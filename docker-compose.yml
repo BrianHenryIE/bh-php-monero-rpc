@@ -1,0 +1,30 @@
+services:
+
+  php-composer:
+    container_name: php
+    build:
+      context: ./.docker/
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/usr/dev/
+
+  monero:
+    container_name: monero
+    image: sethsimmons/simple-monerod:latest
+    user: ${FIXUID:-1000}:${FIXGID:-1000}
+    restart: unless-stopped
+    volumes:
+      - ./.docker/monero_data/:/home/monero/.bitmonero
+    dns:
+      - 8.8.8.8
+    ports:
+      - 18080:18080
+      - 18089:18089
+    command:
+      # - "--log-level=1"
+      - "--rpc-restricted-bind-ip=0.0.0.0"
+      - "--rpc-restricted-bind-port=18089"
+      - "--public-node"
+      - "--no-igd"
+      - "--enable-dns-blocklist"
+      - "--prune-blockchain"
