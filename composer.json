@@ -39,6 +39,17 @@
             "BrianHenryIE\\MoneroRpc\\": "src/"
         }
     },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ]
+    },
+    "repositories": {
+        "brianhenryie/php-diff-test": {
+            "type": "git",
+            "url": "https://github.com/brianhenryie/php-diff-test"
+        }
+    },
     "require": {
         "php": "^8",
         "ext-bcmath": "*",
@@ -48,6 +59,7 @@
         "simpod/json-rpc": "dev-master"
     },
     "require-dev": {
+        "brianhenryie/php-diff-test": "dev-master",
         "cweagans/composer-patches": "*",
         "dealerdirect/phpcodesniffer-composer-installer": "*",
         "guzzlehttp/guzzle": "^7.4",
@@ -70,7 +82,7 @@
             "phpunit"
         ],
         "test-coverage": [
-            "phpunit --coverage-text --coverage-clover tests/_reports/clover.xml --coverage-html tests/_reports/html"
+            "phpunit --coverage-text --coverage-php tests/_reports/coverage.cov --coverage-clover tests/_reports/clover.xml --coverage-html tests/_reports/html"
         ],
         "lint": [
             "phpcbf || true",
