@@ -21,7 +21,7 @@ class MappersTest extends \PHPUnit\Framework\TestCase
      *
      * @return array<string, string[]>
      */
-    public function data(): array
+    public static function data(): array
     {
         return [
             'get_alt_blocks_hashes.json' => [ 'get_alt_blocks_hashes.json', AltBlocksHashesMapper::class ],
