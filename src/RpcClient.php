@@ -87,6 +87,7 @@ abstract class RpcClient
 
     protected function runJsonRpc(?string $method, ?array $params = null, ?string $type = stdClass::class)
     {
+
         return $this->run('json_rpc', $method, $params, $type);
     }
 
