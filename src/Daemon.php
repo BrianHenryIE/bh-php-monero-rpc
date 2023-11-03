@@ -71,6 +71,8 @@ class Daemon extends RpcClient
    * Look up how many blocks are in the longest chain known to the node.
    *
    * @see https://www.getmonero.org/resources/developer-guides/daemon-rpc.html#get_block_count
+   * @see https://github.com/monero-project/monero/blob/e06129bb4d1076f4f2cebabddcee09f1e9e30dcc/src/rpc/core_rpc_server.cpp#L1687-L1701
+   * @see https://github.com/monero-project/monero/blob/e06129bb4d1076f4f2cebabddcee09f1e9e30dcc/src/cryptonote_core/blockchain.cpp#L269-L277
    */
     public function getBlockCount(): BlockCount
     {
