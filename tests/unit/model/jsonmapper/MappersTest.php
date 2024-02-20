@@ -6,6 +6,7 @@ use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\AltBlocksHashesMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockCountMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderByMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockMapper;
+use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\ConnectionsMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InPeersMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\LimitMapper;
@@ -41,6 +42,7 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'in_peers.json' => ['in_peers.json',InPeersMapper::class],
             'json_rpc-getblockheaderbyhash.json' => ['json_rpc-getblockheaderbyhash.json',BlockHeaderByMapper::class],
             'set_limit.json' => ['set_limit.json',LimitMapper::class],
+            'get_connections.json' => ['get_connections.json',ConnectionsMapper::class],
         ];
     }
 

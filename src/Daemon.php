@@ -51,6 +51,7 @@ use BrianHenryIE\MoneroRpc\Daemon\InPeers;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\AltBlocksHashesMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockCountMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderByMapper;
+use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\ConnectionsMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InPeersMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\LimitMapper;
@@ -309,7 +310,7 @@ class Daemon extends RpcClient
    */
     public function getConnections()
     {
-        return $this->runJsonRpc('get_connections');
+        return $this->runJsonRpc('get_connections', null, ConnectionsMapper::class);
     }
 
   /**
