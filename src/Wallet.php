@@ -1736,8 +1736,8 @@ class Wallet extends RpcClient
   /**
    * Get RPC version Major & Minor integer-format, where Major is the first 16 bits and Minor the last 16 bits.
    */
-    public function getVersion()
+    public function getVersion(): Version
     {
-        return $this->runJsonRpc('get_version');
+        return $this->runJsonRpc('get_version', null, VersionMapper::class);
     }
 }
