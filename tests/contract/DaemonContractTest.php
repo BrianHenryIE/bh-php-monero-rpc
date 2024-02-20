@@ -13,48 +13,11 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\HttpFactory;
-use PHPUnit\Framework\TestCase;
-
 /**
  * @coversDefaultClass \BrianHenryIE\MoneroRpc\Daemon
  */
-class DaemonContractTest extends TestCase
+class DaemonContractTest extends ContractTestCase
 {
-    protected static Daemon $rpcClient;
-
-    /**
-     * moneord --rpc-bind-port arg (=18081, 28081 if 'testnet', 38081 if 'stagenet')
-     */
-    public static function setUpBeforeClass(): void
-    {
-        self::$rpcClient = new Daemon(
-            new HttpFactory(),
-            new HttpFactory(),
-            new Client(),
-            new HttpFactory(),
-            '127.0.0.1',
-            Daemon::TESTNET_PORT,
-            false
-        );
-        try {
-            self::$rpcClient->miningStatus();
-        } catch (\Exception $exception) {
-            self::markTestSkipped('Daemon not running.');
-        }
-    }
-
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
-
-    protected function getDaemonRpcClient(): Daemon
-    {
-        return self::$rpcClient;
-    }
-
     public function testCollectTestData(): void
     {
         $this->markTestSkipped('only for saving test data');
@@ -97,7 +60,7 @@ class DaemonContractTest extends TestCase
         $daemonRpc = $this->getDaemonRpcClient();
 
         $height = (int) $this->extractFromCli(
-            'monerod --testnet print_height',
+            'print_height',
             '/(\d+)$/'
         );
 
@@ -186,44 +149,18 @@ class DaemonContractTest extends TestCase
     {
         $daemonRpc = $this->getDaemonRpcClient();
 
-        $height = $daemonRpc->getBlockCount()->getCount() - 10;
+        $height = max(1, $daemonRpc->getBlockCount()->getCount() - 10);
 
+        // Failed to parse arguments: unrecognised option '-9'
+
+        // This doesn't respect the port defined above... does it need to?!
         $expected = $this->extractFromCli(
-            "monerod --testnet print_block $height",
+            "print_block $height",
             '/\nhash: (.*)\n/'
         );
 
         $result = $daemonRpc->onGetBlockHash($height);
 
         self::assertEquals($expected, $result);
-    }
-
-    /**
-     * E.g. `monerod --testnet print_block`
-     */
-    private function extractFromCli(string $monerodCliCommand, string $regex): string
-    {
-        $shell = shell_exec($monerodCliCommand);
-
-        $shell = trim($this->stripAnsi($shell));
-
-        preg_match($regex, $shell, $matches);
-
-        return $matches[1];
-    }
-
-    /**
-     * Surprisingly, there is nothing on Packagist to remove ANSI codes from a string.
-     */
-    private function stripAnsi(string $from): string
-    {
-        $ansi = [
-            '[0;36m',
-            '[0m',
-            '[?2004h',
-            '[?2004l',
-        ];
-
-        return str_replace($ansi, '', $from);
     }
 }
