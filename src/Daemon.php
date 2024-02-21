@@ -46,12 +46,14 @@ namespace BrianHenryIE\MoneroRpc;
 use BrianHenryIE\MoneroRpc\Daemon\AltBlocksHashes;
 use BrianHenryIE\MoneroRpc\Daemon\BlockCount;
 use BrianHenryIE\MoneroRpc\Daemon\BlockHeaderBy;
+use BrianHenryIE\MoneroRpc\Daemon\GenerateBlocks;
 use BrianHenryIE\MoneroRpc\Daemon\Info;
 use BrianHenryIE\MoneroRpc\Daemon\InPeers;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\AltBlocksHashesMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockCountMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderByMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\ConnectionsMapper;
+use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\GenerateBlocksMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InPeersMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\LimitMapper;
@@ -130,6 +132,31 @@ class Daemon extends RpcClient
     public function submitBlock($block)
     {
         return $this->runJsonRpc('submitblock', $block);
+    }
+
+    /**
+     * Generate Blocks
+     *
+     * @see https://www.getmonero.org/resources/developer-guides/daemon-rpc.html#generateblocks
+     *
+     * @param int $amountOfBlocks - unsigned int; number of blocks to be generated.
+     * @param string $walletAddress- string; address to receive the coinbase reward.
+     * @param string $previousBlock
+     * @param int $startingNonce - unsigned int; Increased by miner untill it finds a matching result that solves a block.
+     */
+    public function generateBlocks(
+        int $amountOfBlocks,
+        string $walletAddress,
+        string $previousBlock,
+        int $startingNonce
+    ): GenerateBlocks {
+        $params = [
+            'amount_of_blocks' => $amountOfBlocks,
+            'wallet_address' => $walletAddress,
+            'prev_block' => $previousBlock,
+            'starting_nonce' => $startingNonce
+        ];
+        return $this->runJsonRpc('generateblocks', $params, GenerateBlocksMapper::class);
     }
 
   /**
