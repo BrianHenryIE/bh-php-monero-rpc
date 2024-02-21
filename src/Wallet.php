@@ -53,7 +53,12 @@ class Wallet extends RpcClient
   /**
    * Look up an account's balance
    *
-   * @param  int  $accountIndex  Index of account to look up  (optional)
+   *
+   *
+   * @param ?int $accountIndex - unsigned int; Return balance for this account. Index of account to look up  (optional)
+   * @param int[] $addressIndices - array of unsigned int; (Optional) Return balance detail for those subaddresses.
+   * @param bool $allAaccounts - boolean; (Defaults to false)
+   * @param bool $isStrict - boolean; (Defaults to false) all changes go to 0-th subaddress (in the current subaddress account)
    *
    * @return object  Example: {
    *   "balance": 140000000000,
@@ -61,10 +66,15 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getBalance(int $accountIndex = 0)
+    public function getBalance(?int $accountIndex = 0, array $addressIndices = [], bool $allAccounts = false, bool $isStrict = false): Balance
     {
-        $params = array('account_index' => $accountIndex);
-        return $this->runJsonRpc('get_balance', $params);
+        $params = array(
+            'account_index' => $accountIndex,
+            'address_indices' => $addressIndices,
+            'all_accounts' => $allAccounts,
+            'strict' => $isStrict
+        );
+        return $this->runJsonRpc('get_balance', $params, BalanceMapper::class);
     }
 
   /**
