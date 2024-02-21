@@ -91,10 +91,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getAddress(int $accountIndex = 0, int $addressIndex = 0)
+    public function getAddress(int $accountIndex = 0, int $addressIndex = 0): GetAddress
     {
         $params = array( 'account_index' => $accountIndex, 'address_index' => $addressIndex);
-        return $this->runJsonRpc('get_address', $params);
+        return $this->runJsonRpc('get_address', $params, GetAddressMapper::class);
     }
 
     /**
