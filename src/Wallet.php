@@ -891,11 +891,12 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Rescan the blockchain from scratch
+   * Rescan the blockchain from scratch, losing any information which can not be recovered from the blockchain itself.
+   * This includes destination addresses, tx secret keys, tx notes, etc.
    */
-    public function rescanBlockchain()
+    public function rescanBlockchain(): void
     {
-        return $this->runJsonRpc('rescan_blockchain');
+        $this->runJsonRpc('rescan_blockchain');
     }
 
   /**
