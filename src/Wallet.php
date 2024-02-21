@@ -479,14 +479,10 @@ class Wallet extends RpcClient
   /**
    * Send all dust outputs back to the wallet
    *
-   * @return object  Example: {
-   *   // TODO example
-   * }
-   *
    */
-    public function sweepDust()
+    public function sweepDust(): SweepDustMapper
     {
-        return $this->runJsonRpc('sweep_dust');
+        return $this->runJsonRpc('sweep_dust', null, SweepDustMapper::class);
     }
 
   /**
