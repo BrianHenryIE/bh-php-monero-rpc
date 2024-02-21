@@ -1408,11 +1408,11 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Stop mining
+   * Stop mining in the Monero daemon.
    */
-    public function stopMining()
+    public function stopMining(): void
     {
-        return $this->runJsonRpc('stop_mining');
+        $this->runJsonRpc('stop_mining');
     }
 
   /**
