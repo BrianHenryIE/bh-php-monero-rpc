@@ -1431,6 +1431,8 @@ class Wallet extends RpcClient
   /**
    * Create a new wallet
    *
+   * @see https://github.com/monero-project/monero/blob/2656cdf5056c07684741c4425a051760b97025b0/src/wallet/wallet_rpc_server.cpp#L3285
+   *
    * @param  string  $filename  Filename of new wallet to create
    * @param  ?string  $password  Password of new wallet to create
    * @param  string  $language  Language of new wallet to create
@@ -1450,10 +1452,10 @@ class Wallet extends RpcClient
    * @param  string  $filename  Filename of wallet to open
    * @param  ?string  $password  Password of wallet to open
    */
-    public function openWallet(string $filename = 'monero_wallet', ?string $password = null)
+    public function openWallet(string $filename = 'monero_wallet', ?string $password = null): void
     {
         $params = array('filename' => $filename, 'password' => $password);
-        return $this->runJsonRpc('open_wallet', $params);
+        $this->runJsonRpc('open_wallet', $params);
     }
 
   /**
