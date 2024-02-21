@@ -47,12 +47,12 @@ abstract class ContractTestCase extends TestCase
         );
         try {
             self::$rpcClient->miningStatus();
-        } catch ( Exception $exception) {
+        } catch (Exception $exception) {
             self::markTestSkipped('Daemon not running.');
         }
         try {
             self::$wallet->getVersion();
-        } catch ( Exception $exception) {
+        } catch (Exception $exception) {
             self::markTestSkipped('Wallet not running.');
         }
     }

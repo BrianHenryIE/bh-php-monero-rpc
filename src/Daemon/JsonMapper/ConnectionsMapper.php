@@ -9,9 +9,9 @@ class ConnectionsMapper implements Connections
 {
     use ResponseBaseTrait;
 
-	/**
-	 * @var ConnectionMapper[]
-	 */
+    /**
+     * @var ConnectionMapper[]
+     */
     protected array $connections;
 
     /**
