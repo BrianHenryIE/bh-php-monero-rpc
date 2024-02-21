@@ -1397,14 +1397,20 @@ class Wallet extends RpcClient
   /**
    * Start mining
    *
-   * @param  int   $threadsCount         Number of threads with which to mine
-   * @param  boolean  $doBackgroundMining  Mine in background?
-   * @param  boolean  $ignoreBattery        Ignore battery?
+   * @param  int  $threadsCount       Number of threads created for mining.
+   * @param  bool $doBackgroundMining Allow to start the miner in smart mining mode – a process of having a throttled miner mine when it otherwise does not cause drawbacks.
+   * @param  bool $ignoreBattery      Ignore battery status (for smart mining only).
+   *
+   * @throws Exception when mining has already started.
    */
-    public function startMining(int $threadsCount, bool $doBackgroundMining, bool $ignoreBattery)
+    public function startMining(int $threadsCount, bool $doBackgroundMining, bool $ignoreBattery): void
     {
-        $params = array( 'threads_count' => $threadsCount, 'do_background_mining' => $doBackgroundMining, 'ignore_battery' => $ignoreBattery);
-        return $this->runJsonRpc('start_mining', $params);
+        $params = array(
+            'threads_count' => $threadsCount,
+            'do_background_mining' => $doBackgroundMining,
+            'ignore_battery' => $ignoreBattery,
+        );
+        $this->runJsonRpc('start_mining', $params);
     }
 
   /**
