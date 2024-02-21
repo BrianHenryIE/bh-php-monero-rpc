@@ -34,6 +34,14 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\ResponseBaseMapper;
+use BrianHenryIE\MoneroRpc\Wallet\Balance;
+use BrianHenryIE\MoneroRpc\Wallet\GetAddress;
+use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\BalanceMapper;
+use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\GetAddressMapper;
+use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\SweepDustMapper;
+use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\VersionMapper;
+use BrianHenryIE\MoneroRpc\Wallet\Version;
 use Exception;
 
 class Wallet extends RpcClient
