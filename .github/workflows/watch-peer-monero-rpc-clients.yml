@@ -1,0 +1,134 @@
+name: Watch peer Monero RPC clients
+
+# Weekly review of other Monero RPC client libraries (Rust, Go, Python, JS, …).
+# Claude inspects their commits since the last run, judges whether any change is
+# worth porting to this PHP library (new RPC methods, request/response shape
+# fixes, monerod compatibility updates), and opens ONE GitHub issue with
+# recommendations when — and only when — there is something actionable.
+#
+# Setup required (once): add an `ANTHROPIC_API_KEY` repository secret
+# (Settings → Secrets and variables → Actions). Claude Pro/Max subscribers can
+# instead use `claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}`.
+#
+# State is kept in the issues themselves: the creation date of the most recent
+# issue labelled `peer-client-watch` is the "reviewed up to" watermark, so the
+# workflow is stateless and safe to re-run (`workflow_dispatch`).
+#
+# @see https://code.claude.com/docs/en/github-actions
+
+on:
+  schedule:
+    # Mondays 06:30 UTC.
+    - cron: '30 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  id-token: write
+
+jobs:
+  review-peer-monero-rpc-client-changes:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Git checkout (for cross-referencing src/Daemon.php and src/Wallet.php)
+        uses: actions/checkout@v4
+
+      - name: Ensure the peer-client-watch label exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create peer-client-watch \
+            --description "Automated weekly review of peer Monero RPC clients" \
+            --color 1D76DB --force
+
+      - name: Review peer client changes with Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --allowedTools "Read,Grep,Glob,Bash(gh api:*),Bash(gh issue:*),Bash(gh search:*),Bash(date:*),Bash(jq:*)"
+            --max-turns 60
+          prompt: |
+            You are reviewing peer Monero RPC client libraries for changes worth
+            porting into this repository (brianhenryie/bh-php-monero-rpc, a PHP
+            client for monerod's daemon RPC and monero-wallet-rpc, checked out in
+            the current directory).
+
+            ## Watched repositories
+
+            - monero-rs/monero-rpc-rs          (Rust)
+            - omani/go-monero-rpc-client       (Go)
+            - eversinc33/nim-monero-rpc        (Nim)
+            - monerojs/monerojs                (JavaScript)
+            - monero-ecosystem/monero-python   (Python)
+            - monero-ecosystem/python-monerorpc (Python)
+            - monero-ecosystem/monero-java     (Java)
+            - monero-integrations/monerophp    (PHP; this library's upstream ancestor)
+
+            ## Step 1 — determine the review window
+
+            Find the most recent issue in THIS repository with the label
+            `peer-client-watch` (any state):
+              gh issue list --label peer-client-watch --state all --limit 1 \
+                --json createdAt,number
+            Use its `createdAt` as SINCE. If there is none, use 8 days ago.
+
+            ## Step 2 — collect changes
+
+            For each watched repository:
+              gh api "repos/{owner}/{repo}/commits?since=SINCE&per_page=50" \
+                --jq '.[] | {sha: .sha[0:10], message: .commit.message, date: .commit.author.date}'
+            Also check tagged releases in the window:
+              gh api "repos/{owner}/{repo}/releases?per_page=5"
+            For commits whose message suggests relevance, fetch the diff:
+              gh api repos/{owner}/{repo}/commits/{sha} --jq '.files[] | {filename, patch}'
+            A repository having zero commits in the window is normal; move on.
+
+            ## Step 3 — judge relevance
+
+            Relevant (actionable here):
+            - New daemon or wallet RPC methods added, or new request parameters /
+              response fields supported.
+            - Bug fixes in request construction or response parsing (wrong
+              parameter names, wrongly typed fields, endpoints that ignore
+              params) — this library has had exactly such bugs.
+            - Changes tracking new monerod releases or hard-fork behavior.
+            - Security fixes relevant to RPC handling (e.g. auth, TLS).
+
+            Not relevant (never justify an issue):
+            - CI, docs, formatting, dependency bumps, language-internal
+              refactors, test-only changes, README edits.
+
+            ## Step 4 — cross-reference before recommending
+
+            For each candidate, check whether this library already handles it:
+            read src/Daemon.php, src/Wallet.php, and src/RpcClient.php (Grep for
+            the RPC method name, e.g. `get_transactions`, `sign`). Only recommend
+            work this library actually lacks. Note the affected file and method
+            for each recommendation.
+
+            ## Step 5 — report
+
+            If there is at least ONE actionable recommendation, create exactly
+            one issue:
+              gh issue create \
+                --title "Peer Monero RPC client changes: review week of <YYYY-MM-DD>" \
+                --label peer-client-watch \
+                --body "<body>"
+            Body format: one section per source repository with linked commits/
+            releases, a one-paragraph summary of the change, the concrete
+            recommendation for THIS library (affected class/method), and a
+            Recommendations checklist (- [ ] items) at the top. Keep it under
+            ~300 lines; link, don't paste, large diffs.
+
+            If there are NO actionable recommendations, do NOT create an issue —
+            but if this is the first ever run (no `peer-client-watch` issue
+            exists), create one titled "Peer Monero RPC client watch: baseline
+            <YYYY-MM-DD>" with a body noting the watch has started and listing
+            the watched repositories, so future runs have a watermark. Close it
+            immediately with:  gh issue close <number> --reason "not planned"
+
+            Do not modify any files. Do not comment on or edit existing issues.
