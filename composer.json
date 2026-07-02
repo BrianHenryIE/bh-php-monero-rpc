@@ -26,12 +26,15 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "process-timeout": 0,
-        "sort-packages": true,
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "phpstan/extension-installer": true
-        }
+        },
+        "platform": {
+          "php": "8.4"
+        },
+        "process-timeout": 0,
+        "sort-packages": true
     },
     "autoload": {
         "psr-4": {
@@ -98,7 +101,7 @@
         }
     },
     "require": {
-        "php": "^8",
+        "php": ">=8.4",
         "ext-bcmath": "*",
         "ext-json": "*",
         "json-mapper/json-mapper": "^2.25",
