@@ -2,21 +2,23 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface PeerListEntry
+final readonly class PeerListEntry
 {
-    public function getHost(): string;
-
-    public function getId(): int;
-
-    public function getIp(): int;
-
-    public function getLastSeen(): int;
-
-    public function getPort(): int;
-
-    public function getPruningSeed(): ?int;
-
-    public function getRpcPort(): ?int;
-
-    public function getRpcCreditsPerHash(): ?int;
+    /**
+     * @param ?int $pruningSeed       Optional: monerod omits pruning fields for peers that do
+     *                                not advertise them.
+     * @param ?int $rpcPort           Optional: omitted for peers that do not advertise an RPC port.
+     * @param ?int $rpcCreditsPerHash Optional: omitted for peers that do not advertise RPC credits.
+     */
+    public function __construct(
+        public string $host,
+        public int $id,
+        public int $ip,
+        public int $lastSeen,
+        public int $port,
+        public ?int $pruningSeed = null,
+        public ?int $rpcPort = null,
+        public ?int $rpcCreditsPerHash = null,
+    ) {
+    }
 }

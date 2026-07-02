@@ -2,11 +2,15 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface BlockHeaderBy extends ResponseBase
+final readonly class BlockHeaderBy extends ResponseBase
 {
-    public function getBlockHeader(): BlockHeader;
-
-    public function getCredits(): int;
-
-    public function getTopHash(): string;
+    public function __construct(
+        public BlockHeader $blockHeader,
+        public int $credits,
+        public string $topHash,
+        string $status,
+        bool $untrusted,
+    ) {
+        parent::__construct($status, $untrusted);
+    }
 }

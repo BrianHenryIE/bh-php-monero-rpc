@@ -2,9 +2,11 @@
 
 namespace BrianHenryIE\MoneroRpc\Wallet;
 
-interface SweepDust
+final readonly class SweepDust
 {
-    public function getMultisigTxset(): string;
-
-    public function getUnsignedTxset(): string;
+    public function __construct(
+        public string $multisigTxset,
+        public string $unsignedTxset,
+    ) {
+    }
 }

@@ -75,10 +75,10 @@ EOD;
 
         self::assertSame(
             '43zjHrEvKytNk8YG7JEa2M9XJsPtfkG23jFBukXBj43sETTrwZhVYr1Pup4HH9qox9GuNeUuTvquyYc8Sk8PTVSaPbhVN81',
-            $result->getAddress()
+            $result->address
         );
-        self::assertSame('Wallet has been restored successfully.', $result->getInfo());
-        self::assertFalse($result->isWasDeprecated());
+        self::assertSame('Wallet has been restored successfully.', $result->info);
+        self::assertFalse($result->wasDeprecated);
     }
 
     /**

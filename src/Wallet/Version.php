@@ -6,8 +6,11 @@
 
 namespace BrianHenryIE\MoneroRpc\Wallet;
 
-interface Version
+final readonly class Version
 {
-    public function getRelease(): bool;
-    public function getVersion(): int;
+    public function __construct(
+        public bool $release,
+        public int $version,
+    ) {
+    }
 }

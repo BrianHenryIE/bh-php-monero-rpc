@@ -7,7 +7,10 @@
 
 namespace BrianHenryIE\MoneroRpc\Wallet;
 
-interface Key
+final readonly class Key
 {
-    public function getKey(): string;
+    public function __construct(
+        public string $key,
+    ) {
+    }
 }

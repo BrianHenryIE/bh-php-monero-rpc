@@ -2,9 +2,15 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface Height
+final readonly class Height
 {
-    public function getHash(): string;
-
-    public function getHeight(): int;
+    /**
+     * @param ?string $hash Optional: the wallet RPC `get_height` returns only `height`; the daemon
+     *                      RPC `get_height` also returns the top block `hash`.
+     */
+    public function __construct(
+        public int $height,
+        public ?string $hash = null,
+    ) {
+    }
 }

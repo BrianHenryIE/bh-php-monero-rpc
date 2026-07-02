@@ -2,10 +2,16 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface Connections extends ResponseBase
+final readonly class Connections extends ResponseBase
 {
     /**
-     * @return Connection[]
+     * @param Connection[] $connections
      */
-    public function getConnections(): array;
+    public function __construct(
+        public array $connections,
+        string $status,
+        bool $untrusted,
+    ) {
+        parent::__construct($status, $untrusted);
+    }
 }

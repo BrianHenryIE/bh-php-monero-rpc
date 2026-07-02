@@ -2,17 +2,19 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface PeerList extends ResponseBase
+final readonly class PeerList extends ResponseBase
 {
     /**
-     * 5000
-     *
-     * @return PeerListEntry[]
+     * @param PeerListEntry[] $grayList  5000. Optional: monerod omits `gray_list` when it is empty
+     *                                   (observed live: a node whose only peers are white-listed).
+     * @param PeerListEntry[] $whiteList Optional: monerod omits `white_list` when it is empty.
      */
-    public function getGrayList(): array;
-
-    /**
-     * @return PeerListEntry[]
-     */
-    public function getWhiteList(): array;
+    public function __construct(
+        string $status,
+        bool $untrusted,
+        public array $grayList = [],
+        public array $whiteList = [],
+    ) {
+        parent::__construct($status, $untrusted);
+    }
 }

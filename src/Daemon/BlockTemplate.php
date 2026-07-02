@@ -21,21 +21,27 @@ namespace BrianHenryIE\MoneroRpc\Daemon;
  * "wide_difficulty" : "0x64"
  * }
  */
-interface BlockTemplate extends ResponseBase
+final readonly class BlockTemplate extends ResponseBase
 {
-    public function getBlockhashingBlob(): string;
-    public function getBlocktemplateBlob(): string;
-    public function getDifficulty(): int;
-    public function getDifficultyTop64(): int;
-    public function getExpectedReward(): int;
-    public function getHeight(): int;
-    public function getNextSeedHash(): string;
-    public function getPrevHash(): string;
-    public function getReservedOffset(): int;
-    public function getSeedHash(): string;
-    public function getSeedHeight(): int;
     /**
-     * @return string / base16/hex string.
+     * @param string $wideDifficulty base16/hex string.
      */
-    public function getWideDifficulty(): string;
+    public function __construct(
+        public string $blockhashingBlob,
+        public string $blocktemplateBlob,
+        public int $difficulty,
+        public int $difficultyTop64,
+        public int $expectedReward,
+        public int $height,
+        public string $nextSeedHash,
+        public string $prevHash,
+        public int $reservedOffset,
+        public string $seedHash,
+        public int $seedHeight,
+        public string $wideDifficulty,
+        string $status,
+        bool $untrusted,
+    ) {
+        parent::__construct($status, $untrusted);
+    }
 }

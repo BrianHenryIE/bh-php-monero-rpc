@@ -2,87 +2,53 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface Info extends ResponseBase
+final readonly class Info extends ResponseBase
 {
-    public function getAdjustedTime(): int;
-
-    public function getAltBlocksCount(): int;
-
-    public function getBlockSizeLimit(): int;
-
-    public function getBlockSizeMedian(): int;
-
-    public function getBlockWeightLimit(): int;
-
-    public function getBlockWeightMedian(): int;
-
-    public function getBootstrapDaemonAddress(): string;
-
-    public function getBusySyncing(): bool;
-
-    public function getCredits(): int;
-
-    public function getCumulativeDifficulty(): int;
-
-    public function getCumulativeDifficultyTop64(): int;
-
-    public function getDatabaseSize(): int;
-
-    public function getDifficulty(): int;
-
-    public function getDifficultyTop64(): int;
-
-    public function getFreeSpace(): int;
-
-    public function getGreyPeerlistSize(): int;
-
-    public function getHeight(): int;
-
-    public function getHeightWithoutBootstrap(): int;
-
-    public function getIncomingConnectionsCount(): int;
-
-    public function getMainnet(): bool;
-
-    public function getNettype(): string;
-
-    public function getOffline(): bool;
-
-    public function getOutgoingConnectionsCount(): int;
-
-    public function getRestricted(): bool;
-
-    public function getRpcConnectionsCount(): int;
-
-    public function getStagenet(): bool;
-
-    public function getStartTime(): int;
-
-    public function getSynchronized(): bool;
-
-    public function getTarget(): int;
-
-    public function getTargetHeight(): int;
-
-    public function getTestnet(): bool;
-
-    public function getTopBlockHash(): string;
-
-    public function getTopHash(): string;
-
-    public function getTxCount(): int;
-
-    public function getTxPoolSize(): int;
-
-    public function getUpdateAvailable(): bool;
-
-    public function getVersion(): string;
-
-    public function getWasBootstrapEverUsed(): bool;
-
-    public function getWhitePeerlistSize(): int;
-
-    public function getWideCumulativeDifficulty(): string;
-
-    public function getWideDifficulty(): string;
+    public function __construct(
+        public int $adjustedTime,
+        public int $altBlocksCount,
+        public int $blockSizeLimit,
+        public int $blockSizeMedian,
+        public int $blockWeightLimit,
+        public int $blockWeightMedian,
+        public string $bootstrapDaemonAddress,
+        public bool $busySyncing,
+        public int $credits,
+        public int $cumulativeDifficulty,
+        public int $cumulativeDifficultyTop64,
+        public int $databaseSize,
+        public int $difficulty,
+        public int $difficultyTop64,
+        public int $freeSpace,
+        public int $greyPeerlistSize,
+        public int $height,
+        public int $heightWithoutBootstrap,
+        public int $incomingConnectionsCount,
+        public bool $mainnet,
+        public string $nettype,
+        public bool $offline,
+        public int $outgoingConnectionsCount,
+        public bool $restricted,
+        public int $rpcConnectionsCount,
+        public bool $stagenet,
+        public int $startTime,
+        public bool $synchronized,
+        public int $target,
+        public int $targetHeight,
+        public bool $testnet,
+        public string $topBlockHash,
+        public string $topHash,
+        public int $txCount,
+        public int $txPoolSize,
+        public bool $updateAvailable,
+        public string $version,
+        public bool $wasBootstrapEverUsed,
+        public int $whitePeerlistSize,
+        public string $wideCumulativeDifficulty,
+        public string $wideDifficulty,
+        string $status,
+        bool $untrusted,
+    ) {
+        parent::__construct($status, $untrusted);
+    }
 }

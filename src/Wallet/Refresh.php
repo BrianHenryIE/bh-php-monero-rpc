@@ -1,12 +1,11 @@
 <?php
 
-/**
- *
- */
-
 namespace BrianHenryIE\MoneroRpc\Wallet;
 
-interface Refresh
+final readonly class Refresh
 {
-    public function getRefreshResult(): RefreshResult;
+    public function __construct(
+        public RefreshResult $refreshResult,
+    ) {
+    }
 }

@@ -1,17 +1,15 @@
 <?php
 
-/**
- *
- */
-
 namespace BrianHenryIE\MoneroRpc\Wallet;
 
-interface GetAddress
+final readonly class GetAddress
 {
-    public function getAddress(): string;
-
     /**
-     * @return Address[]
+     * @param Address[] $addresses
      */
-    public function getAddresses(): array;
+    public function __construct(
+        public string $address,
+        public array $addresses,
+    ) {
+    }
 }

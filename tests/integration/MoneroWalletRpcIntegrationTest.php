@@ -23,7 +23,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
     {
         $result = self::$minerWalletRpcClient->getVersion();
 
-        self::assertGreaterThan(0, $result->getVersion());
+        self::assertGreaterThan(0, $result->version);
     }
 
     public function testRecipientWalletBalanceIsExactlyTheSeedTransfer(): void
@@ -33,7 +33,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         $result = $recipientWallet->getBalance();
 
-        self::assertSame(MoneroRegtestFixture::EXPECTED_RECIPIENT_BALANCE_ATOMIC_UNITS, $result->getBalance());
+        self::assertSame(MoneroRegtestFixture::EXPECTED_RECIPIENT_BALANCE_ATOMIC_UNITS, $result->balance);
     }
 
     public function testMinerWalletBalanceMatchesManifest(): void
@@ -43,7 +43,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         $result = $minerWallet->getBalance();
 
-        self::assertSame(self::$manifest['miner_wallet_balance_atomic_units'], $result->getBalance());
+        self::assertSame(self::$manifest['miner_wallet_balance_atomic_units'], $result->balance);
     }
 
     public function testGetAddressIsMnemonicDerivedConstant(): void
@@ -51,8 +51,8 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         $minerResult = $this->openMinerWallet()->getAddress();
         $recipientResult = $this->openRecipientWallet()->getAddress();
 
-        self::assertSame(MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS, $minerResult->getAddress());
-        self::assertSame(MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS, $recipientResult->getAddress());
+        self::assertSame(MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS, $minerResult->address);
+        self::assertSame(MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS, $recipientResult->address);
     }
 
     public function testGetAddressIndex(): void
@@ -81,7 +81,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         $result = $minerWallet->queryKey('mnemonic');
 
-        self::assertSame(MoneroRegtestFixture::MINER_WALLET_MNEMONIC, $result->getKey());
+        self::assertSame(MoneroRegtestFixture::MINER_WALLET_MNEMONIC, $result->key);
     }
 
     public function testGetTransfersRecipientSeesExactlyOneIncomingTransfer(): void
@@ -202,11 +202,11 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         $integratedAddressResult = $minerWallet->makeIntegratedAddress();
 
         $splitResult = $minerWallet->splitIntegratedAddress(
-            $integratedAddressResult->getIntegratedAddress()
+            $integratedAddressResult->integratedAddress
         );
 
         self::assertSame(MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS, $splitResult->standardAddress);
-        self::assertSame($integratedAddressResult->getPaymentId(), $splitResult->paymentId);
+        self::assertSame($integratedAddressResult->paymentId, $splitResult->paymentId);
     }
 
     public function testSignAndVerifyRoundTrip(): void

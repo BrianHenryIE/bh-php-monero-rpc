@@ -34,18 +34,10 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\HeightMapper;
+use BrianHenryIE\MoneroRpc\Daemon\Height;
 use BrianHenryIE\MoneroRpc\Wallet\Balance;
 use BrianHenryIE\MoneroRpc\Wallet\GetAddress;
 use BrianHenryIE\MoneroRpc\Wallet\IntegratedAddress;
-use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\BalanceMapper;
-use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\GetAddressMapper;
-use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\IntegratedAddressMapper;
-use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\KeyMapper;
-use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\RefreshResultMapper;
-use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\RestoreDeterministicWalletResultMapper;
-use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\SweepDustMapper;
-use BrianHenryIE\MoneroRpc\Wallet\JsonMapper\VersionMapper;
 use BrianHenryIE\MoneroRpc\Wallet\Key;
 use BrianHenryIE\MoneroRpc\Wallet\RefreshResult;
 use BrianHenryIE\MoneroRpc\Wallet\RestoreDeterministicWalletResult;
@@ -115,7 +107,7 @@ class Wallet extends RpcClient
      */
     public function getVersion(): Version
     {
-        return $this->runJsonRpc('get_version', null, VersionMapper::class);
+        return $this->runJsonRpc('get_version', null, Version::class);
     }
 
 
@@ -179,7 +171,7 @@ class Wallet extends RpcClient
         return $this->runJsonRpc(
             'restore_deterministic_wallet',
             $params,
-            RestoreDeterministicWalletResultMapper::class
+            RestoreDeterministicWalletResult::class
         );
     }
 
@@ -288,7 +280,7 @@ class Wallet extends RpcClient
     public function refresh(?int $startHeight = null): RefreshResult
     {
         $params = array('start_height' => $startHeight);
-        return $this->runJsonRpc('refresh', $params, RefreshResultMapper::class);
+        return $this->runJsonRpc('refresh', $params, RefreshResult::class);
     }
 
     /**
@@ -327,12 +319,7 @@ class Wallet extends RpcClient
      */
     public function getHeight(): int
     {
-        $response = $this->runJsonRpc('get_height');
-//        $response = $this->runJsonRpc('get_height', null, HeightMapper::class);
-        if (isset($response->height)) {
-            return $response->height;
-        }
-        throw new Exception('Unexpected response, no height returned');
+        return $this->runJsonRpc('get_height', null, Height::class)->height;
     }
 
     /**
@@ -396,7 +383,7 @@ class Wallet extends RpcClient
             'all_accounts' => $allAccounts,
             'strict' => $isStrict
         );
-        return $this->runJsonRpc('get_balance', $params, BalanceMapper::class);
+        return $this->runJsonRpc('get_balance', $params, Balance::class);
     }
 
   /**
@@ -426,7 +413,7 @@ class Wallet extends RpcClient
     public function getAddress(int $accountIndex = 0, int $addressIndex = 0): GetAddress
     {
         $params = array( 'account_index' => $accountIndex, 'address_index' => $addressIndex);
-        return $this->runJsonRpc('get_address', $params, GetAddressMapper::class);
+        return $this->runJsonRpc('get_address', $params, GetAddress::class);
     }
 
     /**
@@ -809,7 +796,7 @@ class Wallet extends RpcClient
    */
     public function sweepDust(): SweepDust
     {
-        return $this->runJsonRpc('sweep_dust', null, SweepDustMapper::class);
+        return $this->runJsonRpc('sweep_dust', null, SweepDust::class);
     }
 
   /**
@@ -1126,7 +1113,7 @@ class Wallet extends RpcClient
         }
 
         $params = array('key_type' => $keyType);
-        return $this->runJsonRpc('query_key', $params, KeyMapper::class);
+        return $this->runJsonRpc('query_key', $params, Key::class);
     }
 
   /**
@@ -1145,7 +1132,7 @@ class Wallet extends RpcClient
     public function makeIntegratedAddress(?string $standardAddress = null, ?string $paymentId = null): IntegratedAddress
     {
         $params = array('standard_address' => $standardAddress, 'payment_id' => $paymentId);
-        return $this->runJsonRpc('make_integrated_address', $params, IntegratedAddressMapper::class);
+        return $this->runJsonRpc('make_integrated_address', $params, IntegratedAddress::class);
     }
 
   /**

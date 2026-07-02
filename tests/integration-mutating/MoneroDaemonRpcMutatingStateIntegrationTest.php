@@ -28,7 +28,7 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
 
     public function testGenerateBlocksExtendsChainOnBothDaemons(): void
     {
-        $heightBefore = self::$daemonPrimaryRpcClient->getHeight()->getHeight();
+        $heightBefore = self::$daemonPrimaryRpcClient->getHeight()->height;
 
         $result = self::$daemonPrimaryRpcClient->generateBlocks(
             1,
@@ -39,14 +39,14 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
 
         // `generateblocks` returns the height (index) of the last generated
         // block, which equals the pre-mining `get_height` value.
-        self::assertSame($heightBefore, $result->getHeight());
-        self::assertCount(1, $result->getBlocks());
+        self::assertSame($heightBefore, $result->height);
+        self::assertCount(1, $result->blocks);
         self::assertSame(
             $heightBefore + 1,
-            self::$daemonPrimaryRpcClient->getHeight()->getHeight()
+            self::$daemonPrimaryRpcClient->getHeight()->height
         );
         self::pollUntil(
-            fn() => self::$daemonPeerRpcClient->getHeight()->getHeight() === $heightBefore + 1,
+            fn() => self::$daemonPeerRpcClient->getHeight()->height === $heightBefore + 1,
             60,
             'monero-daemon-peer did not sync the newly generated block'
         );
@@ -63,14 +63,14 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
             );
 
             self::pollUntil(
-                fn() => self::$daemonPeerRpcClient->miningStatus()->getActive(),
+                fn() => self::$daemonPeerRpcClient->miningStatus()->active,
                 30,
                 'Mining did not become active after start_mining'
             );
-            self::assertTrue(self::$daemonPeerRpcClient->miningStatus()->getActive());
+            self::assertTrue(self::$daemonPeerRpcClient->miningStatus()->active);
             self::assertSame(
                 MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
-                self::$daemonPeerRpcClient->miningStatus()->getAddress()
+                self::$daemonPeerRpcClient->miningStatus()->address
             );
         } finally {
             // NB: stop_mining blocks while the miner thread shuts down (~20s observed).
@@ -78,18 +78,18 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
         }
 
         self::pollUntil(
-            fn() => self::$daemonPeerRpcClient->miningStatus()->getActive() === false,
+            fn() => self::$daemonPeerRpcClient->miningStatus()->active === false,
             30,
             'Mining still active after stop_mining'
         );
-        self::assertFalse(self::$daemonPeerRpcClient->miningStatus()->getActive());
+        self::assertFalse(self::$daemonPeerRpcClient->miningStatus()->active);
 
         // Mining at fixed difficulty 1 may have found blocks; sync the daemons
         // before any later test reads heights.
         self::pollUntil(
             function () {
-                return self::$daemonPeerRpcClient->getHeight()->getHeight()
-                    === self::$daemonPrimaryRpcClient->getHeight()->getHeight();
+                return self::$daemonPeerRpcClient->getHeight()->height
+                    === self::$daemonPrimaryRpcClient->getHeight()->height;
             },
             60,
             'Daemons did not converge to the same height after mining'
@@ -99,26 +99,26 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
     public function testSetLimitRoundTrip(): void
     {
         $initialLimitResult = self::$daemonPrimaryRpcClient->getLimit();
-        $initialLimitDown = $initialLimitResult->getLimitDown();
-        $initialLimitUp = $initialLimitResult->getLimitUp();
+        $initialLimitDown = $initialLimitResult->limitDown;
+        $initialLimitUp = $initialLimitResult->limitUp;
 
         try {
             $setResult = self::$daemonPrimaryRpcClient->setLimit(4096, 1024);
 
-            self::assertSame(4096, $setResult->getLimitDown());
-            self::assertSame(1024, $setResult->getLimitUp());
+            self::assertSame(4096, $setResult->limitDown);
+            self::assertSame(1024, $setResult->limitUp);
 
             $getResult = self::$daemonPrimaryRpcClient->getLimit();
 
-            self::assertSame(4096, $getResult->getLimitDown());
-            self::assertSame(1024, $getResult->getLimitUp());
+            self::assertSame(4096, $getResult->limitDown);
+            self::assertSame(1024, $getResult->limitUp);
         } finally {
             self::$daemonPrimaryRpcClient->setLimit($initialLimitDown, $initialLimitUp);
         }
 
         $restoredResult = self::$daemonPrimaryRpcClient->getLimit();
 
-        self::assertSame($initialLimitDown, $restoredResult->getLimitDown());
+        self::assertSame($initialLimitDown, $restoredResult->limitDown);
     }
 
     public function testSetAndUnsetBans(): void
@@ -145,7 +145,7 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
 
         $getBansResult = self::$daemonPrimaryRpcClient->getBans();
 
-        self::assertSame('OK', $getBansResult->getStatus());
+        self::assertSame('OK', $getBansResult->status);
     }
 
     public function testFlushTxPool(): void

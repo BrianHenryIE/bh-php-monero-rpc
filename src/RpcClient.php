@@ -6,10 +6,13 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Exception\IncompleteRpcResponseException;
 use Exception;
 use JsonMapper\Enums\TextNotation;
-use JsonMapper\JsonMapperFactory;
-use JsonMapper\Middleware\CaseConversion;
+use JsonMapper\Handler\FactoryRegistry;
+use JsonMapper\Handler\PropertyMapper;
+use JsonMapper\JsonMapperBuilder;
+use JsonMapper\JsonMapperInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Client\RequestExceptionInterface;
@@ -140,7 +143,7 @@ abstract class RpcClient
         $extracted = new ResponseExtractor($response);
 
         if ($extracted->getErrorCode()) {
-            // TODO:
+            // TODO: Link to where these errors are emitted in the rpc server code itself.
 	        // Method not found
             // Exception: Internal error: can't get block by hash. Hash = 41aea45eb8e6f627f3d9980de9f2048116bec00b4bd15b669d484681e881f6ef.
             // start_mining: Couldn't start mining due to unknown error.
@@ -165,11 +168,101 @@ abstract class RpcClient
             return [];
         }
 
-        $mapper = ( new JsonMapperFactory() )->bestFit();
-
-        $mapper->push(new CaseConversion(TextNotation::UNDERSCORE(), TextNotation::CAMEL_CASE()));
-
 		// status: Failed, wrong address
-        return $mapper->mapToClassFromString($data, $type);
+        // The mapper silently zero-fills a missing scalar (absent int → 0), so strictness
+        // (PHP84_READONLY_MODELS_PLAN.md decision 5) is enforced HERE, before mapping: a response
+        // missing a required top-level field throws rather than fabricating a value that could flow
+        // into a payment decision downstream.
+        self::assertResponseComplete($method ?? $path, $type, $data);
+
+        return self::buildResponseMapper()->mapToClassFromString($data, $type);
+    }
+
+    /**
+     * Enforce that $data contains every field $type requires, throwing otherwise.
+     *
+     * Response models are `readonly` classes whose required fields have no constructor default
+     * (design decision 5). The JsonMapper does NOT fail on a missing field — it zero-fills the
+     * value — so completeness is verified here by reflecting $type's constructor and diffing its
+     * required (non-optional, non-nullable) parameters against the response's top-level keys
+     * (snake_case → camelCase, matching the mapper). Optional params (with a default, e.g. `= null`
+     * or `= []`) and nullable params are skipped. Nested-object completeness is not deep-checked;
+     * the safety-critical fields (balances, heights, keys) are top-level.
+     *
+     * @param class-string $type
+     * @throws IncompleteRpcResponseException when a required field is absent.
+     */
+    public static function assertResponseComplete(string $rpcMethod, string $type, string $data): void
+    {
+        if (!class_exists($type)) {
+            return;
+        }
+        $constructor = ( new \ReflectionClass($type) )->getConstructor();
+        if ($constructor === null) {
+            return;
+        }
+
+        $decoded = json_decode($data, true);
+        if (!is_array($decoded)) {
+            return;
+        }
+        /** @var array<string, mixed> $decoded */
+        $presentKeys = array_keys($decoded);
+        $presentCamel = array_map(
+            static fn ($key): string => lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', (string) $key)))),
+            $presentKeys
+        );
+
+        $missing = [];
+        foreach ($constructor->getParameters() as $parameter) {
+            if ($parameter->isOptional() || $parameter->allowsNull()) {
+                continue;
+            }
+            if (!in_array($parameter->getName(), $presentCamel, true)) {
+                $missing[] = $parameter->getName();
+            }
+        }
+
+        if ($missing === []) {
+            return;
+        }
+
+        $message = sprintf(
+            'Incomplete RPC response for method "%s" mapping to %s: missing required %s [%s]. Response keys present: [%s].',
+            $rpcMethod,
+            $type,
+            count($missing) === 1 ? 'property' : 'properties',
+            implode(', ', $missing),
+            implode(', ', array_map('strval', $presentKeys))
+        );
+
+        throw new IncompleteRpcResponseException($message, $data);
+    }
+
+    /**
+     * The single construction site for the JsonMapper used to hydrate every response model.
+     *
+     * Response models are immutable `readonly` classes hydrated via constructor property
+     * promotion, so the Constructor middleware (with a shared {@see FactoryRegistry}) is
+     * required — it registers a factory that passes JSON values positionally to each class's
+     * constructor rather than writing properties directly. `CaseConversion` maps monerod's
+     * snake_case keys to the classes' camelCase parameters; nested-object and array element
+     * types are resolved from the `@var`/`@param` docblocks on the promoted parameters.
+     *
+     * Both {@see RpcClient::run()} and the fixture-mapping tests build the mapper here so the
+     * two can never diverge.
+     */
+    public static function buildResponseMapper(): JsonMapperInterface
+    {
+        $factoryRegistry = FactoryRegistry::withNativePhpClassesAdded();
+
+        return ( new JsonMapperBuilder() )
+            ->withPropertyMapper(new PropertyMapper($factoryRegistry))
+            ->withDocBlockAnnotationsMiddleware()
+            ->withTypedPropertiesMiddleware()
+            ->withNamespaceResolverMiddleware()
+            ->withObjectConstructorMiddleware($factoryRegistry)
+            ->withCaseConversionMiddleware(TextNotation::UNDERSCORE(), TextNotation::CAMEL_CASE())
+            ->build();
     }
 }

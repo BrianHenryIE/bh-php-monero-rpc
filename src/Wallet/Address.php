@@ -1,18 +1,14 @@
 <?php
 
-/**
- *
- */
-
 namespace BrianHenryIE\MoneroRpc\Wallet;
 
-interface Address
+final readonly class Address
 {
-    public function getAddress(): string;
-
-    public function getAddressIndex(): int;
-
-    public function getLabel(): string;
-
-    public function getUsed(): bool;
+    public function __construct(
+        public string $address,
+        public int $addressIndex,
+        public string $label,
+        public bool $used,
+    ) {
+    }
 }

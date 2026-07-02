@@ -2,9 +2,11 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface Limit
+final readonly class Limit
 {
-    public function getLimitDown(): int;
-
-    public function getLimitUp(): int;
+    public function __construct(
+        public int $limitDown,
+        public int $limitUp,
+    ) {
+    }
 }

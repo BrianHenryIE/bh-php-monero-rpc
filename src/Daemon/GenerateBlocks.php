@@ -2,12 +2,17 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface GenerateBlocks extends ResponseBase
+final readonly class GenerateBlocks extends ResponseBase
 {
     /**
-     * @return string[]
+     * @param string[] $blocks
      */
-    public function getBlocks(): array;
-
-    public function getHeight(): int;
+    public function __construct(
+        public array $blocks,
+        public int $height,
+        string $status,
+        bool $untrusted,
+    ) {
+        parent::__construct($status, $untrusted);
+    }
 }

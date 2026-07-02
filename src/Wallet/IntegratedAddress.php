@@ -14,8 +14,11 @@
 
 namespace BrianHenryIE\MoneroRpc\Wallet;
 
-interface IntegratedAddress
+final readonly class IntegratedAddress
 {
-    public function getIntegratedAddress(): string;
-    public function getPaymentId(): string;
+    public function __construct(
+        public string $integratedAddress,
+        public string $paymentId,
+    ) {
+    }
 }

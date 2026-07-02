@@ -69,7 +69,7 @@ abstract class MoneroRpcIntegrationTestCase extends TestCase
         }
 
         try {
-            $height = self::$daemonPrimaryRpcClient->getHeight()->getHeight();
+            $height = self::$daemonPrimaryRpcClient->getHeight()->height;
         } catch (Exception $exception) {
             self::fail(
                 'monero-daemon-primary RPC unreachable on '

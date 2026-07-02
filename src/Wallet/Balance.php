@@ -1,20 +1,15 @@
 <?php
 
-/**
- *
- */
-
 namespace BrianHenryIE\MoneroRpc\Wallet;
 
-interface Balance
+final readonly class Balance
 {
-    public function getBalance(): int;
-
-    public function getBlocksToUnlock(): int;
-
-    public function getMultisigImportNeeded(): bool;
-
-    public function getTimeToUnlock(): int;
-
-    public function getUnlockedBalance(): int;
+    public function __construct(
+        public int $balance,
+        public int $blocksToUnlock,
+        public bool $multisigImportNeeded,
+        public int $timeToUnlock,
+        public int $unlockedBalance,
+    ) {
+    }
 }

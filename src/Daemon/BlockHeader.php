@@ -2,49 +2,31 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface BlockHeader
+final readonly class BlockHeader
 {
-    public function getBlockSize(): int;
-
-    public function getBlockWeight(): int;
-
-    public function getCumulativeDifficulty(): int;
-
-    public function getCumulativeDifficultyTop64(): int;
-
-    public function getDepth(): int;
-
-    public function getDifficulty(): int;
-
-    public function getDifficultyTop64(): int;
-
-    public function getHash(): string;
-
-    public function getHeight(): int;
-
-    public function getLongTermWeight(): int;
-
-    public function getMajorVersion(): int;
-
-    public function getMinerTxHash(): string;
-
-    public function getMinorVersion(): int;
-
-    public function getNonce(): int;
-
-    public function getNumTxes(): int;
-
-    public function getOrphanStatus(): bool;
-
-    public function getPowHash(): string;
-
-    public function getPrevHash(): string;
-
-    public function getReward(): int;
-
-    public function getTimestamp(): int;
-
-    public function getWideCumulativeDifficulty(): string;
-
-    public function getWideDifficulty(): string;
+    public function __construct(
+        public int $blockSize,
+        public int $blockWeight,
+        public int $cumulativeDifficulty,
+        public int $cumulativeDifficultyTop64,
+        public int $depth,
+        public int $difficulty,
+        public int $difficultyTop64,
+        public string $hash,
+        public int $height,
+        public int $longTermWeight,
+        public int $majorVersion,
+        public string $minerTxHash,
+        public int $minorVersion,
+        public int $nonce,
+        public int $numTxes,
+        public bool $orphanStatus,
+        public string $powHash,
+        public string $prevHash,
+        public int $reward,
+        public int $timestamp,
+        public string $wideCumulativeDifficulty,
+        public string $wideDifficulty,
+    ) {
+    }
 }

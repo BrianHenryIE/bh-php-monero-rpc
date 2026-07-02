@@ -54,21 +54,6 @@ use BrianHenryIE\MoneroRpc\Daemon\GenerateBlocks;
 use BrianHenryIE\MoneroRpc\Daemon\Height;
 use BrianHenryIE\MoneroRpc\Daemon\Info;
 use BrianHenryIE\MoneroRpc\Daemon\InPeers;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\AltBlocksHashesMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockCountMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderByMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockTemplateMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\ConnectionsMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\GenerateBlocksMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\HeightMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InPeersMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\LimitMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\ResponseBaseMapper;
-use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsMapper;
 use BrianHenryIE\MoneroRpc\Daemon\Limit;
 use BrianHenryIE\MoneroRpc\Daemon\MiningStatus;
 use BrianHenryIE\MoneroRpc\Daemon\PeerList;
@@ -87,7 +72,7 @@ class Daemon extends RpcClient
    */
     public function getBlockCount(): BlockCount
     {
-        return $this->runJsonRpc('get_block_count', null, BlockCountMapper::class);
+        return $this->runJsonRpc('get_block_count', null, BlockCount::class);
     }
 
   /**
@@ -128,7 +113,7 @@ class Daemon extends RpcClient
     {
         $params = array( 'wallet_address' => $walletAddress, 'reserve_size' => $reserveSize);
 
-        return $this->runJsonRpc('getblocktemplate', $params, BlockTemplateMapper::class);
+        return $this->runJsonRpc('getblocktemplate', $params, BlockTemplate::class);
     }
 
   /**
@@ -170,7 +155,7 @@ class Daemon extends RpcClient
             'prev_block' => $previousBlock,
             'starting_nonce' => $startingNonce
         ];
-        return $this->runJsonRpc('generateblocks', $params, GenerateBlocksMapper::class);
+        return $this->runJsonRpc('generateblocks', $params, GenerateBlocks::class);
     }
 
   /**
@@ -196,7 +181,7 @@ class Daemon extends RpcClient
    */
     public function getLastBlockHeader(): BlockHeaderBy
     {
-        return $this->runJsonRpc('getlastblockheader', null, BlockHeaderByMapper::class);
+        return $this->runJsonRpc('getlastblockheader', null, BlockHeaderBy::class);
     }
 
   /**
@@ -226,7 +211,7 @@ class Daemon extends RpcClient
     {
         $params = array('hash' => $hash);
 
-        return $this->runJsonRpc('getblockheaderbyhash', $params, BlockHeaderByMapper::class);
+        return $this->runJsonRpc('getblockheaderbyhash', $params, BlockHeaderBy::class);
     }
 
   /**
@@ -256,7 +241,7 @@ class Daemon extends RpcClient
     {
         $params = array('height' => $height);
 
-        return $this->runJsonRpc('getblockheaderbyheight', $params, BlockHeaderByMapper::class);
+        return $this->runJsonRpc('getblockheaderbyheight', $params, BlockHeaderBy::class);
     }
 
   /**
@@ -320,7 +305,7 @@ class Daemon extends RpcClient
     {
         $params = array('height' => $height);
 
-        return $this->runJsonRpc('getblock', $params, BlockMapper::class);
+        return $this->runJsonRpc('getblock', $params, Block::class);
     }
 
   /**
@@ -354,7 +339,7 @@ class Daemon extends RpcClient
    */
     public function getConnections(): Connections
     {
-        return $this->runJsonRpc('get_connections', null, ConnectionsMapper::class);
+        return $this->runJsonRpc('get_connections', null, Connections::class);
     }
 
   /**
@@ -380,7 +365,7 @@ class Daemon extends RpcClient
    */
     public function getInfo(): Info
     {
-        return $this->runJsonRpc('get_info', null, InfoMapper::class);
+        return $this->runJsonRpc('get_info', null, Info::class);
     }
 
   /**
@@ -455,7 +440,7 @@ class Daemon extends RpcClient
    */
     public function getBans(): ResponseBase
     {
-        return $this->runJsonRpc('get_bans', null, ResponseBaseMapper::class);
+        return $this->runJsonRpc('get_bans', null, ResponseBase::class);
     }
 
   /**
@@ -477,7 +462,7 @@ class Daemon extends RpcClient
      */
     public function getHeight(): Height
     {
-        return $this->runRpc('getheight', null, HeightMapper::class);
+        return $this->runRpc('getheight', null, Height::class);
     }
 
    /**
@@ -494,7 +479,7 @@ class Daemon extends RpcClient
 
     public function getAltBlocksHashes(): AltBlocksHashes
     {
-        return $this->runRpc('get_alt_blocks_hashes', null, AltBlocksHashesMapper::class);
+        return $this->runRpc('get_alt_blocks_hashes', null, AltBlocksHashes::class);
     }
 
     public function isKeyImageSpent($keyImages)
@@ -535,23 +520,23 @@ class Daemon extends RpcClient
 
     public function stopMining(): ResponseBase
     {
-        return $this->runRpc('stop_mining', null, ResponseBaseMapper::class);
+        return $this->runRpc('stop_mining', null, ResponseBase::class);
     }
 
     public function miningStatus(): MiningStatus
     {
-        return $this->runRpc('mining_status', null, MiningStatusMapper::class);
+        return $this->runRpc('mining_status', null, MiningStatus::class);
     }
 
     public function saveBc(): ResponseBase
     {
-        return $this->runRpc('save_bc', null, ResponseBaseMapper::class);
+        return $this->runRpc('save_bc', null, ResponseBase::class);
     }
 
     public function getPeerList(bool $publicOnly = true): PeerList
     {
         $params = array('public_only' => $publicOnly);
-        return $this->runRpc('get_peer_list', $params, PeerListMapper::class);
+        return $this->runRpc('get_peer_list', $params, PeerList::class);
     }
 
 	/**
@@ -566,7 +551,7 @@ class Daemon extends RpcClient
     public function setLogHashRate(bool $visible = true): ResponseBase
     {
         $params = array('visible' => $visible); // TODO: does this need the bool as a string? int?
-        return $this->runRpc('set_log_hash_rate', $params, ResponseBaseMapper::class);
+        return $this->runRpc('set_log_hash_rate', $params, ResponseBase::class);
     }
 
     public function setLogLevel(int $logLevel = 0)
@@ -591,23 +576,23 @@ class Daemon extends RpcClient
 
     public function getTransactionPoolStats(): TransactionPoolStats
     {
-        return $this->runRpc('get_transaction_pool_stats', null, TransactionPoolStatsMapper::class);
+        return $this->runRpc('get_transaction_pool_stats', null, TransactionPoolStats::class);
     }
 
     public function stopDaemon(): ResponseBase
     {
-        return $this->runRpc('stop_daemon', null, ResponseBaseMapper::class);
+        return $this->runRpc('stop_daemon', null, ResponseBase::class);
     }
 
     public function getLimit(): Limit
     {
-        return $this->runRpc('get_limit', null, LimitMapper::class);
+        return $this->runRpc('get_limit', null, Limit::class);
     }
 
     public function setLimit(int $limitDown, int $limitUp): Limit
     {
         $params = array( 'limit_down' => $limitDown, 'limit_up' => $limitUp);
-        return $this->runRpc('set_limit', $params, LimitMapper::class);
+        return $this->runRpc('set_limit', $params, Limit::class);
     }
 
     public function outPeers()
@@ -617,7 +602,7 @@ class Daemon extends RpcClient
 
     public function inPeers(): InPeers
     {
-        return $this->runRpc('in_peers', null, InPeersMapper::class);
+        return $this->runRpc('in_peers', null, InPeers::class);
     }
 
     public function startSaveGraph()

@@ -10,25 +10,19 @@
 
 namespace BrianHenryIE\MoneroRpc\Wallet;
 
-interface RestoreDeterministicWalletResult
+final readonly class RestoreDeterministicWalletResult
 {
     /**
-     * The public address of the restored wallet.
+     * @param string $address       The public address of the restored wallet.
+     * @param string $info          Human readable message, e.g. "Wallet has been restored successfully."
+     * @param string $seed          The 25-word mnemonic seed the wallet was restored from.
+     * @param bool   $wasDeprecated Whether the mnemonic uses the deprecated (pre-2014, 13-word) format.
      */
-    public function getAddress(): string;
-
-    /**
-     * Human readable message, e.g. "Wallet has been restored successfully."
-     */
-    public function getInfo(): string;
-
-    /**
-     * The 25-word mnemonic seed the wallet was restored from.
-     */
-    public function getSeed(): string;
-
-    /**
-     * Whether the mnemonic uses the deprecated (pre-2014, 13-word) format.
-     */
-    public function isWasDeprecated(): bool;
+    public function __construct(
+        public string $address,
+        public string $info,
+        public string $seed,
+        public bool $wasDeprecated,
+    ) {
+    }
 }

@@ -74,7 +74,7 @@ EOD;
 
         $result = $daemonRpcClient->miningStatus();
 
-        self::assertFalse($result->getActive());
+        self::assertFalse($result->active);
     }
 
     public function testGetBlockCount(): void
@@ -95,7 +95,7 @@ EOD;
 
         $result = $daemonRpcClient->getBlockCount();
 
-        self::assertEquals(587251, $result->getCount());
+        self::assertEquals(587251, $result->count);
     }
     public function testOnGetBlockHash(): void
     {

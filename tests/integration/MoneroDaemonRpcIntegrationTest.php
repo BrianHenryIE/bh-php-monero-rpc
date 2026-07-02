@@ -22,14 +22,14 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
     {
         $result = self::$daemonPrimaryRpcClient->getBlockCount();
 
-        self::assertSame(MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED, $result->getCount());
+        self::assertSame(MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED, $result->count);
     }
 
     public function testGetHeightOnPrimaryDaemon(): void
     {
         $result = self::$daemonPrimaryRpcClient->getHeight();
 
-        self::assertSame(MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED, $result->getHeight());
+        self::assertSame(MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED, $result->height);
     }
 
     /**
@@ -40,7 +40,7 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
     {
         $result = self::$daemonPeerRpcClient->getHeight();
 
-        self::assertSame(MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED, $result->getHeight());
+        self::assertSame(MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED, $result->height);
     }
 
     public function testOnGetBlockHashGenesisIsRegtestConstant(): void
@@ -63,13 +63,13 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         $result = self::$daemonPrimaryRpcClient->getLastBlockHeader();
 
-        self::assertSame($topHeight, $result->getBlockHeader()->getHeight());
+        self::assertSame($topHeight, $result->blockHeader->height);
         self::assertSame(
             self::$manifest['block_hashes_by_height'][(string) $topHeight],
-            $result->getBlockHeader()->getHash()
+            $result->blockHeader->hash
         );
-        self::assertSame(0, $result->getBlockHeader()->getDepth());
-        self::assertGreaterThan(0, $result->getBlockHeader()->getReward());
+        self::assertSame(0, $result->blockHeader->depth);
+        self::assertGreaterThan(0, $result->blockHeader->reward);
     }
 
     public function testGetBlockHeaderByHeightMatchesManifest(): void
@@ -78,10 +78,10 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         $result = self::$daemonPrimaryRpcClient->getBlockHeaderByHeight($height);
 
-        self::assertSame($height, $result->getBlockHeader()->getHeight());
+        self::assertSame($height, $result->blockHeader->height);
         self::assertSame(
             self::$manifest['block_hashes_by_height'][(string) $height],
-            $result->getBlockHeader()->getHash()
+            $result->blockHeader->hash
         );
     }
 
@@ -92,8 +92,8 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         $result = self::$daemonPrimaryRpcClient->getBlockHeaderByHash($hash);
 
-        self::assertSame($height, $result->getBlockHeader()->getHeight());
-        self::assertSame($hash, $result->getBlockHeader()->getHash());
+        self::assertSame($height, $result->blockHeader->height);
+        self::assertSame($hash, $result->blockHeader->hash);
     }
 
     /**
@@ -106,7 +106,7 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         self::assertSame(
             MoneroRegtestFixture::EXPECTED_FIRST_BLOCK_REWARD_ATOMIC_UNITS,
-            $result->getBlockHeader()->getReward()
+            $result->blockHeader->reward
         );
     }
 
@@ -118,10 +118,10 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         self::assertSame(
             self::$manifest['block_hashes_by_height'][(string) $height],
-            $result->getBlockHeader()->getHash()
+            $result->blockHeader->hash
         );
-        self::assertNotEmpty($result->getBlob());
-        self::assertNotEmpty($result->getMinerTxHash());
+        self::assertNotEmpty($result->blob);
+        self::assertNotEmpty($result->minerTxHash);
     }
 
     public function testGetBlockByHash(): void
@@ -141,22 +141,22 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
             8
         );
 
-        self::assertSame(MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED, $result->getHeight());
+        self::assertSame(MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED, $result->height);
         $topHeight = MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED - 1;
         self::assertSame(
             self::$manifest['block_hashes_by_height'][(string) $topHeight],
-            $result->getPrevHash()
+            $result->prevHash
         );
-        self::assertNotEmpty($result->getBlocktemplateBlob());
+        self::assertNotEmpty($result->blocktemplateBlob);
     }
 
     public function testGetInfo(): void
     {
         $result = self::$daemonPrimaryRpcClient->getInfo();
 
-        self::assertSame(MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED, $result->getHeight());
-        self::assertSame('fakechain', $result->getNettype());
-        self::assertFalse($result->getMainnet());
+        self::assertSame(MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED, $result->height);
+        self::assertSame('fakechain', $result->nettype);
+        self::assertFalse($result->mainnet);
     }
 
     /**
@@ -167,15 +167,15 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         $primaryResult = self::$daemonPrimaryRpcClient->getConnections();
         $peerResult = self::$daemonPeerRpcClient->getConnections();
 
-        self::assertGreaterThanOrEqual(1, count($primaryResult->getConnections()));
-        self::assertGreaterThanOrEqual(1, count($peerResult->getConnections()));
+        self::assertGreaterThanOrEqual(1, count($primaryResult->connections));
+        self::assertGreaterThanOrEqual(1, count($peerResult->connections));
     }
 
     public function testGetPeerList(): void
     {
         $result = self::$daemonPrimaryRpcClient->getPeerList();
 
-        self::assertSame('OK', $result->getStatus());
+        self::assertSame('OK', $result->status);
     }
 
     public function testGetTransactionsFindsSeedTransfer(): void
@@ -193,14 +193,14 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
     {
         $result = self::$daemonPrimaryRpcClient->getTransactionPoolStats();
 
-        self::assertSame(0, $result->getPoolStats()->getTxsTotal());
+        self::assertSame(0, $result->poolStats->txsTotal);
     }
 
     public function testGetAltBlocksHashes(): void
     {
         $result = self::$daemonPrimaryRpcClient->getAltBlocksHashes();
 
-        self::assertSame('OK', $result->getStatus());
+        self::assertSame('OK', $result->status);
     }
 
     /**
@@ -212,22 +212,22 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
     {
         $result = self::$daemonPrimaryRpcClient->getLimit();
 
-        self::assertGreaterThan(0, $result->getLimitDown());
-        self::assertGreaterThan(0, $result->getLimitUp());
+        self::assertGreaterThan(0, $result->limitDown);
+        self::assertGreaterThan(0, $result->limitUp);
     }
 
     public function testInPeers(): void
     {
         $result = self::$daemonPrimaryRpcClient->inPeers();
 
-        self::assertSame('OK', $result->getStatus());
+        self::assertSame('OK', $result->status);
     }
 
     public function testGetBansIsEmpty(): void
     {
         $result = self::$daemonPrimaryRpcClient->getBans();
 
-        self::assertSame('OK', $result->getStatus());
+        self::assertSame('OK', $result->status);
     }
 
     /**
@@ -244,13 +244,13 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
     {
         $result = self::$daemonPrimaryRpcClient->miningStatus();
 
-        self::assertFalse($result->getActive());
+        self::assertFalse($result->active);
     }
 
     public function testSaveBc(): void
     {
         $result = self::$daemonPrimaryRpcClient->saveBc();
 
-        self::assertSame('OK', $result->getStatus());
+        self::assertSame('OK', $result->status);
     }
 }

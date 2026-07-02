@@ -92,12 +92,12 @@ $recipientWalletRpc = buildWalletRpcClient(
 $manifestPath = MoneroRegtestFixture::getManifestPath();
 
 echo "Waiting for daemons and wallet-rpc servers...\n";
-pollUntil(fn() => $daemonPrimary->getHeight()->getHeight() >= 1, 60, 'monero-daemon-primary RPC unreachable');
-pollUntil(fn() => $daemonPeer->getHeight()->getHeight() >= 1, 60, 'monero-daemon-peer RPC unreachable');
-pollUntil(fn() => $minerWalletRpc->getVersion()->getVersion() > 0, 60, 'monero-wallet-rpc-miner unreachable');
-pollUntil(fn() => $recipientWalletRpc->getVersion()->getVersion() > 0, 60, 'monero-wallet-rpc-recipient unreachable');
+pollUntil(fn() => $daemonPrimary->getHeight()->height >= 1, 60, 'monero-daemon-primary RPC unreachable');
+pollUntil(fn() => $daemonPeer->getHeight()->height >= 1, 60, 'monero-daemon-peer RPC unreachable');
+pollUntil(fn() => $minerWalletRpc->getVersion()->version > 0, 60, 'monero-wallet-rpc-miner unreachable');
+pollUntil(fn() => $recipientWalletRpc->getVersion()->version > 0, 60, 'monero-wallet-rpc-recipient unreachable');
 
-$initialHeight = $daemonPrimary->getHeight()->getHeight();
+$initialHeight = $daemonPrimary->getHeight()->height;
 
 if ($initialHeight === MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED && file_exists($manifestPath)) {
     echo "Chain already seeded (height {$initialHeight}) and manifest present. Nothing to do.\n";
@@ -119,8 +119,8 @@ $minerRestoreResult = $minerWalletRpc->restoreDeterministicWallet(
     MoneroRegtestFixture::MINER_WALLET_PASSWORD,
     MoneroRegtestFixture::MINER_WALLET_MNEMONIC
 );
-if ($minerRestoreResult->getAddress() !== MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS) {
-    fwrite(STDERR, "Miner wallet restored to unexpected address {$minerRestoreResult->getAddress()}\n");
+if ($minerRestoreResult->address !== MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS) {
+    fwrite(STDERR, "Miner wallet restored to unexpected address {$minerRestoreResult->address}\n");
     exit(1);
 }
 $recipientRestoreResult = $recipientWalletRpc->restoreDeterministicWallet(
@@ -128,8 +128,8 @@ $recipientRestoreResult = $recipientWalletRpc->restoreDeterministicWallet(
     MoneroRegtestFixture::RECIPIENT_WALLET_PASSWORD,
     MoneroRegtestFixture::RECIPIENT_WALLET_MNEMONIC
 );
-if ($recipientRestoreResult->getAddress() !== MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS) {
-    fwrite(STDERR, "Recipient wallet restored to unexpected address {$recipientRestoreResult->getAddress()}\n");
+if ($recipientRestoreResult->address !== MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS) {
+    fwrite(STDERR, "Recipient wallet restored to unexpected address {$recipientRestoreResult->address}\n");
     exit(1);
 }
 
@@ -144,7 +144,7 @@ $heightAfterMining = 1 + MoneroRegtestFixture::SEED_BLOCKS_MINED_BEFORE_TRANSFER
 
 echo "Waiting for monero-daemon-peer to sync to height {$heightAfterMining}...\n";
 pollUntil(
-    fn() => $daemonPeer->getHeight()->getHeight() === $heightAfterMining,
+    fn() => $daemonPeer->getHeight()->height === $heightAfterMining,
     120,
     'monero-daemon-peer did not sync; are the daemons peered?'
 );
@@ -152,7 +152,7 @@ pollUntil(
 echo "Refreshing miner wallet...\n";
 $minerWalletRpc->refresh();
 pollUntil(
-    fn() => $minerWalletRpc->getBalance()->getUnlockedBalance() > 0,
+    fn() => $minerWalletRpc->getBalance()->unlockedBalance > 0,
     60,
     'Miner wallet shows no unlocked balance after mining'
 );
@@ -182,7 +182,7 @@ $daemonPrimary->generateBlocks(
 
 $expectedFinalHeight = MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED;
 pollUntil(
-    fn() => $daemonPeer->getHeight()->getHeight() === $expectedFinalHeight,
+    fn() => $daemonPeer->getHeight()->height === $expectedFinalHeight,
     120,
     "monero-daemon-peer did not sync to final height {$expectedFinalHeight}"
 );
@@ -191,7 +191,7 @@ echo "Refreshing wallets and verifying balances...\n";
 $minerWalletRpc->refresh();
 $recipientWalletRpc->refresh();
 pollUntil(
-    fn() => $recipientWalletRpc->getBalance()->getBalance()
+    fn() => $recipientWalletRpc->getBalance()->balance
         === MoneroRegtestFixture::EXPECTED_RECIPIENT_BALANCE_ATOMIC_UNITS,
     60,
     'Recipient wallet balance is not exactly '
@@ -207,8 +207,8 @@ $firstBlockHeader = $daemonPrimary->getBlockHeaderByHeight(1);
 
 $manifest = [
     'seeded_at' => date('c'),
-    'monerod_version' => $daemonPrimary->getInfo()->getVersion(),
-    'chain_height' => $daemonPrimary->getHeight()->getHeight(),
+    'monerod_version' => $daemonPrimary->getInfo()->version,
+    'chain_height' => $daemonPrimary->getHeight()->height,
     'genesis_block_hash' => $daemonPrimary->onGetBlockHash(0),
     'block_hashes_by_height' => [
         '1' => $daemonPrimary->onGetBlockHash(1),
@@ -217,14 +217,14 @@ $manifest = [
         ),
         (string) ($expectedFinalHeight - 1) => $daemonPrimary->onGetBlockHash($expectedFinalHeight - 1),
     ],
-    'first_block_reward_atomic_units' => $firstBlockHeader->getBlockHeader()->getReward(),
+    'first_block_reward_atomic_units' => $firstBlockHeader->blockHeader->reward,
     'transfer_txid' => $transferTxid,
     'transfer_tx_key' => $transferTxKey,
     'transfer_fee_atomic_units' => $transferFeeAtomicUnits,
     'transfer_block_height' => $transferBlockHeight,
     'transfer_amount_atomic_units' => MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS,
-    'miner_wallet_balance_atomic_units' => $minerBalance->getBalance(),
-    'miner_wallet_unlocked_balance_atomic_units' => $minerBalance->getUnlockedBalance(),
+    'miner_wallet_balance_atomic_units' => $minerBalance->balance,
+    'miner_wallet_unlocked_balance_atomic_units' => $minerBalance->unlockedBalance,
 ];
 
 if (!is_dir(dirname($manifestPath))) {

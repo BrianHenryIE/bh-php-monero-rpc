@@ -1,14 +1,12 @@
 <?php
 
-/**
- *
- */
-
 namespace BrianHenryIE\MoneroRpc\Wallet;
 
-interface RefreshResult
+final readonly class RefreshResult
 {
-    public function getBlocksFetched(): int;
-
-	public function isReceivedMoney(): bool;
+    public function __construct(
+        public int $blocksFetched,
+        public bool $receivedMoney,
+    ) {
+    }
 }

@@ -2,22 +2,24 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface Block extends ResponseBase
+final readonly class Block extends ResponseBase
 {
-    public function getBlob(): string;
-
-    public function getBlockHeader(): BlockHeader;
-
-    public function getCredits(): int;
-
-    public function getJson(): string;
-
-    public function getMinerTxHash(): string;
-
-    public function getTopHash(): string;
-
     /**
-     * @return string[]
+     * @param string[] $txHashes Optional: monerod omits `tx_hashes` for blocks that contain only
+     *                           the coinbase transaction (no user transactions), so absence means
+     *                           an empty list.
      */
-    public function getTxHashes(): array;
+    public function __construct(
+        public string $blob,
+        public BlockHeader $blockHeader,
+        public int $credits,
+        public string $json,
+        public string $minerTxHash,
+        public string $topHash,
+        string $status,
+        bool $untrusted,
+        public array $txHashes = [],
+    ) {
+        parent::__construct($status, $untrusted);
+    }
 }
