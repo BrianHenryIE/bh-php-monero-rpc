@@ -1,4 +1,4 @@
-[![PHP 8.0](https://img.shields.io/badge/PHP-8.0-8892BF.svg)]() [![PHPCS PSR-12](https://img.shields.io/badge/PHPCS-PSR–12❌-lightgrey.svg)](https://www.php-fig.org/psr/psr-12/) [![PHPUnit ](.github/coverage.svg)](https://brianhenryie.github.io/bh-php-monero-rpc/) [![PHPStan ](.github/phpstan.svg)](https://phpstan.org/)
+[![PHP 8.4](https://img.shields.io/badge/PHP-8.4-8892BF.svg)]() [![PHPCS PSR-12](https://img.shields.io/badge/PHPCS-PSR–12❌-lightgrey.svg)](https://www.php-fig.org/psr/psr-12/) [![PHPUnit ](.github/coverage.svg)](https://brianhenryie.github.io/bh-php-monero-rpc/) [![PHPStan ](.github/phpstan.svg)](https://phpstan.org/)
 
 # Monero RPC PHP Client
 
@@ -13,6 +13,8 @@ Status: Much of `Daemon` is strongly typed and unit tested. `Wallet` returns `st
 Before v1.0, function signatures are expected to change as they are properly documented.
 
 ## Install
+
+Requires PHP 8.4 or newer.
 
 ```bash
 composer config minimum-stability dev
@@ -50,25 +52,37 @@ $monero = new \BrianHenryIE\MoneroRpc\Daemon(
     $streamFactory,
 );
 
-$result = $monero->getBlockCount()->getCount();
+$result = $monero->getBlockCount()->count;
 ```
 
 ## Contributing 
 
 > ⚠️ PRs helping improve the PhpDoc of methods are very welcome.
 
-The `tests/contract` directory contains tests that make live queries to `monerod`. `tests/unit` contains tests which mock the RPC response, and `tests/unit/model/jsonmapper` uses JSON saved in `tests/_data` to test the model parsing.
+There are three PHPUnit test suites (see `phpunit.xml`):
 
-Contract tests can be static or dynamic – `Daemon::getBlockByHash()` will always return the same result for the same input, but `Daemon::getBlockCount()` will regularly change. For the latter tests, a function, `::extractFromCli()`, exists to execute the Monero CLI and extract a value by using regex on its response, to then use as the expected value in the test assertion.  
+* `unit` – no network access; mocks RPC responses. `tests/unit/model/jsonmapper` uses JSON saved in `tests/_data` to test the model parsing. Runs by default with `composer test`.
+* `integration` – read-only tests against a live, deterministic, Dockerised Monero regtest stack (two peered `monerod` daemons and two `monero-wallet-rpc` servers; see `docker-compose.yml`).
+* `integration-mutating` – integration tests which mutate chain/wallet/daemon state; always run after `integration`.
 
-To add a strongly typed response to a Daemon or Wallet method which does not have one, first create a contract test which will call that method. In `RpcClient::run()` temporarily add a line ~`$responseString = (string) $response;`, set a breakpoint after it, run the test, and copy the value. Save the `result` key in `tests/_data` with an appropriate name. Use the online tool [jacobdekeizer/json-to-php-generator](https://jacobdekeizer.github.io/json-to-php-generator/#/) to create a PHP model, use PhpStorm menu Code/Generate to add getters and setters, and save it.  Create a corresponding interface containing only the `get()` methods of the model – this is where PhpDoc should be written. Add the new class and file to the `MappersTest.php` dataprovider. Update the contract test to use the new class. Create a unit test which uses the entire copied response by using the `getDaemonClient()` method. For each method with PhpDoc, create test assertion that calls that method, i.e. unit test coverage should reflect the class is complete.   
+The integration stack is seeded by `tests/integration/seed-monero-regtest-chain.php`: it restores two wallets from mnemonics committed in `tests/integration/MoneroRegtestFixture.php`, mines 120 blocks, transfers exactly 1.23 XMR between the wallets, and mines 10 more. Heights, addresses, and balances are therefore identical on every run and are asserted as constants; block hashes and txids depend on timestamps and differ per run, so the seed script writes them to `tests/_data/integration/manifest.json` (gitignored) for tests to read.
 
-* Start the Monero daemon on testnet
+* Run the full integration cycle (clean slate → up → seed → test → down):
+
 ```bash
-monerod --testnet --detach
+make integration
 ```
 
-* Run all tests:
+* Or step by step:
+
+```bash
+make integration-up      # docker compose up -d --wait
+make integration-seed    # build the deterministic chain + manifest
+composer test-integration
+make integration-down    # docker compose down -v (destroys all state)
+```
+
+* Run the unit tests:
 
 ```bash
 composer test
@@ -79,6 +93,16 @@ composer test
 ```bash
 composer lint
 ```
+
+To add a strongly typed response to a Daemon or Wallet method which does not have one: call the method in an integration test and copy the live JSON response (or temporarily log `$data` in `RpcClient::run()`). Save the `result` key in `tests/_data` with an appropriate name.
+
+Write a single `final readonly class` (no interface, no mapper) whose constructor uses promoted public properties in `camelCase` — the `CaseConversion` middleware maps monerod's `snake_case` keys automatically, and the `Constructor` middleware hydrates the class through its constructor. Guidelines:
+
+- **Fields are required by default** (no constructor default). A response missing a required field throws `IncompleteRpcResponseException` rather than fabricating a value that could flow into a payment decision. Only make a field optional — nullable `?T $x = null`, or `= []` for a list — when you have observed monerod actually omitting it, and record that evidence in the property's docblock. (Optional/defaulted parameters must come after the required ones.)
+- **Document parameters in the constructor `@param` block, not as inline docblocks on the promoted parameters.** The hydrator throws if a promoted property carries a docblock without a `@var` tag, so put descriptions, `@see` links, and array element types (`@param Connection[] $connections`) on the constructor.
+- Responses that carry monerod's `status`/`untrusted` extend `Daemon\ResponseBase` and forward both via `parent::__construct(...)`.
+
+Add the new class to the `MappersTest.php` dataprovider (using the shared `RpcClient::buildResponseMapper()`), and add an integration test assertion against the live value.
 
 ## Documentation
 
@@ -115,3 +139,16 @@ composer lint
 * [jacobdekeizer json-to-php-generator](https://jacobdekeizer.github.io/json-to-php-generator/#/)
 
 
+## Docker
+
+`make integration-up` starts the Dockerised Monero regtest stack used by the integration tests (pinned via `MONERO_VERSION` in `.env`). `make integration-down` destroys it, including all chain and wallet state.
+
+
+```
+monero-wallet-cli --stagenet --use-english-language-names --generate-new-wallet wallet1 --create-address-file --password 'password' --daemon-port 48081
+```
+
+```
+monero-wallet-cli --stagenet --daemon-address 127.0.0.1:38089
+monero-wallet-cli --stagenet --daemon-port 48081
+```
