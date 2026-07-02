@@ -2,29 +2,30 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface MiningStatus extends ResponseBase
+final readonly class MiningStatus extends ResponseBase
 {
-    public function getActive(): bool;
-    public function getAddress(): string;
-    public function getBgIdleThreshold(): int;
-    public function getBgIgnoreBattery(): bool;
-    public function getBgMinIdleSeconds(): int;
-    public function getBgTarget(): int;
-    public function getBlockReward(): int;
-    public function getBlockTarget(): int;
-
-    public function getDifficulty(): int;
-    public function getDifficultyTop64(): int;
-
-    public function getIsBackgroundMiningEnabled(): bool;
-
-    public function getPowAlgorithm(): string;
-
-    public function getSpeed(): int;
-
-
-    public function getThreadsCount(): int;
-
-
-    public function getWideDifficulty(): string;
+    /**
+     * @param string $powAlgorithm pow: proof of work
+     */
+    public function __construct(
+        public bool $active,
+        public string $address,
+        public int $bgIdleThreshold,
+        public bool $bgIgnoreBattery,
+        public int $bgMinIdleSeconds,
+        public int $bgTarget,
+        public int $blockReward,
+        public int $blockTarget,
+        public int $difficulty,
+        public int $difficultyTop64,
+        public bool $isBackgroundMiningEnabled,
+        public string $powAlgorithm,
+        public int $speed,
+        public int $threadsCount,
+        public string $wideDifficulty,
+        string $status,
+        bool $untrusted,
+    ) {
+        parent::__construct($status, $untrusted);
+    }
 }

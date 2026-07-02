@@ -6,12 +6,16 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Exception\IncompleteRpcResponseException;
 use Exception;
 use JsonMapper\Enums\TextNotation;
-use JsonMapper\JsonMapperFactory;
-use JsonMapper\Middleware\CaseConversion;
+use JsonMapper\Handler\FactoryRegistry;
+use JsonMapper\Handler\PropertyMapper;
+use JsonMapper\JsonMapperBuilder;
+use JsonMapper\JsonMapperInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Client\RequestExceptionInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
@@ -101,39 +105,164 @@ abstract class RpcClient
      * @param ?array<string,mixed> $params Parameters to pass.
      * @param ?class-string<T> $type The object type to cast/deserialize the response to, or null to return a string.
      *
-     * @return T|String
-     * @throws ClientExceptionInterface
+     * @return T|String|array|void
+     * @throws ClientExceptionInterface|RequestExceptionInterface
      */
     protected function run(string $path, ?string $method, ?array $params = null, ?string $type = stdClass::class)
     {
         $rpcRequestFactory = new HttpJsonRpcRequestFactory($this->requestFactory, $this->streamFactory);
 
         $id      = null;
-        $request = $rpcRequestFactory->request($id, $method ?? '', $params);
+        // Strip only null (i.e. unset optional) parameters. A plain `array_filter()`
+        // here would also remove legitimate falsy values such as `0` (e.g. the
+        // genesis block height in `on_getblockhash`), `false`, and `''`.
+        $params  = array_filter(
+            $params ?? [],
+            function ($value) {
+                return !is_null($value);
+            }
+        );
+        $uri = $this->uriFactory->createUri($this->urlBase . $path);
 
-        $uri     = $this->uriFactory->createUri($this->urlBase . $path);
-        $request = $request->withUri($uri);
+        if ($path === 'json_rpc') {
+            $request = $rpcRequestFactory->request($id, $method ?? '', $params);
+            $request = $request->withUri($uri);
+        } else {
+            // "Other" daemon RPC endpoints (e.g. /get_transactions, /get_limit)
+            // expect the parameters as the top-level JSON body, NOT wrapped in
+            // a JSON-RPC envelope (which monerod silently ignores).
+            $request = $this->requestFactory->createRequest('POST', $uri)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->streamFactory->createStream((string) json_encode((object) $params)));
+        }
 
         // TODO: Credentials.
 
-        $response  = $this->client->sendRequest($request);
+        // Throws RequestExceptionInterface.
+        $response = $this->client->sendRequest($request);
         $extracted = new ResponseExtractor($response);
 
-        $data = $path === 'json_rpc' ? json_encode($extracted->getResult()) : (string) $response->getBody();
-
         if ($extracted->getErrorCode()) {
-            // TODO:
+            // TODO: Link to where these errors are emitted in the rpc server code itself.
+	        // Method not found
+            // Exception: Internal error: can't get block by hash. Hash = 41aea45eb8e6f627f3d9980de9f2048116bec00b4bd15b669d484681e881f6ef.
+            // start_mining: Couldn't start mining due to unknown error.
+            // rescan_blockchain: no connection to daemon
+            // open_wallet: Failed to open wallet
+	        // Exception: Couldn't start mining due to unknown error.
+	        // Regtest required when generating blocks
+	        // failed to get blocks
+	        // Failed to parse wallet address
             throw new Exception($extracted->getErrorMessage());
         }
+
+        $data = $path === 'json_rpc' ? json_encode($extracted->getResult()) : (string) $response->getBody();
 
         if (is_null($type)) {
             return trim($data, '"');
         }
 
-        $mapper = ( new JsonMapperFactory() )->bestFit();
+        // Some methods we know return an empty array every time, indicating void.
+        // Others maybe return an empty array only sometimes.
+        if (($data === '[]')) {
+            return [];
+        }
 
-        $mapper->push(new CaseConversion(TextNotation::UNDERSCORE(), TextNotation::CAMEL_CASE()));
+		// status: Failed, wrong address
+        // The mapper silently zero-fills a missing scalar (absent int → 0), so strictness
+        // (PHP84_READONLY_MODELS_PLAN.md decision 5) is enforced HERE, before mapping: a response
+        // missing a required top-level field throws rather than fabricating a value that could flow
+        // into a payment decision downstream.
+        self::assertResponseComplete($method ?? $path, $type, $data);
 
-        return $mapper->mapToClassFromString($data, $type);
+        return self::buildResponseMapper()->mapToClassFromString($data, $type);
+    }
+
+    /**
+     * Enforce that $data contains every field $type requires, throwing otherwise.
+     *
+     * Response models are `readonly` classes whose required fields have no constructor default
+     * (design decision 5). The JsonMapper does NOT fail on a missing field — it zero-fills the
+     * value — so completeness is verified here by reflecting $type's constructor and diffing its
+     * required (non-optional, non-nullable) parameters against the response's top-level keys
+     * (snake_case → camelCase, matching the mapper). Optional params (with a default, e.g. `= null`
+     * or `= []`) and nullable params are skipped. Nested-object completeness is not deep-checked;
+     * the safety-critical fields (balances, heights, keys) are top-level.
+     *
+     * @param class-string $type
+     * @throws IncompleteRpcResponseException when a required field is absent.
+     */
+    public static function assertResponseComplete(string $rpcMethod, string $type, string $data): void
+    {
+        if (!class_exists($type)) {
+            return;
+        }
+        $constructor = ( new \ReflectionClass($type) )->getConstructor();
+        if ($constructor === null) {
+            return;
+        }
+
+        $decoded = json_decode($data, true);
+        if (!is_array($decoded)) {
+            return;
+        }
+        /** @var array<string, mixed> $decoded */
+        $presentKeys = array_keys($decoded);
+        $presentCamel = array_map(
+            static fn ($key): string => lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', (string) $key)))),
+            $presentKeys
+        );
+
+        $missing = [];
+        foreach ($constructor->getParameters() as $parameter) {
+            if ($parameter->isOptional() || $parameter->allowsNull()) {
+                continue;
+            }
+            if (!in_array($parameter->getName(), $presentCamel, true)) {
+                $missing[] = $parameter->getName();
+            }
+        }
+
+        if ($missing === []) {
+            return;
+        }
+
+        $message = sprintf(
+            'Incomplete RPC response for method "%s" mapping to %s: missing required %s [%s]. Response keys present: [%s].',
+            $rpcMethod,
+            $type,
+            count($missing) === 1 ? 'property' : 'properties',
+            implode(', ', $missing),
+            implode(', ', array_map('strval', $presentKeys))
+        );
+
+        throw new IncompleteRpcResponseException($message, $data);
+    }
+
+    /**
+     * The single construction site for the JsonMapper used to hydrate every response model.
+     *
+     * Response models are immutable `readonly` classes hydrated via constructor property
+     * promotion, so the Constructor middleware (with a shared {@see FactoryRegistry}) is
+     * required — it registers a factory that passes JSON values positionally to each class's
+     * constructor rather than writing properties directly. `CaseConversion` maps monerod's
+     * snake_case keys to the classes' camelCase parameters; nested-object and array element
+     * types are resolved from the `@var`/`@param` docblocks on the promoted parameters.
+     *
+     * Both {@see RpcClient::run()} and the fixture-mapping tests build the mapper here so the
+     * two can never diverge.
+     */
+    public static function buildResponseMapper(): JsonMapperInterface
+    {
+        $factoryRegistry = FactoryRegistry::withNativePhpClassesAdded();
+
+        return ( new JsonMapperBuilder() )
+            ->withPropertyMapper(new PropertyMapper($factoryRegistry))
+            ->withDocBlockAnnotationsMiddleware()
+            ->withTypedPropertiesMiddleware()
+            ->withNamespaceResolverMiddleware()
+            ->withObjectConstructorMiddleware($factoryRegistry)
+            ->withCaseConversionMiddleware(TextNotation::UNDERSCORE(), TextNotation::CAMEL_CASE())
+            ->build();
     }
 }

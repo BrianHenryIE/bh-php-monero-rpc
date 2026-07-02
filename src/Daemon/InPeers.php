@@ -2,7 +2,13 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface InPeers extends ResponseBase
+final readonly class InPeers extends ResponseBase
 {
-    public function getInPeers(): int;
+    public function __construct(
+        public int $inPeers,
+        string $status,
+        bool $untrusted,
+    ) {
+        parent::__construct($status, $untrusted);
+    }
 }

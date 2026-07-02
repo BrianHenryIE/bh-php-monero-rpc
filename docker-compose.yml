@@ -1,0 +1,189 @@
+# Deterministic Monero regtest topology for integration tests.
+#
+# Two monerod daemons in `--regtest` mode, peered exclusively with each other
+# (no internet access needed or used), plus one monero-wallet-rpc per daemon.
+#
+# Inside every container the standard Monero ports are used (p2p 18080,
+# daemon RPC 18081, wallet RPC 18083) so the images' built-in healthchecks work;
+# distinct host ports are mapped for the test suite:
+#
+#   monero-daemon-primary    RPC → 127.0.0.1:48089   (static IP 172.31.7.10)
+#   monero-daemon-peer       RPC → 127.0.0.1:38089   (static IP 172.31.7.11)
+#   monero-wallet-rpc-miner      → 127.0.0.1:58083 (daemon: primary)
+#   monero-wallet-rpc-recipient  → 127.0.0.1:58084 (daemon: peer)
+#
+# The two daemons peer via `--add-exclusive-node` using each other's STATIC IP
+# rather than the Docker service name: monerod resolves exclusive-node addresses
+# once at startup and aborts if resolution fails, and while a container is
+# restarting Docker drops its DNS name — so hostname peering deadlocks the pair.
+#
+# The images' entrypoints prepend flags before the `command:` below
+# (monerod: `--non-interactive`; wallet-rpc: `--non-interactive --rpc-bind-ip=0.0.0.0
+# --confirm-external-bind`), so those flags are intentionally NOT repeated here —
+# monerod aborts on any duplicated option.
+#
+# Usage:
+#   make integration-up     # docker compose up -d --wait
+#   make integration-seed   # build the deterministic chain (see tests/integration/)
+#   make integration-down   # docker compose down -v  (destroys ALL state)
+#
+# The chain is rebuilt from genesis on every up/seed cycle; nothing persists.
+# MONERO_VERSION is pinned in `.env`.
+#
+# @see INTEGRATION_TEST_PLAN.md
+# @see https://github.com/sethforprivacy/simple-monerod-docker
+# @see https://github.com/sethforprivacy/simple-monero-wallet-rpc-docker
+
+services:
+
+  monero-daemon-primary:
+    container_name: monero-daemon-primary
+    image: ghcr.io/sethforprivacy/simple-monerod:${MONERO_VERSION}
+    restart: unless-stopped
+    networks:
+      monero:
+        ipv4_address: 172.31.7.10
+    ports:
+      - "127.0.0.1:48089:18081"
+    command:
+      - "--regtest"
+      - "--fixed-difficulty"
+      - "1"
+      - "--no-igd"
+      - "--hide-my-port"
+      - "--allow-local-ip"
+      - "--p2p-bind-ip"
+      - "0.0.0.0"
+      - "--p2p-bind-port"
+      - "18080"
+      - "--rpc-bind-ip"
+      - "0.0.0.0"
+      - "--rpc-bind-port"
+      - "18081"
+      - "--confirm-external-bind"
+      - "--rpc-ssl"
+      - "disabled"
+      - "--add-exclusive-node"
+      - "172.31.7.11:18080"
+      - "--log-level"
+      - "0"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:18081/get_height || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  monero-daemon-peer:
+    container_name: monero-daemon-peer
+    image: ghcr.io/sethforprivacy/simple-monerod:${MONERO_VERSION}
+    restart: unless-stopped
+    networks:
+      monero:
+        ipv4_address: 172.31.7.11
+    ports:
+      - "127.0.0.1:38089:18081"
+    command:
+      - "--regtest"
+      - "--fixed-difficulty"
+      - "1"
+      - "--no-igd"
+      - "--hide-my-port"
+      - "--allow-local-ip"
+      - "--p2p-bind-ip"
+      - "0.0.0.0"
+      - "--p2p-bind-port"
+      - "18080"
+      - "--rpc-bind-ip"
+      - "0.0.0.0"
+      - "--rpc-bind-port"
+      - "18081"
+      - "--confirm-external-bind"
+      - "--rpc-ssl"
+      - "disabled"
+      - "--add-exclusive-node"
+      - "172.31.7.10:18080"
+      - "--log-level"
+      - "0"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:18081/get_height || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  # NB: regtest uses MAINNET address format; do NOT pass --stagenet/--testnet here.
+  monero-wallet-rpc-miner:
+    container_name: monero-wallet-rpc-miner
+    image: ghcr.io/sethforprivacy/simple-monero-wallet-rpc:${MONERO_VERSION}
+    restart: unless-stopped
+    networks:
+      - monero
+    depends_on:
+      monero-daemon-primary:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:58083:18083"
+    command:
+      - "--daemon-address"
+      - "monero-daemon-primary:18081"
+      - "--daemon-ssl"
+      - "disabled"
+      - "--trusted-daemon"
+      - "--rpc-bind-port"
+      - "18083"
+      - "--disable-rpc-login"
+      # Regtest activates every hard fork at height 1; without this flag the
+      # wallet refuses to refresh ("Unexpected hard fork version v16 at height 1").
+      - "--allow-mismatched-daemon-version"
+      - "--wallet-dir"
+      - "/home/monero"
+      - "--log-level"
+      - "0"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail -X POST http://localhost:18083/json_rpc -d '{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_version\"}' -H 'Content-Type: application/json' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  monero-wallet-rpc-recipient:
+    container_name: monero-wallet-rpc-recipient
+    image: ghcr.io/sethforprivacy/simple-monero-wallet-rpc:${MONERO_VERSION}
+    restart: unless-stopped
+    networks:
+      - monero
+    depends_on:
+      monero-daemon-peer:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:58084:18083"
+    command:
+      - "--daemon-address"
+      - "monero-daemon-peer:18081"
+      - "--daemon-ssl"
+      - "disabled"
+      - "--trusted-daemon"
+      - "--rpc-bind-port"
+      - "18083"
+      - "--disable-rpc-login"
+      # Regtest activates every hard fork at height 1; without this flag the
+      # wallet refuses to refresh ("Unexpected hard fork version v16 at height 1").
+      - "--allow-mismatched-daemon-version"
+      - "--wallet-dir"
+      - "/home/monero"
+      - "--log-level"
+      - "0"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail -X POST http://localhost:18083/json_rpc -d '{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_version\"}' -H 'Content-Type: application/json' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+# Static-subnet bridge so the daemons can peer by fixed IP (see header comment).
+networks:
+  monero:
+    ipam:
+      config:
+        - subnet: 172.31.7.0/24

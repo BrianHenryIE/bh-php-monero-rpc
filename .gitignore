@@ -5,3 +5,6 @@ vendor
 .phpunit.result.cache
 .DS_Store
 tests/_reports
+# Written by tests/integration/seed-monero-regtest-chain.php on every seed run;
+# contains run-specific block hashes/txids, so it is never committed.
+tests/_data/integration/manifest.json

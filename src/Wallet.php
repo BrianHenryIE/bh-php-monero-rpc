@@ -34,6 +34,15 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Daemon\Height;
+use BrianHenryIE\MoneroRpc\Wallet\Balance;
+use BrianHenryIE\MoneroRpc\Wallet\GetAddress;
+use BrianHenryIE\MoneroRpc\Wallet\IntegratedAddress;
+use BrianHenryIE\MoneroRpc\Wallet\Key;
+use BrianHenryIE\MoneroRpc\Wallet\RefreshResult;
+use BrianHenryIE\MoneroRpc\Wallet\RestoreDeterministicWalletResult;
+use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
+use BrianHenryIE\MoneroRpc\Wallet\Version;
 use Exception;
 
 class Wallet extends RpcClient
@@ -41,19 +50,324 @@ class Wallet extends RpcClient
   /**
    * Convert from moneroj to tacoshi (piconero)
    *
-   * @used-by Wallet::sweepSingle()
+   * NB: was previously typed `int $amount`, which silently truncated
+   * fractional XMR amounts (e.g. '1.23' became 1) via PHP int coercion.
    *
-   * @param  int  $amount  Amount (in monero) to transform to tacoshi (piconero)  (optional)
+   * @used-by Wallet::sweepSingle()
+   * @used-by Wallet::transfer()
+   *
+   * @param  string|int|float  $amount  Amount (in monero) to transform to tacoshi (piconero)  (optional)
    */
-    public function _transform(int $amount = 0): int
+    public function _transform($amount = 0): int
     {
-        return intval(bcmul($amount, 1000000000000));
+        return intval(bcmul((string) $amount, '1000000000000'));
     }
 
-  /**
+    /**
+     *
+     * `{"address":"http://localhost:18081","trusted":true,"ssl_support":"enabled","ssl_private_key_path":"path/to/ssl/key","ssl_certificate_path":"path/to/ssl/certificate","ssl_ca_file":"path/to/ssl/ca/file","ssl_allowed_fingerprints":["85:A7:68:29:BE:73:49:80:84:91:7A:BB:1F:F1:AD:7E:43:FE:CC:B8"],"ssl_allow_any_cert":true}}`
+     *
+     * empty array as response
+     */
+    public function setDaemon(
+        string $host = 'localhost',
+        int $port = 18081,
+        bool $isTrusted = true,
+        $sslSupport = 'enabled',
+        ?string $sslPrivateKeyPath = null,
+        ?string $sslCertificatePath = null,
+        ?string $sslCaFile = null,
+        ?string $sslAllowedFingerprints = null,
+        bool $sslAllowAnyCert = true
+    ): void {
+        $address = sprintf(
+            'http%s://%s:%d/',
+            $sslSupport === 'enabled' ? 's' : '',
+            $host,
+            $port
+        );
+
+        $params = array(
+            "address" => $address,
+            "trusted" => $isTrusted,
+            "ssl_support" => $sslSupport,
+            "ssl_private_key_path" => $sslPrivateKeyPath,
+            "ssl_certificate_path" => $sslCertificatePath,
+            "ssl_ca_file" => $sslCaFile,
+            "ssl_allowed_fingerprints" => $sslAllowedFingerprints,
+            "ssl_allow_any_cert" => $sslAllowAnyCert,
+        );
+
+        $response = $this->runJsonRpc('set_daemon', $params);
+    }
+
+
+    /**
+     * Get RPC version Major & Minor integer-format, where Major is the first 16 bits and Minor the last 16 bits.
+     */
+    public function getVersion(): Version
+    {
+        return $this->runJsonRpc('get_version', null, Version::class);
+    }
+
+
+    /**
+     * Create a new wallet
+     *
+     * @see https://github.com/monero-project/monero/blob/2656cdf5056c07684741c4425a051760b97025b0/src/wallet/wallet_rpc_server.cpp#L3285
+     *
+     * Is this always a void return?
+     *
+     * @param  string  $filename  Filename of new wallet to create
+     * @param  ?string  $password  Password of new wallet to create
+     * @param  string  $language  Language of new wallet to create
+     */
+    public function createWallet(
+        string $filename = 'monero_wallet',
+        ?string $password = null,
+        string $language = 'English'
+    ): void {
+        $params = array(
+			'filename' => $filename,
+			'password' => $password,
+			'language' => $language,
+        );
+        $this->runJsonRpc('create_wallet', $params);
+    }
+
+    /**
+     * Restore a (deterministic) wallet from a 25-word mnemonic seed.
+     *
+     * The restored wallet becomes the wallet-rpc server's currently open wallet.
+     *
+     * @see https://docs.getmonero.org/rpc-library/wallet-rpc/#restore_deterministic_wallet
+     *
+     * @param string $filename Filename of the wallet file to create on the wallet-rpc server.
+     * @param string $password Password to encrypt the new wallet file with.
+     * @param string $seed The 25-word mnemonic seed to restore from.
+     * @param int $restoreHeight Block height to begin scanning the chain from.
+     * @param string $language Language of the mnemonic.
+     * @param bool $autosaveCurrent Save the currently open wallet before closing it.
+     * @param ?string $seedOffset Optional passphrase offsetting the seed.
+     */
+    public function restoreDeterministicWallet(
+        string $filename,
+        string $password,
+        string $seed,
+        int $restoreHeight = 0,
+        string $language = 'English',
+        bool $autosaveCurrent = true,
+        ?string $seedOffset = null
+    ): RestoreDeterministicWalletResult {
+        $params = array(
+            'filename' => $filename,
+            'password' => $password,
+            'seed' => $seed,
+            'restore_height' => $restoreHeight,
+            'language' => $language,
+            'autosave_current' => $autosaveCurrent,
+            'seed_offset' => $seedOffset,
+        );
+        return $this->runJsonRpc(
+            'restore_deterministic_wallet',
+            $params,
+            RestoreDeterministicWalletResult::class
+        );
+    }
+
+    /**
+     * Open a wallet
+     *
+     * @param  string  $filename  Filename of wallet to open
+     * @param  ?string  $password  Password of wallet to open
+     */
+    public function openWallet(string $filename = 'monero_wallet', ?string $password = null): void
+    {
+        $params = array('filename' => $filename, 'password' => $password);
+        $this->runJsonRpc('open_wallet', $params);
+    }
+
+
+    /**
+     * Create a wallet on the RPC server from an address, view key, and (optionally) spend key.
+     *
+     * @param string $filename is the name of the wallet to create on the RPC server
+     * @param string $password is the password encrypt the wallet
+     * @param string $address is the address of the wallet to construct
+     * @param string $viewKey is the view key of the wallet to construct
+     * @param string $spendKey is the spend key of the wallet to construct or null to create a view-only wallet
+     * @param string $language is the wallet and mnemonic's language (default = "English")
+     * @param int restoreHeight is the block height to restore (i.e. scan the chain) from (default = 0)
+     * @param bool saveCurrent specifies if the current RPC wallet should be saved before being closed (default = true)
+     *
+     */
+    public function generateFromKeys(
+        string $filename,
+        string $password,
+        string $address,
+        string $viewKey,
+        string $spendKey = '',
+        string $language = 'English',
+        int $restoreHeight = 0,
+        bool $saveCurrent = true
+    ) {
+        $params = array(
+            'filename'          => $filename,
+            'password'          => $password,
+            'address'           => $address,
+            'viewkey'           => $viewKey,
+            'spendkey'          => $spendKey,
+            'language'          => $language,
+            'restore_height'    => $restoreHeight,
+            'autosave_current'  => $saveCurrent
+        );
+        return $this->runJsonRpc('generate_from_keys', $params);
+    }
+
+    /**
+     * Save wallet
+     *
+     * @return object  Example:
+     *
+     */
+    public function store()
+    {
+        return $this->runJsonRpc('store');
+    }
+
+    /**
+     * Stop the wallet, saving the state
+     */
+    public function stopWallet()
+    {
+        return $this->runJsonRpc('stop_wallet');
+    }
+
+    /**
+     * Close wallet
+     */
+    public function closeWallet()
+    {
+        return $this->runJsonRpc('close_wallet');
+    }
+
+    /**
+     * Change a wallet password
+     *
+     * @param string $oldPassword old password or blank
+     * @param string $newPassword new password or blank
+     */
+    public function changeWalletPassword(string $oldPassword = '', string $newPassword = '')
+    {
+        $params = array(
+            'old_password' => $oldPassword,
+            'new_password' => $newPassword
+        );
+        return $this->runJsonRpc('change_wallet_password', $params);
+    }
+
+
+    /**
+     * Refresh the wallet after opening
+     *
+     * @param  ?int  $startHeight  Block height from which to start    (optional)
+     *
+     * @return object  Example: {
+     *   // TODO example
+     * }
+     *
+     */
+    public function refresh(?int $startHeight = null): RefreshResult
+    {
+        $params = array('start_height' => $startHeight);
+        return $this->runJsonRpc('refresh', $params, RefreshResult::class);
+    }
+
+    /**
+     * Set whether and how often to automatically refresh the current wallet
+     *
+     * @param bool $enable Enable or disable automatic refreshing (default = true)
+     * @param int $period The period of the wallet refresh cycle (i.e. time between refreshes) in seconds
+     *
+     */
+    public function autoRefresh(bool $enable = true, int $period = 10): void
+    {
+        $params = array(
+            'enable' => $enable,
+            'period' => $period
+        );
+        $this->runJsonRpc('auto_refresh', $params);
+    }
+
+
+    /**
+     * Rescan the blockchain from scratch, losing any information which can not be recovered from the blockchain itself.
+     * This includes destination addresses, tx secret keys, tx notes, etc.
+     */
+    public function rescanBlockchain(): void
+    {
+        $this->runJsonRpc('rescan_blockchain');
+    }
+
+    /**
+     * Look up how many blocks are in the longest chain known to the wallet
+     *
+     * @return object  Example: {
+     *   "height": 994310
+     * }
+     *
+     */
+    public function getHeight(): int
+    {
+        return $this->runJsonRpc('get_height', null, Height::class)->height;
+    }
+
+    /**
+     * Look up a list of available languages for your wallet's seed
+     *
+     * @return object  Example: {
+     *   // TODO example
+     * }
+     *
+     */
+    public function getLanguages()
+    {
+        return $this->runJsonRpc('get_languages');
+    }
+
+    /**
+     * Export all outputs in hex format
+     */
+    public function exportOutputs()
+    {
+        return $this->runJsonRpc('export_outputs');
+    }
+
+    /**
+     * Import outputs in hex format
+     *
+     * @param $outputsDataHex wallet outputs in hex format
+     *
+     *
+     */
+    public function importOutputs($outputsDataHex)
+    {
+        $params = array(
+            'outputs_data_hex' => $outputsDataHex,
+        );
+        return $this->runJsonRpc('import_outputs', $params);
+    }
+
+
+    /**
    * Look up an account's balance
    *
-   * @param  int  $accountIndex  Index of account to look up  (optional)
+   *
+   *
+   * @param ?int $accountIndex - unsigned int; Return balance for this account. Index of account to look up  (optional)
+   * @param int[] $addressIndices - array of unsigned int; (Optional) Return balance detail for those subaddresses.
+   * @param bool $allAaccounts - boolean; (Defaults to false)
+   * @param bool $isStrict - boolean; (Defaults to false) all changes go to 0-th subaddress (in the current subaddress account)
    *
    * @return object  Example: {
    *   "balance": 140000000000,
@@ -61,10 +375,15 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getBalance(int $accountIndex = 0)
+    public function getBalance(?int $accountIndex = 0, array $addressIndices = [], bool $allAccounts = false, bool $isStrict = false): Balance
     {
-        $params = array('account_index' => $accountIndex);
-        return $this->runJsonRpc('get_balance', $params);
+        $params = array(
+            'account_index' => $accountIndex,
+            'address_indices' => $addressIndices,
+            'all_accounts' => $allAccounts,
+            'strict' => $isStrict
+        );
+        return $this->runJsonRpc('get_balance', $params, Balance::class);
     }
 
   /**
@@ -91,10 +410,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getAddress(int $accountIndex = 0, int $addressIndex = 0)
+    public function getAddress(int $accountIndex = 0, int $addressIndex = 0): GetAddress
     {
         $params = array( 'account_index' => $accountIndex, 'address_index' => $addressIndex);
-        return $this->runJsonRpc('get_address', $params);
+        return $this->runJsonRpc('get_address', $params, GetAddress::class);
     }
 
     /**
@@ -148,6 +467,9 @@ class Wallet extends RpcClient
 
   /**
    * Look up wallet accounts
+   *
+   * A wallet consists of accounts, which consist of subaddresses. Your Monero balance is the sum of all your accounts.
+   * I.e. you don't need multiple wallets to manage your Monero funds in distinct pots, just multiple accounts.
    *
    * @param  string $tag Optional filtering by tag
    *
@@ -284,19 +606,6 @@ class Wallet extends RpcClient
         $save = $this->store(); // Save wallet state after describing tag
 
         return $setAccountTagDescriptionMethod;
-    }
-
-  /**
-   * Look up how many blocks are in the longest chain known to the wallet
-   *
-   * @return object  Example: {
-   *   "height": 994310
-   * }
-   *
-   */
-    public function getHeight()
-    {
-        return $this->runJsonRpc('get_height');
     }
 
   /**
@@ -479,14 +788,15 @@ class Wallet extends RpcClient
   /**
    * Send all dust outputs back to the wallet
    *
-   * @return object  Example: {
-   *   // TODO example
-   * }
+   * "Dust" refers to very small amounts of cryptocurrency that are typically uneconomical to spend due to
+   * the transaction fees being higher than the value of the dust itself. These small amounts can accumulate over time
+   * and are often consolidated or "swept" into a single transaction to make them more usable. The sweepDust method in
+   * the Monero wallet API is used to collect and send all dust outputs back to the wallet.
    *
    */
-    public function sweepDust()
+    public function sweepDust(): SweepDust
     {
-        return $this->runJsonRpc('sweep_dust');
+        return $this->runJsonRpc('sweep_dust', null, SweepDust::class);
     }
 
   /**
@@ -669,6 +979,15 @@ class Wallet extends RpcClient
         return $sweepSingleMethod;
     }
 
+    /**
+     * Rescan the blockchain for spent outputs
+     *
+     */
+    public function rescanSpent()
+    {
+        return $this->runJsonRpc('rescan_spent');
+    }
+
   /**
    * Relay a transaction
    *
@@ -685,17 +1004,6 @@ class Wallet extends RpcClient
         $save = $this->store(); // Save wallet state after transaction relay
 
         return $this->runJsonRpc('relay_tx');
-    }
-
-  /**
-   * Save wallet
-   *
-   * @return object  Example:
-   *
-   */
-    public function store()
-    {
-        return $this->runJsonRpc('store');
     }
 
   /**
@@ -792,65 +1100,27 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Look up a wallet key
+   * Return the spend or view private key, or the wallet mnemonic (seed phrase).
    *
    * @param  string  $keyType  Type of key to look up; must be 'view_key', 'spend_key', or 'mnemonic'
-   *
-   * @return object  Example: {
-   *   "key": "7e341d..."
-   * }
-   *
    */
-    public function queryKey(string $keyType)
+    public function queryKey(string $keyType): Key
     {
+        if (! in_array($keyType, ['view_key', 'spend_key', 'mnemonic'])) {
+            throw new \InvalidArgumentException(
+                "Invalid key type: $keyType, must be one of 'view_key', 'spend_key', or 'mnemonic'."
+            );
+        }
+
         $params = array('key_type' => $keyType);
-        return $this->runJsonRpc('query_key', $params);
-    }
-
-  /**
-   * Look up wallet view key
-   *
-   * @return object  Example: {
-   *   "key": "7e341d..."
-   * }
-   *
-   */
-    public function viewKey()
-    {
-        $params = array('key_type' => 'view_key');
-        return $this->runJsonRpc('query_key', $params);
-    }
-
-  /**
-   * Look up wallet spend key
-   *
-   * @return object  Example: {
-   *   "key": "2ab810..."
-   * }
-   *
-   */
-    public function spendKey()
-    {
-        $params = array('key_type' => 'spend_key');
-        return $this->runJsonRpc('query_key', $params);
-    }
-
-  /**
-   * Look up wallet mnemonic seed
-   *
-   * @return object  Example: {
-   *   "key": "2ab810..."
-   * }
-   *
-   */
-    public function mnemonic()
-    {
-        $params = array('key_type' => 'mnemonic');
-        return $this->runJsonRpc('query_key', $params);
+        return $this->runJsonRpc('query_key', $params, Key::class);
     }
 
   /**
    * Create an integrated address from a given payment ID
+   *
+   * standard_address - string; (Optional, defaults to primary address) Destination public address.
+   * payment_id - string; (Optional, defaults to a random ID) 16 characters hex encoded.
    *
    * @param  ?string  $paymentId  Payment ID  (optional)
    *
@@ -859,10 +1129,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function makeIntegratedAddress(?string $paymentId = null)
+    public function makeIntegratedAddress(?string $standardAddress = null, ?string $paymentId = null): IntegratedAddress
     {
-        $params = array('payment_id' => $paymentId);
-        return $this->runJsonRpc('make_integrated_address', $params);
+        $params = array('standard_address' => $standardAddress, 'payment_id' => $paymentId);
+        return $this->runJsonRpc('make_integrated_address', $params, IntegratedAddress::class);
     }
 
   /**
@@ -883,22 +1153,6 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Stop the wallet, saving the state
-   */
-    public function stopWallet()
-    {
-        return $this->runJsonRpc('stop_wallet');
-    }
-
-  /**
-   * Rescan the blockchain from scratch
-   */
-    public function rescanBlockchain()
-    {
-        return $this->runJsonRpc('rescan_blockchain');
-    }
-
-  /**
    * Add notes to transactions
    *
    * @param  array  $txIds  Array of transaction IDs to note
@@ -915,7 +1169,7 @@ class Wallet extends RpcClient
    *
    * @param  array  $txIds  Array of transaction IDs (strings) to look up
    *
-   * @return obect  Example: {
+   * @return object  Example: {
    *   // TODO example
    * }
    *
@@ -1085,7 +1339,7 @@ class Wallet extends RpcClient
             $params = array('account_index' => $accountIndex);
         }
 
-        return $this->runJsonRpc('get_reserve_proof');
+        return $this->runJsonRpc('get_reserve_proof', $params);
     }
 
   /**
@@ -1118,7 +1372,9 @@ class Wallet extends RpcClient
    *
    *   OR
    *
-   * @param  object  $inputTypes      Array containing any of the options listed above, where only an input types array is required
+   * @param  string|string[]|array<string,mixed>  $inputTypes  Array of input types (e.g. ['in', 'out']), a single
+   *                                  input type string, or a full parameters array containing any of the options
+   *                                  listed above (where only an input types array is required).
    *
    * @return object  Example: {
    *   "pool": [{
@@ -1228,7 +1484,9 @@ class Wallet extends RpcClient
    */
     public function sign($data)
     {
-        $params = array('string' => $data);
+        // NB: the request field is named `data`; this previously sent `string`,
+        // which monero-wallet-rpc ignored, signing an empty string instead.
+        $params = array('data' => $data);
         return $this->runJsonRpc('sign', $params);
     }
 
@@ -1258,9 +1516,12 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function exportKeyImages()
+    public function exportKeyImages(bool $all = false)
     {
-        return $this->runJsonRpc('export_key_images');
+        // Without `all`, only key images since the last export ("offset") are
+        // returned, and the `signed_key_images` key is omitted when there are none.
+        $params = array('all' => $all);
+        return $this->runJsonRpc('export_key_images', $params);
     }
 
   /**
@@ -1370,90 +1631,30 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Refresh the wallet after opening
-   *
-   * @param  ?int  $startHeight  Block height from which to start    (optional)
-   *
-   * @return object  Example: {
-   *   // TODO example
-   * }
-   *
-   */
-    public function refresh(?int $startHeight = null)
-    {
-        $params = array('start_height' => $startHeight);
-        return $this->runJsonRpc('refresh', $params);
-    }
-
-  /**
-   * Rescan the blockchain for spent outputs
-   *
-   */
-    public function rescanSpent()
-    {
-        return $this->runJsonRpc('rescan_spent');
-    }
-
-  /**
    * Start mining
    *
-   * @param  int   $threadsCount         Number of threads with which to mine
-   * @param  boolean  $doBackgroundMining  Mine in background?
-   * @param  boolean  $ignoreBattery        Ignore battery?
+   * @param  int  $threadsCount       Number of threads created for mining.
+   * @param  bool $doBackgroundMining Allow to start the miner in smart mining mode – a process of having a throttled miner mine when it otherwise does not cause drawbacks.
+   * @param  bool $ignoreBattery      Ignore battery status (for smart mining only).
+   *
+   * @throws Exception when mining has already started.
    */
-    public function startMining(int $threadsCount, bool $doBackgroundMining, bool $ignoreBattery)
+    public function startMining(int $threadsCount, bool $doBackgroundMining, ?bool $ignoreBattery = null): void
     {
-        $params = array( 'threads_count' => $threadsCount, 'do_background_mining' => $doBackgroundMining, 'ignore_battery' => $ignoreBattery);
-        return $this->runJsonRpc('start_mining', $params);
+        $params = array(
+            'threads_count' => $threadsCount,
+            'do_background_mining' => $doBackgroundMining,
+            'ignore_battery' => $ignoreBattery,
+        );
+        $this->runJsonRpc('start_mining', $params);
     }
 
   /**
-   * Stop mining
+   * Stop mining in the Monero daemon.
    */
-    public function stopMining()
+    public function stopMining(): void
     {
-        return $this->runJsonRpc('stop_mining');
-    }
-
-  /**
-   * Look up a list of available languages for your wallet's seed
-   *
-   * @return object  Example: {
-   *   // TODO example
-   * }
-   *
-   */
-    public function getLanguages()
-    {
-        return $this->runJsonRpc('get_languages');
-    }
-
-  /**
-   * Create a new wallet
-   *
-   * @param  string  $filename  Filename of new wallet to create
-   * @param  ?string  $password  Password of new wallet to create
-   * @param  string  $language  Language of new wallet to create
-   */
-    public function createWallet(
-        string $filename = 'monero_wallet',
-        ?string $password = null,
-        string $language = 'English'
-    ) {
-        $params = array('filename' => $filename, 'password' => $password, 'language' => $language);
-        return $this->runJsonRpc('create_wallet', $params);
-    }
-
-  /**
-   * Open a wallet
-   *
-   * @param  string  $filename  Filename of wallet to open
-   * @param  ?string  $password  Password of wallet to open
-   */
-    public function openWallet(string $filename = 'monero_wallet', ?string $password = null)
-    {
-        $params = array('filename' => $filename, 'password' => $password);
-        return $this->runJsonRpc('open_wallet', $params);
+        $this->runJsonRpc('stop_mining');
     }
 
   /**
@@ -1606,42 +1807,6 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Create a wallet on the RPC server from an address, view key, and (optionally) spend key.
-   *
-   * @param string $filename is the name of the wallet to create on the RPC server
-   * @param string $password is the password encrypt the wallet
-   * @param string $address is the address of the wallet to construct
-   * @param string $viewKey is the view key of the wallet to construct
-   * @param string $spendKey is the spend key of the wallet to construct or null to create a view-only wallet
-   * @param string $language is the wallet and mnemonic's language (default = "English")
-   * @param int restoreHeight is the block height to restore (i.e. scan the chain) from (default = 0)
-   * @param bool saveCurrent specifies if the current RPC wallet should be saved before being closed (default = true)
-   *
-   */
-    public function generateFromKeys(
-        string $filename,
-        string $password,
-        string $address,
-        string $viewKey,
-        string $spendKey = '',
-        string $language = 'English',
-        int $restoreHeight = 0,
-        bool $saveCurrent = true
-    ) {
-        $params = array(
-            'filename'          => $filename,
-            'password'          => $password,
-            'address'           => $address,
-            'viewkey'           => $viewKey,
-            'spendkey'          => $spendKey,
-            'language'          => $language,
-            'restore_height'    => $restoreHeight,
-            'autosave_current'  => $saveCurrent
-        );
-        return $this->runJsonRpc('generate_from_keys', $params);
-    }
-
-  /**
    * Exchange mutlisignature information
    *
    * @param string $password wallet password
@@ -1669,75 +1834,5 @@ class Wallet extends RpcClient
             'multisig_txset' => $txInfo,
         );
         return $this->runJsonRpc('describe_transfer', $params);
-    }
-
-  /**
-   * Export all outputs in hex format
-   */
-    public function exportOutputs()
-    {
-        return $this->runJsonRpc('export_outputs');
-    }
-
-  /**
-   * Import outputs in hex format
-   *
-   * @param $outputsDataHex wallet outputs in hex format
-   *
-   *
-   */
-    public function importOutputs($outputsDataHex)
-    {
-        $params = array(
-            'outputs_data_hex' => $outputsDataHex,
-        );
-        return $this->runJsonRpc('import_outputs', $params);
-    }
-
-  /**
-   * Set whether and how often to automatically refresh the current wallet
-   *
-   * @param bool $enable Enable or disable automatic refreshing (default = true)
-   * @param int $period The period of the wallet refresh cycle (i.e. time between refreshes) in seconds
-   *
-   */
-    public function autoRefresh(bool $enable = true, int $period = 10)
-    {
-        $params = array(
-        'enable' => $enable,
-        'period' => $period
-        );
-        return $this->runJsonRpc('auto_refresh', $params);
-    }
-
-  /**
-   * Change a wallet password
-   *
-   * @param string $oldPassword old password or blank
-   * @param string $newPassword new password or blank
-   */
-    public function changeWalletPassword(string $oldPassword = '', string $newPassword = '')
-    {
-        $params = array(
-            'old_password' => $oldPassword,
-            'new_password' => $newPassword
-        );
-        return $this->runJsonRpc('change_wallet_password', $params);
-    }
-
-  /**
-   * Close wallet
-   */
-    public function closeWallet()
-    {
-        return $this->runJsonRpc('close_wallet');
-    }
-
-  /**
-   * Get RPC version Major & Minor integer-format, where Major is the first 16 bits and Minor the last 16 bits.
-   */
-    public function getVersion()
-    {
-        return $this->runJsonRpc('get_version');
     }
 }

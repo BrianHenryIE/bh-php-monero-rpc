@@ -2,29 +2,21 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-interface TransactionPoolStatsStats
+final readonly class TransactionPoolStatsStats
 {
-    public function getBytesMax(): int;
-
-    public function getBytesMed(): int;
-
-    public function getBytesMin(): int;
-
-    public function getBytesTotal(): int;
-
-    public function getFeeTotal(): int;
-
-    public function getHisto98pc(): int;
-
-    public function getNum10m(): int;
-
-    public function getNumDoubleSpends(): int;
-
-    public function getNumFailing(): int;
-
-    public function getNumNotRelayed(): int;
-
-    public function getOldest(): int;
-
-    public function getTxsTotal(): int;
+    public function __construct(
+        public int $bytesMax,
+        public int $bytesMed,
+        public int $bytesMin,
+        public int $bytesTotal,
+        public int $feeTotal,
+        public int $histo98pc,
+        public int $num10m,
+        public int $numDoubleSpends,
+        public int $numFailing,
+        public int $numNotRelayed,
+        public int $oldest,
+        public int $txsTotal,
+    ) {
+    }
 }

@@ -26,13 +26,15 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "process-timeout": 0,
-        "sort-packages": true,
         "allow-plugins": {
-            "cweagans/composer-patches": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "phpstan/extension-installer": true
-        }
+        },
+        "platform": {
+          "php": "8.4"
+        },
+        "process-timeout": 0,
+        "sort-packages": true
     },
     "autoload": {
         "psr-4": {
@@ -48,41 +50,89 @@
         "brianhenryie/php-diff-test": {
             "type": "git",
             "url": "https://github.com/brianhenryie/php-diff-test"
+        },
+        "monero-project/monero": {
+          "type": "package",
+          "package": {
+            "name": "monero-project/monero",
+            "version": "v0.18.3.3",
+            "source": {
+              "url": "https://github.com/monero-project/monero",
+              "type": "git",
+              "reference": "master"
+            }
+          }
+        },
+        "eversinc33/nim-monero-rpc": {
+          "type": "package",
+          "package": {
+            "name": "eversinc33/nim-monero-rpc",
+            "version": "dev-main",
+            "source": {
+              "url": "https://github.com/eversinc33/nim-monero-rpc",
+              "type": "git",
+              "reference": "main"
+            }
+          }
+        },
+        "omani/go-monero-rpc-client": {
+          "type": "package",
+          "package": {
+            "name": "omani/go-monero-rpc-client",
+            "version": "dev-master",
+            "source": {
+              "url": "https://github.com/omani/go-monero-rpc-client",
+              "type": "git",
+              "reference": "master"
+            }
+          }
+        },
+        "monero-rs/monero-rpc-rs": {
+          "type": "package",
+          "package": {
+            "name": "monero-rs/monero-rpc-rs",
+            "version": "dev-main",
+            "source": {
+              "url": "https://github.com/monero-rs/monero-rpc-rs",
+              "type": "git",
+              "reference": "main"
+            }
+          }
         }
     },
     "require": {
-        "php": "^8",
+        "php": ">=8.4",
         "ext-bcmath": "*",
         "ext-json": "*",
-        "json-mapper/json-mapper": "*",
+        "json-mapper/json-mapper": "^2.25",
         "psr/http-client-implementation": "*",
-        "simpod/json-rpc": "dev-master"
+        "simpod/json-rpc": "^0.2"
     },
     "require-dev": {
         "brianhenryie/php-diff-test": "dev-master",
-        "cweagans/composer-patches": "*",
         "dealerdirect/phpcodesniffer-composer-installer": "*",
-        "guzzlehttp/guzzle": "^7.4",
-        "jaschilz/php-coverage-badger": "^2.0",
-        "mockery/mockery": "^1.5",
+        "eversinc33/nim-monero-rpc": "dev-main",
+        "guzzlehttp/guzzle": "^7.13",
+        "mockery/mockery": "^1.6",
+        "monero-project/monero": "^0.18",
+        "monero-rs/monero-rpc-rs": "dev-main",
+        "omani/go-monero-rpc-client": "dev-master",
         "phpstan/extension-installer": "*",
         "phpunit/phpcov": "*",
         "psr-mock/http": "^1.0",
         "squizlabs/php_codesniffer": "*"
     },
-    "extra": {
-        "patches": {
-            "jaschilz/php-coverage-badger": {
-                "Allow customising the text": "https://github.com/JASchilz/PHPCoverageBadge/pull/1.patch"
-            }
-        }
-    },
     "scripts": {
         "test": [
             "phpunit"
         ],
+        "test-integration": [
+            "phpunit --testsuite integration",
+            "phpunit --testsuite integration-mutating"
+        ],
         "test-coverage": [
-            "phpunit --coverage-text --coverage-php tests/_reports/coverage.cov --coverage-clover tests/_reports/clover.xml --coverage-html tests/_reports/html"
+            "phpunit --coverage-text --coverage-php tests/_reports/coverage.cov --coverage-clover tests/_reports/clover.xml --coverage-html tests/_reports/html",
+            "open tests/_reports/html/index.html"
         ],
         "lint": [
             "phpcbf || true",

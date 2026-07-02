@@ -2,12 +2,13 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
-final readonly class BlockHeaderBy extends ResponseBase
+final readonly class Connections extends ResponseBase
 {
+    /**
+     * @param Connection[] $connections
+     */
     public function __construct(
-        public BlockHeader $blockHeader,
-        public int $credits,
-        public string $topHash,
+        public array $connections,
         string $status,
         bool $untrusted,
     ) {
