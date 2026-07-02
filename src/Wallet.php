@@ -1681,15 +1681,14 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function prepareMultisig()
-    {
-        return $this->runJsonRpc('prepare_multisig');
+    public function prepareMultisig() {
+	    return $this->runJsonRpc( 'prepare_multisig' );
     }
 
-  /**
-   * Create a multisignature wallet
-   *
-   * @param  string  $multisigInfo  Multisignature information (from eg. prepare_multisig)
+	/**
+	 * Create a multisignature wallet
+	 *
+	 * @param string $multisigInfo  Multisignature information (from eg. prepare_multisig)
    * @param  string  $threshold      Threshold required to spend from multisignature wallet
    * @param  string  $password       Passphrase to apply to multisignature wallet
    *
