@@ -1,6 +1,6 @@
 <?php
 
-namespace BrianHenryIE\MoneroExplorer\Model\JsonMapper;
+namespace BrianHenryIE\MoneroRpc\Model\JsonMapper;
 
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\AltBlocksHashesMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockCountMapper;
@@ -15,6 +15,7 @@ use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\ResponseBaseMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsMapper;
 use JsonMapper\JsonMapperFactory;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class MappersTest extends \PHPUnit\Framework\TestCase
 {
@@ -47,12 +48,11 @@ class MappersTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @dataProvider data
-     *
      * @template T of object
      * @param string $filename The test .json file.
      * @param class-string<T> $type The object type to cast/deserialize the response to.
      */
+    #[DataProvider('data')]
     public function testMappers($filename, $type): void
     {
         try {
