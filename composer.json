@@ -128,7 +128,8 @@
             "phpunit --testsuite integration-mutating"
         ],
         "test-coverage": [
-            "phpunit --coverage-text --coverage-php tests/_reports/coverage.cov --coverage-clover tests/_reports/clover.xml --coverage-html tests/_reports/html"
+            "phpunit --coverage-text --coverage-php tests/_reports/coverage.cov --coverage-clover tests/_reports/clover.xml --coverage-html tests/_reports/html",
+            "open tests/_reports/html/index.html"
         ],
         "lint": [
             "phpcbf || true",
