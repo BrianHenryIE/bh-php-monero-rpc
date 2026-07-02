@@ -5,7 +5,17 @@ namespace BrianHenryIE\MoneroRpc\Daemon;
 interface Connection
 {
     public function getAddress(): string;
-    public function getAddressType(): int;
+
+	/**
+	 * invalid = 0,
+	 * ipv4 = 1,
+	 * ipv6 = 2,
+	 * i2p = 3,
+	 * tor = 4
+	 *
+	 * @see monero-project/monero/contrib/epee/include/net/enums.h
+	 */
+	public function getAddressType(): int;
 
     public function getAvgDownload(): int;
 

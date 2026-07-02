@@ -18,6 +18,9 @@ interface MiningStatus extends ResponseBase
 
     public function getIsBackgroundMiningEnabled(): bool;
 
+	/**
+	 * pow: proof of work
+	 */
     public function getPowAlgorithm(): string;
 
     public function getSpeed(): int;

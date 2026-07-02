@@ -2,7 +2,9 @@
 
 namespace BrianHenryIE\MoneroRpc\Wallet\JsonMapper;
 
-class SweepDustMapper
+use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
+
+class SweepDustMapper implements SweepDust
 {
     public function __construct(protected string $multisigTxset, protected string $unsignedTxset)
     {

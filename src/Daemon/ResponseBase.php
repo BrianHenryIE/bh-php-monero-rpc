@@ -11,7 +11,7 @@ interface ResponseBase
     /**
      * General RPC error code. "OK" means everything looks good.
      *
-     * "OK"|"BUSY"|"Mining never started".
+     * "OK"|"BUSY"|"Mining never started"|"NOT MINING"
      */
     public function getStatus(): string;
 

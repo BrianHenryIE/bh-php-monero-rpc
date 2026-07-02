@@ -41,6 +41,12 @@ class VersionMapper implements Version
      */
     public function setVersion(int $version): void
     {
+		// Get RPC version Major & Minor integer-format, where Major is the first 16 bits and Minor the last 16 bits.
+//	    $version - 65535; // major
+	    // 65563
+	    // 000000010000000000011011
+	    // 00000001 0000000000011011
+	    // 1.27
         $this->version = $version;
     }
 }

@@ -44,16 +44,24 @@
 namespace BrianHenryIE\MoneroRpc;
 
 use BrianHenryIE\MoneroRpc\Daemon\AltBlocksHashes;
+use BrianHenryIE\MoneroRpc\Daemon\Block;
 use BrianHenryIE\MoneroRpc\Daemon\BlockCount;
 use BrianHenryIE\MoneroRpc\Daemon\BlockHeaderBy;
+use BrianHenryIE\MoneroRpc\Daemon\BlockTemplate;
+use BrianHenryIE\MoneroRpc\Daemon\Connection;
+use BrianHenryIE\MoneroRpc\Daemon\Connections;
 use BrianHenryIE\MoneroRpc\Daemon\GenerateBlocks;
+use BrianHenryIE\MoneroRpc\Daemon\Height;
 use BrianHenryIE\MoneroRpc\Daemon\Info;
 use BrianHenryIE\MoneroRpc\Daemon\InPeers;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\AltBlocksHashesMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockCountMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderByMapper;
+use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockMapper;
+use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockTemplateMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\ConnectionsMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\GenerateBlocksMapper;
+use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\HeightMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InPeersMapper;
 use BrianHenryIE\MoneroRpc\Daemon\JsonMapper\LimitMapper;
@@ -104,6 +112,8 @@ class Daemon extends RpcClient
    * @param  string  $walletAddress  Address of wallet to receive coinbase transactions if block is successfully mined
    * @param  int     $reserveSize    Reserve size
    *
+   * https://monero.stackexchange.com/questions/6852/what-does-getblocktemplate-return
+   *
    * Example: {
    *   "blocktemplate_blob": "01029af88cb70568b84a11dc9406ace9e635918ca03b008f7728b9726b327c1b482a98d81ed83000000000018bd03c01ffcfcf3c0493d7cec7020278dfc296544f139394e5e045fcda1ba2cca5b69b39c9ddc90b7e0de859fdebdc80e8eda1ba01029c5d518ce3cc4de26364059eadc8220a3f52edabdaf025a9bff4eec8b6b50e3d8080dd9da417021e642d07a8c33fbe497054cfea9c760ab4068d31532ff0fbb543a7856a9b78ee80c0f9decfae01023ef3a7182cb0c260732e7828606052a0645d3686d7a03ce3da091dbb2b75e5955f01ad2af83bce0d823bf3dbbed01ab219250eb36098c62cbb6aa2976936848bae53023c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001f12d7c87346d6b84e17680082d9b4a1d84e36dd01bd2c7f3b3893478a8d88fb3",
    *   "difficulty": 982540729,
@@ -114,11 +124,11 @@ class Daemon extends RpcClient
    * }
    *
    */
-    public function getBlockTemplate($walletAddress, $reserveSize)
+    public function getBlockTemplate($walletAddress, $reserveSize): BlockTemplate
     {
         $params = array( 'wallet_address' => $walletAddress, 'reserve_size' => $reserveSize);
 
-        return $this->runJsonRpc('getblocktemplate', $params);
+        return $this->runJsonRpc('getblocktemplate', $params, BlockTemplateMapper::class);
     }
 
   /**
@@ -134,15 +144,19 @@ class Daemon extends RpcClient
         return $this->runJsonRpc('submitblock', $block);
     }
 
+
     /**
      * Generate Blocks
+     *
+     * Is this a function just for testing? `--regtest`
+     * @see https://github.com/monero-project/monero/commit/34cb6b4b703f30be89388f4cdcc5d7b6780ee988
      *
      * @see https://www.getmonero.org/resources/developer-guides/daemon-rpc.html#generateblocks
      *
      * @param int $amountOfBlocks - unsigned int; number of blocks to be generated.
      * @param string $walletAddress- string; address to receive the coinbase reward.
      * @param string $previousBlock
-     * @param int $startingNonce - unsigned int; Increased by miner untill it finds a matching result that solves a block.
+     * @param int $startingNonce - unsigned int; Increased by miner until it finds a matching result that solves a block.
      */
     public function generateBlocks(
         int $amountOfBlocks,
@@ -240,7 +254,9 @@ class Daemon extends RpcClient
    */
     public function getBlockHeaderByHeight($height): BlockHeaderBy
     {
-        return $this->runJsonRpc('getblockheaderbyheight', $height, BlockHeaderByMapper::class);
+        $params = array('height' => $height);
+
+        return $this->runJsonRpc('getblockheaderbyheight', $params, BlockHeaderByMapper::class);
     }
 
   /**
@@ -300,11 +316,11 @@ class Daemon extends RpcClient
    * }
    *
    */
-    public function getBlockByHeight($height)
+    public function getBlockByHeight($height): Block
     {
         $params = array('height' => $height);
 
-        return $this->runJsonRpc('getblock', $params);
+        return $this->runJsonRpc('getblock', $params, BlockMapper::class);
     }
 
   /**
@@ -334,8 +350,9 @@ class Daemon extends RpcClient
    *   "status": "OK"
    * }
    *
+   * @see Connection
    */
-    public function getConnections()
+    public function getConnections(): Connections
     {
         return $this->runJsonRpc('get_connections', null, ConnectionsMapper::class);
     }
@@ -458,19 +475,20 @@ class Daemon extends RpcClient
      * Get height
      *
      */
-    public function getHeight()
+    public function getHeight(): Height
     {
-        return $this->runRpc('getheight');
+        return $this->runRpc('getheight', null, HeightMapper::class);
     }
 
    /**
     * Get transactions
     *
+    * TODO: obviously incomplete.
     */
-    public function getTransactions($txsHashes = null)
+    public function getTransactions(?array $txsHashes = null)
     {
         $params = array( 'txs_hashes' => $txsHashes, 'decode_as_json' => true);
-        return $this->runRpc('gettransactions');
+        return $this->runRpc('get_transactions', $params);
     }
 
 
@@ -497,7 +515,10 @@ class Daemon extends RpcClient
         return $this->runRpc('send_raw_transaction', $params);
     }
 
-    public function startMining(bool $backgroundMining, bool $ignoreBattery, $minerAddress, int $threadsCount = 1)
+    /**
+     * @see Wallet::startMining()
+     */
+    public function startMining(bool $backgroundMining, bool $ignoreBattery, string $minerAddress, int $threadsCount = 1)
     {
         if ($threadsCount < 0) {
             trigger_error('Error: threads_count must be a positive integer', E_USER_WARNING);
@@ -533,10 +554,19 @@ class Daemon extends RpcClient
         return $this->runRpc('get_peer_list', $params, PeerListMapper::class);
     }
 
-    public function setLogHashRate($visible = true)
+	/**
+	 * Set the log hash rate display mode.
+	 *
+	 * Control whether the hash rate is of the mining hardware is logged.
+	 *
+	 * @see https://www.getmonero.org/resources/developer-guides/daemon-rpc.html#set_log_hash_rate
+	 *
+	 * @param bool $visible
+	 */
+    public function setLogHashRate(bool $visible = true): ResponseBase
     {
-        $params = array('visible' => $visible);
-        return $this->runRpc('set_log_hash_rate', $params);
+        $params = array('visible' => $visible); // TODO: does this need the bool as a string? int?
+        return $this->runRpc('set_log_hash_rate', $params, ResponseBaseMapper::class);
     }
 
     public function setLogLevel(int $logLevel = 0)
@@ -574,7 +604,7 @@ class Daemon extends RpcClient
         return $this->runRpc('get_limit', null, LimitMapper::class);
     }
 
-    public function setLimit($limitDown, $limitUp): Limit
+    public function setLimit(int $limitDown, int $limitUp): Limit
     {
         $params = array( 'limit_down' => $limitDown, 'limit_up' => $limitUp);
         return $this->runRpc('set_limit', $params, LimitMapper::class);
@@ -603,6 +633,6 @@ class Daemon extends RpcClient
     public function getOuts($outputs)
     {
         $params = array('outputs' => $outputs);
-        return $this->runRpc('get_outs');
+        return $this->runRpc('get_outs', $params);
     }
 }
