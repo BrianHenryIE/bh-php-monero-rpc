@@ -8,11 +8,8 @@
  * open throwaway wallet files call `forgetOpenWalletState()` so subsequent
  * tests re-open the fixture wallets.
  *
- * Not covered here (gaps): `Wallet::relayTx()` (Wallet::transfer() does not
- * expose `get_tx_hex`, so there is no tx blob to relay),
- * `Wallet::labelAddress()` (its signature takes `int $index` but the RPC
- * requires `index: {major, minor}` — broken parameter construction),
- * `Wallet::sweepAll()`/`sweepSingle()` (would empty the fixture miner wallet).
+ * relayTx, labelAddress, sweepAll and sweepSingle are all covered here now (sweeps
+ * run against funded throwaway wallets, never the fixture miner wallet).
  *
  * @package brianhenryie/bh-php-monero-rpc
  */
@@ -392,6 +389,54 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
         } finally {
             self::forgetOpenWalletState();
         }
+    }
+
+    public function testLabelAddress(): void
+    {
+        $recipient = $this->openRecipientWallet();
+
+        // Create a fresh subaddress, then label it (Phase 1 fixed the index:{major,minor} request).
+        $created = $recipient->createAddress(0, 'initial');
+        $label = 'relabelled-' . uniqid();
+        $recipient->labelAddress(0, $created->addressIndex, $label);
+
+        $addresses = $recipient->getAddress(0)->addresses;
+        $match = array_values(array_filter($addresses, fn($a) => $a->address === $created->address));
+
+        self::assertNotEmpty($match);
+        self::assertSame($label, $match[0]->label);
+    }
+
+    public function testWalletStartAndStopMining(): void
+    {
+        $recipient = $this->openRecipientWallet();
+
+        try {
+            // The wallet-rpc proxies mining to its daemon (the peer daemon).
+            $recipient->startMining(1, false);
+
+            self::pollUntil(
+                fn() => self::$daemonPeerRpcClient->miningStatus()->active,
+                30,
+                'Wallet startMining did not activate daemon mining'
+            );
+            self::assertTrue(self::$daemonPeerRpcClient->miningStatus()->active);
+        } finally {
+            // NB: stop_mining blocks while the miner thread shuts down (~20s).
+            $recipient->stopMining();
+        }
+
+        self::pollUntil(
+            fn() => self::$daemonPeerRpcClient->miningStatus()->active === false,
+            30,
+            'Mining still active after wallet stopMining'
+        );
+        self::pollUntil(
+            fn() => self::$daemonPeerRpcClient->getHeight()->height
+                === self::$daemonPrimaryRpcClient->getHeight()->height,
+            60,
+            'Daemons did not converge after wallet mining'
+        );
     }
 
     public function testAddressBookCrud(): void

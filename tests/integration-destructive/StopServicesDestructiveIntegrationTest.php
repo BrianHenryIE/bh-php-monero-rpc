@@ -17,6 +17,31 @@ use Exception;
 
 class StopServicesDestructiveIntegrationTest extends MoneroDestructiveIntegrationTestCase
 {
+    public function testStopWallet(): void
+    {
+        // Precondition: the sacrificial wallet-rpc is up.
+        self::assertGreaterThan(0, self::$sacrificialWalletRpcClient->getVersion()->version);
+
+        // The simple-monero-wallet-rpc image exits its process on stop_wallet.
+        self::$sacrificialWalletRpcClient->stopWallet();
+
+        self::pollUntil(
+            function () {
+                try {
+                    self::$sacrificialWalletRpcClient->getVersion();
+                    return false;
+                } catch (Exception $e) {
+                    return true; // connection refused → stopped
+                }
+            },
+            30,
+            'Sacrificial wallet-rpc still reachable after stop_wallet'
+        );
+
+        $this->expectException(Exception::class);
+        self::$sacrificialWalletRpcClient->getVersion();
+    }
+
     public function testStopDaemon(): void
     {
         // Precondition: the sacrificial daemon is up (setUpBeforeClass already asserted this).

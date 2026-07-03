@@ -263,9 +263,9 @@ class Wallet extends RpcClient
     /**
      * Stop the wallet, saving the state
      */
-    public function stopWallet()
+    public function stopWallet(): void
     {
-        return $this->runJsonRpc('stop_wallet');
+        $this->runJsonRpc('stop_wallet');
     }
 
     /**
@@ -489,13 +489,13 @@ class Wallet extends RpcClient
    * @param  int     $addressIndex  The subaddress (minor) index within that account.
    * @param  string  $label         The label to apply.
    */
-    public function labelAddress(int $accountIndex, int $addressIndex, string $label)
+    public function labelAddress(int $accountIndex, int $addressIndex, string $label): void
     {
         $params = array(
             'index' => array('major' => $accountIndex, 'minor' => $addressIndex),
             'label' => $label,
         );
-        return $this->runJsonRpc('label_address', $params);
+        $this->runJsonRpc('label_address', $params);
     }
 
   /**
