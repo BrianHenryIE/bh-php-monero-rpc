@@ -11,6 +11,11 @@
 #   monero-daemon-peer       RPC → 127.0.0.1:38089   (static IP 172.31.7.11)
 #   monero-wallet-rpc-miner      → 127.0.0.1:58083 (daemon: primary)
 #   monero-wallet-rpc-recipient  → 127.0.0.1:58084 (daemon: peer)
+#   monero-daemon-sacrificial      RPC → 127.0.0.1:28089 (static IP 172.31.7.12; restart:no)
+#   monero-wallet-rpc-sacrificial      → 127.0.0.1:58085 (daemon: sacrificial; restart:no)
+#
+# The two sacrificial services exist only for the `integration-destructive` suite,
+# which stops them and asserts they stay down; they are standalone (unpeered, unseeded).
 #
 # The two daemons peer via `--add-exclusive-node` using each other's STATIC IP
 # rather than the Docker service name: monerod resolves exclusive-node addresses
@@ -169,6 +174,81 @@ services:
       - "--disable-rpc-login"
       # Regtest activates every hard fork at height 1; without this flag the
       # wallet refuses to refresh ("Unexpected hard fork version v16 at height 1").
+      - "--allow-mismatched-daemon-version"
+      - "--wallet-dir"
+      - "/home/monero"
+      - "--log-level"
+      - "0"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail -X POST http://localhost:18083/json_rpc -d '{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_version\"}' -H 'Content-Type: application/json' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  # Sacrificial daemon + wallet-rpc for the `integration-destructive` suite, which
+  # STOPS them (stopDaemon/stopWallet) and asserts they stay down. `restart: "no"` is
+  # mandatory — a restarted service would defeat the assertion. Not peered with the
+  # primary/peer pair and never seeded: destructive tests need a live-then-dead
+  # service, not chain state. Recreated fresh on every `make integration` cycle.
+  monero-daemon-sacrificial:
+    container_name: monero-daemon-sacrificial
+    image: ghcr.io/sethforprivacy/simple-monerod:${MONERO_VERSION}
+    restart: "no"
+    networks:
+      monero:
+        ipv4_address: 172.31.7.12
+    ports:
+      - "127.0.0.1:28089:18081"
+    command:
+      - "--regtest"
+      - "--fixed-difficulty"
+      - "1"
+      - "--no-igd"
+      - "--hide-my-port"
+      - "--allow-local-ip"
+      - "--p2p-bind-ip"
+      - "0.0.0.0"
+      - "--p2p-bind-port"
+      - "18080"
+      - "--rpc-bind-ip"
+      - "0.0.0.0"
+      - "--rpc-bind-port"
+      - "18081"
+      - "--confirm-external-bind"
+      - "--rpc-ssl"
+      - "disabled"
+      - "--out-peers"
+      - "0"
+      - "--log-level"
+      - "0"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:18081/get_height || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  monero-wallet-rpc-sacrificial:
+    container_name: monero-wallet-rpc-sacrificial
+    image: ghcr.io/sethforprivacy/simple-monero-wallet-rpc:${MONERO_VERSION}
+    restart: "no"
+    networks:
+      - monero
+    depends_on:
+      monero-daemon-sacrificial:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:58085:18083"
+    command:
+      - "--daemon-address"
+      - "monero-daemon-sacrificial:18081"
+      - "--daemon-ssl"
+      - "disabled"
+      - "--trusted-daemon"
+      - "--rpc-bind-port"
+      - "18083"
+      - "--disable-rpc-login"
       - "--allow-mismatched-daemon-version"
       - "--wallet-dir"
       - "/home/monero"
