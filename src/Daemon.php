@@ -64,6 +64,7 @@ use BrianHenryIE\MoneroRpc\Daemon\Outs;
 use BrianHenryIE\MoneroRpc\Daemon\PeerList;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
 use BrianHenryIE\MoneroRpc\Daemon\Transactions;
+use BrianHenryIE\MoneroRpc\Daemon\TransactionPool;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
 use Exception;
 
@@ -588,9 +589,9 @@ class Daemon extends RpcClient
         return $this->runRpc('set_log_categories', $params, LogCategories::class);
     }
 
-    public function getTransactionPool()
+    public function getTransactionPool(): TransactionPool
     {
-        return $this->runRpc('get_transaction_pool');
+        return $this->runRpc('get_transaction_pool', null, TransactionPool::class);
     }
 
     public function getTransactionPoolStats(): TransactionPoolStats
