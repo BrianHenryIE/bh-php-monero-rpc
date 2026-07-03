@@ -506,8 +506,12 @@ class Daemon extends RpcClient
     /**
      * @see Wallet::startMining()
      */
-    public function startMining(bool $backgroundMining, bool $ignoreBattery, string $minerAddress, int $threadsCount = 1)
-    {
+    public function startMining(
+        bool $backgroundMining,
+        bool $ignoreBattery,
+        string $minerAddress,
+        int $threadsCount = 1
+    ): ResponseBase {
         if ($threadsCount < 0) {
             trigger_error('Error: threads_count must be a positive integer', E_USER_WARNING);
             $threadsCount = 1;
@@ -518,7 +522,7 @@ class Daemon extends RpcClient
             'miner_address' => $minerAddress,
             'threads_count' => $threadsCount
         );
-        return $this->runRpc('start_mining', $params);
+        return $this->runRpc('start_mining', $params, ResponseBase::class);
     }
 
     public function stopMining(): ResponseBase

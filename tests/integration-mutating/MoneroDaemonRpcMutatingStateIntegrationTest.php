@@ -57,12 +57,14 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
     public function testStartMiningMiningStatusStopMining(): void
     {
         try {
-            self::$daemonPeerRpcClient->startMining(
+            $startResult = self::$daemonPeerRpcClient->startMining(
                 backgroundMining: false,
                 ignoreBattery: true,
                 minerAddress: MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
                 threadsCount: 1
             );
+            self::assertInstanceOf(ResponseBase::class, $startResult);
+            self::assertSame('OK', $startResult->status);
 
             self::pollUntil(
                 fn() => self::$daemonPeerRpcClient->miningStatus()->active,
