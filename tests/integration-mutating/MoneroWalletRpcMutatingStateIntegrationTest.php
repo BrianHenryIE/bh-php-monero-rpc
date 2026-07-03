@@ -20,6 +20,7 @@
 namespace BrianHenryIE\MoneroRpc;
 
 use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
+use BrianHenryIE\MoneroRpc\Wallet\TransferSplitResult;
 use BrianHenryIE\MoneroRpc\Wallet\WalletKeyType;
 
 /**
@@ -141,7 +142,10 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
             MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS
         );
 
+        self::assertInstanceOf(TransferSplitResult::class, $result);
         self::assertNotEmpty($result->txHashList);
+        self::assertCount(count($result->txHashList), $result->amountList);
+        self::assertContainsOnlyInstancesOf(MoneroAmount::class, $result->feeList);
 
         // Confirm, so later tests start with an empty tx pool.
         self::$daemonPrimaryRpcClient->generateBlocks(

@@ -25,6 +25,7 @@ use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
 use BrianHenryIE\MoneroRpc\Daemon\Transactions;
 use BrianHenryIE\MoneroRpc\RpcClient;
 use BrianHenryIE\MoneroRpc\Wallet\TransferResult;
+use BrianHenryIE\MoneroRpc\Wallet\TransferSplitResult;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
@@ -69,6 +70,7 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'set_limit.json' => ['set_limit.json', Limit::class],
             'get_connections.json' => ['get_connections.json', Connections::class],
             'wallet/transfer.json' => ['wallet/transfer.json', TransferResult::class],
+            'wallet/transfer_split.json' => ['wallet/transfer_split.json', TransferSplitResult::class],
         ];
     }
 

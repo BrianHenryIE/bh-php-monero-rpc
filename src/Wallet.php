@@ -46,6 +46,7 @@ use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
 use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
 use BrianHenryIE\MoneroRpc\Wallet\TransferPriority;
 use BrianHenryIE\MoneroRpc\Wallet\TransferResult;
+use BrianHenryIE\MoneroRpc\Wallet\TransferSplitResult;
 use BrianHenryIE\MoneroRpc\Wallet\TransferType;
 use BrianHenryIE\MoneroRpc\Wallet\Version;
 use BrianHenryIE\MoneroRpc\Wallet\WalletKeyType;
@@ -702,11 +703,11 @@ class Wallet extends RpcClient
         bool $doNotRelay = false,
         bool $getTxHex = false,
         bool $getTxMetadata = false
-    ) {
+    ): TransferSplitResult {
         $destinations = array(array('amount' => $this->amountToRequestInt($amount), 'address' => $address));
 
         $params = array( 'destinations' => $destinations, 'mixin' => $mixin, 'get_tx_keys' => true, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'payment_id' => $paymentId, 'priority' => $priority->value, 'unlock_time' => $unlockTime, 'do_not_relay' => $doNotRelay, 'get_tx_hex' => $getTxHex, 'get_tx_metadata' => $getTxMetadata);
-        $transferMethod = $this->runJsonRpc('transfer_split', $params);
+        $transferMethod = $this->runJsonRpc('transfer_split', $params, TransferSplitResult::class);
 
         $save = $this->store(); // Save wallet state after transfer
 
