@@ -35,9 +35,17 @@
 namespace BrianHenryIE\MoneroRpc;
 
 use BrianHenryIE\MoneroRpc\Daemon\Height;
+use BrianHenryIE\MoneroRpc\Wallet\AccountTags;
+use BrianHenryIE\MoneroRpc\Wallet\Accounts;
+use BrianHenryIE\MoneroRpc\Wallet\AddressBook;
+use BrianHenryIE\MoneroRpc\Wallet\AddressBookIndex;
 use BrianHenryIE\MoneroRpc\Wallet\AddressIndex;
 use BrianHenryIE\MoneroRpc\Wallet\AddressValidation;
 use BrianHenryIE\MoneroRpc\Wallet\Balance;
+use BrianHenryIE\MoneroRpc\Wallet\CreatedAccount;
+use BrianHenryIE\MoneroRpc\Wallet\CreatedAddress;
+use BrianHenryIE\MoneroRpc\Wallet\GetAttribute;
+use BrianHenryIE\MoneroRpc\Wallet\TxNotes;
 use BrianHenryIE\MoneroRpc\Wallet\CheckReserveProof;
 use BrianHenryIE\MoneroRpc\Wallet\KeyImagesExport;
 use BrianHenryIE\MoneroRpc\Wallet\Languages;
@@ -457,10 +465,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function createAddress(int $accountIndex = 0, string $label = '')
+    public function createAddress(int $accountIndex = 0, string $label = ''): CreatedAddress
     {
         $params = array( 'account_index' => $accountIndex, 'label' => $label);
-        $createAddressMethod = $this->runJsonRpc('create_address', $params);
+        $createAddressMethod = $this->runJsonRpc('create_address', $params, CreatedAddress::class);
 
         $save = $this->store(); // Save wallet state after subaddress creation
 
@@ -518,11 +526,11 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getAccounts(?string $tag = null)
+    public function getAccounts(?string $tag = null): Accounts
     {
         return $tag
             ? $this->runJsonRpc('get_accounts', array('tag' => $tag))
-            : $this->runJsonRpc('get_accounts');
+            : $this->runJsonRpc('get_accounts', null, Accounts::class);
     }
 
   /**
@@ -530,10 +538,10 @@ class Wallet extends RpcClient
    *
    * @param  string  $label  Label to apply to new account
    */
-    public function createAccount(string $label = '')
+    public function createAccount(string $label = ''): CreatedAccount
     {
         $params = array('label' => $label);
-        $createAccountMethod = $this->runJsonRpc('create_account', $params);
+        $createAccountMethod = $this->runJsonRpc('create_account', $params, CreatedAccount::class);
 
         $save = $this->store(); // Save wallet state after account creation
 
@@ -573,9 +581,9 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getAccountTags()
+    public function getAccountTags(): AccountTags
     {
-        return $this->runJsonRpc('get_account_tags');
+        return $this->runJsonRpc('get_account_tags', null, AccountTags::class);
     }
 
   /**
@@ -1043,10 +1051,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getTxNotes($txIds)
+    public function getTxNotes($txIds): TxNotes
     {
         $params = array('txids' => $txIds);
-        return $this->runJsonRpc('get_tx_notes', $params);
+        return $this->runJsonRpc('get_tx_notes', $params, TxNotes::class);
     }
 
   /**
@@ -1071,10 +1079,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getAttribute(string $key)
+    public function getAttribute(string $key): GetAttribute
     {
         $params = array('key' => $key);
-        return $this->runJsonRpc('get_attribute', $params);
+        return $this->runJsonRpc('get_attribute', $params, GetAttribute::class);
     }
 
   /**
@@ -1430,10 +1438,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getAddressBook($entries)
+    public function getAddressBook($entries): AddressBook
     {
         $params = array('entries' => $entries);
-        return $this->runJsonRpc('get_address_book', $params);
+        return $this->runJsonRpc('get_address_book', $params, AddressBook::class);
     }
 
   /**
@@ -1448,10 +1456,11 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function addAddressBook(string $address, string $paymentId, string $description)
+    public function addAddressBook(string $address, string $description = ''): AddressBookIndex
     {
-        $params = array( 'address' => $address, 'payment_id' => $paymentId, 'description' => $description);
-        return $this->runJsonRpc('add_address_book', $params);
+        // NB: standalone payment ids are deprecated upstream; only address + description are sent.
+        $params = array('address' => $address, 'description' => $description);
+        return $this->runJsonRpc('add_address_book', $params, AddressBookIndex::class);
     }
 
   /**

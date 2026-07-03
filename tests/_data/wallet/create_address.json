@@ -1,0 +1,14 @@
+{
+    "id": "0",
+    "jsonrpc": "2.0",
+    "result": {
+        "address": "84tDuVQdNoTQXeKWb6f7GFcNmZnZWzSkJbszREaaSRX1Z2GWAV9x3J6dfLxn95mDBzPfac1pq6AF2ZU8E5dkTg7D5XWWWZd",
+        "address_index": 1,
+        "address_indices": [
+            1
+        ],
+        "addresses": [
+            "84tDuVQdNoTQXeKWb6f7GFcNmZnZWzSkJbszREaaSRX1Z2GWAV9x3J6dfLxn95mDBzPfac1pq6AF2ZU8E5dkTg7D5XWWWZd"
+        ]
+    }
+}

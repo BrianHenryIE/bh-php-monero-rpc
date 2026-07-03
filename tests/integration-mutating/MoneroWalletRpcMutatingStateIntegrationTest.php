@@ -19,6 +19,8 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Wallet\AddressBook;
+use BrianHenryIE\MoneroRpc\Wallet\AddressBookIndex;
 use BrianHenryIE\MoneroRpc\Wallet\DescribeTransferResult;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
 use BrianHenryIE\MoneroRpc\Wallet\Payments;
@@ -345,6 +347,34 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
         $bulk = $recipient->getBulkPayments([$paymentId], 0);
         self::assertInstanceOf(Payments::class, $bulk);
         self::assertNotEmpty($bulk->payments);
+    }
+
+    public function testAddressBookCrud(): void
+    {
+        $recipient = $this->openRecipientWallet();
+        $index = null;
+
+        try {
+            $added = $recipient->addAddressBook(
+                MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
+                'The miner'
+            );
+            self::assertInstanceOf(AddressBookIndex::class, $added);
+            $index = $added->index;
+
+            $book = $recipient->getAddressBook([$index]);
+            self::assertInstanceOf(AddressBook::class, $book);
+            self::assertSame(MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS, $book->entries[0]->address);
+            self::assertSame('The miner', $book->entries[0]->description);
+        } finally {
+            if ($index !== null) {
+                $recipient->deleteAddressBook($index);
+            }
+        }
+
+        // After deletion the entry is gone (fetching it errors).
+        $this->expectException(\Exception::class);
+        $recipient->getAddressBook([$index]);
     }
 
     public function testSweepDustFindsNoDust(): void

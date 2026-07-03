@@ -1,0 +1,13 @@
+{
+    "id": "0",
+    "jsonrpc": "2.0",
+    "result": {
+        "entries": [
+            {
+                "address": "43zjHrEvKytNk8YG7JEa2M9XJsPtfkG23jFBukXBj43sETTrwZhVYr1Pup4HH9qox9GuNeUuTvquyYc8Sk8PTVSaPbhVN81",
+                "description": "Miner",
+                "index": 0
+            }
+        ]
+    }
+}

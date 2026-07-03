@@ -24,8 +24,16 @@ use BrianHenryIE\MoneroRpc\Daemon\TransactionPool;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
 use BrianHenryIE\MoneroRpc\Daemon\Transactions;
 use BrianHenryIE\MoneroRpc\RpcClient;
+use BrianHenryIE\MoneroRpc\Wallet\AccountTags;
+use BrianHenryIE\MoneroRpc\Wallet\Accounts;
+use BrianHenryIE\MoneroRpc\Wallet\AddressBook;
+use BrianHenryIE\MoneroRpc\Wallet\AddressBookIndex;
 use BrianHenryIE\MoneroRpc\Wallet\AddressIndex;
 use BrianHenryIE\MoneroRpc\Wallet\AddressValidation;
+use BrianHenryIE\MoneroRpc\Wallet\CreatedAccount;
+use BrianHenryIE\MoneroRpc\Wallet\CreatedAddress;
+use BrianHenryIE\MoneroRpc\Wallet\GetAttribute;
+use BrianHenryIE\MoneroRpc\Wallet\TxNotes;
 use BrianHenryIE\MoneroRpc\Wallet\CheckReserveProof;
 use BrianHenryIE\MoneroRpc\Wallet\CheckSpendProof;
 use BrianHenryIE\MoneroRpc\Wallet\KeyImagesExport;
@@ -120,6 +128,14 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'wallet/get_languages.json' => ['wallet/get_languages.json', Languages::class],
             'wallet/get_address_index.json' => ['wallet/get_address_index.json', AddressIndex::class],
             'wallet/split_integrated_address.json' => ['wallet/split_integrated_address.json', SplitIntegratedAddress::class],
+            'wallet/get_accounts.json' => ['wallet/get_accounts.json', Accounts::class],
+            'wallet/create_account.json' => ['wallet/create_account.json', CreatedAccount::class],
+            'wallet/create_address.json' => ['wallet/create_address.json', CreatedAddress::class],
+            'wallet/add_address_book.json' => ['wallet/add_address_book.json', AddressBookIndex::class],
+            'wallet/get_address_book.json' => ['wallet/get_address_book.json', AddressBook::class],
+            'wallet/get_attribute.json' => ['wallet/get_attribute.json', GetAttribute::class],
+            'wallet/get_account_tags.json' => ['wallet/get_account_tags.json', AccountTags::class],
+            'wallet/get_tx_notes.json' => ['wallet/get_tx_notes.json', TxNotes::class],
         ];
     }
 
