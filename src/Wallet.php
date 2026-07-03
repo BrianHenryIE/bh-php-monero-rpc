@@ -616,6 +616,9 @@ class Wallet extends RpcClient
    *                                           treats it as a height when < 500000000, otherwise an
    *                                           epoch timestamp — hence a raw int, not a date type.  (optional)
    * @param  boolean          $doNotRelay      Do not relay transaction                  (optional)
+   * @param  int              $ringsize        Ring size (mixin + 1)                     (optional)
+   * @param  boolean          $getTxHex        Return the raw transaction hex (needed to relayTx/sendRawTransaction later)  (optional)
+   * @param  boolean          $getTxMetadata   Return the transaction metadata blob      (optional)
    *
    * @return object  Example: {
    *   "amount": "1000000000000",
@@ -634,11 +637,13 @@ class Wallet extends RpcClient
         TransferPriority $priority = TransferPriority::Normal,
         int $unlockTime = 0,
         bool $doNotRelay = false,
-        int $ringsize = 11
+        int $ringsize = 11,
+        bool $getTxHex = false,
+        bool $getTxMetadata = false
     ) {
         $destinations = array(array('amount' => $this->amountToRequestInt($amount), 'address' => $address));
 
-        $params = array( 'destinations' => $destinations, 'mixin' => $mixin, 'get_tx_key' => true, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'priority' => $priority->value, 'do_not_relay' => $doNotRelay, 'ringsize' => $ringsize);
+        $params = array( 'destinations' => $destinations, 'mixin' => $mixin, 'get_tx_key' => true, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'priority' => $priority->value, 'do_not_relay' => $doNotRelay, 'ringsize' => $ringsize, 'get_tx_hex' => $getTxHex, 'get_tx_metadata' => $getTxMetadata);
         $transferMethod = $this->runJsonRpc('transfer', $params);
 
         $save = $this->store(); // Save wallet state after transfer
@@ -671,8 +676,10 @@ class Wallet extends RpcClient
    * Single-destination, typed parameters only (see {@see transfer()}); the former
    * multi-destination / params-dictionary overload has been removed.
    *
-   * @param  int $unlockTime Block HEIGHT or UNIX time to unlock output (height when < 500000000,
-   *                         else epoch timestamp) — a raw int, not a date type.
+   * @param  int     $unlockTime      Block HEIGHT or UNIX time to unlock output (height when < 500000000,
+   *                                  else epoch timestamp) — a raw int, not a date type.
+   * @param  boolean $getTxHex        Return the raw transaction hex list          (optional)
+   * @param  boolean $getTxMetadata   Return the transaction metadata blob list    (optional)
    */
     public function transferSplit(
         MoneroAmount $amount,
@@ -683,11 +690,13 @@ class Wallet extends RpcClient
         string $subaddrIndices = '',
         TransferPriority $priority = TransferPriority::Normal,
         int $unlockTime = 0,
-        bool $doNotRelay = false
+        bool $doNotRelay = false,
+        bool $getTxHex = false,
+        bool $getTxMetadata = false
     ) {
         $destinations = array(array('amount' => $this->amountToRequestInt($amount), 'address' => $address));
 
-        $params = array( 'destinations' => $destinations, 'mixin' => $mixin, 'get_tx_key' => true, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'payment_id' => $paymentId, 'priority' => $priority->value, 'unlock_time' => $unlockTime, 'do_not_relay' => $doNotRelay);
+        $params = array( 'destinations' => $destinations, 'mixin' => $mixin, 'get_tx_keys' => true, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'payment_id' => $paymentId, 'priority' => $priority->value, 'unlock_time' => $unlockTime, 'do_not_relay' => $doNotRelay, 'get_tx_hex' => $getTxHex, 'get_tx_metadata' => $getTxMetadata);
         $transferMethod = $this->runJsonRpc('transfer_split', $params);
 
         $save = $this->store(); // Save wallet state after transfer
