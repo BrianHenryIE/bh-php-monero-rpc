@@ -64,6 +64,7 @@ use BrianHenryIE\MoneroRpc\Daemon\Outs;
 use BrianHenryIE\MoneroRpc\Daemon\PeerList;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
 use BrianHenryIE\MoneroRpc\Daemon\SendRawTransactionResult;
+use BrianHenryIE\MoneroRpc\Daemon\SubmitBlockResult;
 use BrianHenryIE\MoneroRpc\Daemon\Transactions;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPool;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
@@ -125,16 +126,17 @@ class Daemon extends RpcClient
     }
 
   /**
-   * Submit a mined block to the network
+   * Submit a mined block to the network.
    *
-   * @param  string  $block  Block blob
+   * monerod's `submitblock` takes an ARRAY of block blobs; this accepts a single blob and
+   * wraps it. A malformed blob raises a JSON-RPC error ("Wrong block blob") surfaced as an
+   * exception.
    *
-   * @return // TODO: example
-   *
+   * @param  string  $blockBlob  Hex-encoded block blob (e.g. from getBlockTemplate).
    */
-    public function submitBlock($block)
+    public function submitBlock(string $blockBlob): SubmitBlockResult
     {
-        return $this->runJsonRpc('submitblock', $block);
+        return $this->runJsonRpc('submitblock', array($blockBlob), SubmitBlockResult::class);
     }
 
 

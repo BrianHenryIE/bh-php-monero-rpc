@@ -20,6 +20,7 @@ use BrianHenryIE\MoneroRpc\Daemon\LogCategories;
 use BrianHenryIE\MoneroRpc\Daemon\OutPeers;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
 use BrianHenryIE\MoneroRpc\Daemon\SendRawTransactionResult;
+use BrianHenryIE\MoneroRpc\Daemon\SubmitBlockResult;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPool;
 
 /**
@@ -148,6 +149,34 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
             // Restore monerod's default so outbound peering is unconstrained for later tests.
             self::$daemonPrimaryRpcClient->outPeers(12);
         }
+    }
+
+    /**
+     * At --fixed-difficulty 1 the unmodified block template satisfies PoW, so submitting it
+     * mines a real block. (If this proves flaky across monerod versions, the malformed-blob
+     * ERROR-CONTRACT test in the read-only suite still pins submitBlock's failure behaviour.)
+     */
+    public function testSubmitBlockAcceptsTemplateBlob(): void
+    {
+        $template = self::$daemonPrimaryRpcClient->getBlockTemplate(
+            MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
+            8
+        );
+
+        $result = self::$daemonPrimaryRpcClient->submitBlock($template->blocktemplateBlob);
+
+        self::assertInstanceOf(SubmitBlockResult::class, $result);
+        self::assertSame('OK', $result->status);
+        self::assertNotEmpty($result->blockId);
+
+        self::pollUntil(
+            function () {
+                return self::$daemonPeerRpcClient->getHeight()->height
+                    === self::$daemonPrimaryRpcClient->getHeight()->height;
+            },
+            60,
+            'Daemons did not converge after submitBlock'
+        );
     }
 
     public function testSendRawTransactionBroadcastsAndConfirms(): void

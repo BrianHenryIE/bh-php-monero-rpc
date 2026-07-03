@@ -19,6 +19,7 @@ use BrianHenryIE\MoneroRpc\Daemon\MiningStatus;
 use BrianHenryIE\MoneroRpc\Daemon\PeerList;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
 use BrianHenryIE\MoneroRpc\Daemon\SendRawTransactionResult;
+use BrianHenryIE\MoneroRpc\Daemon\SubmitBlockResult;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPool;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
 use BrianHenryIE\MoneroRpc\Daemon\Transactions;
@@ -61,6 +62,7 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'get_transactions.json' => ['get_transactions.json', Transactions::class],
             'get_transaction_pool.json' => ['get_transaction_pool.json', TransactionPool::class],
             'send_raw_transaction.json' => ['send_raw_transaction.json', SendRawTransactionResult::class],
+            'json_rpc-submitblock.json' => ['json_rpc-submitblock.json', SubmitBlockResult::class],
             'set_log_categories.json' => ['set_log_categories.json', LogCategories::class],
             'json_rpc-getblockheaderbyhash.json' => ['json_rpc-getblockheaderbyhash.json', BlockHeaderBy::class],
             'set_limit.json' => ['set_limit.json', Limit::class],

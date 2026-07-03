@@ -266,6 +266,18 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
     }
 
     /**
+     * ERROR-CONTRACT: a malformed block blob is rejected with a JSON-RPC error
+     * ("Wrong block blob"), which RpcClient surfaces as an exception.
+     */
+    public function testSubmitBlockRejectsMalformedBlob(): void
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Wrong block blob');
+
+        self::$daemonPrimaryRpcClient->submitBlock('0101');
+    }
+
+    /**
      * ERROR-CONTRACT: malformed tx hex is rejected with status "Failed" (not an RPC
      * error envelope), so no exception is thrown — pin that contract.
      */

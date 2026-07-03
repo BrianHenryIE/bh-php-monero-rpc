@@ -1,0 +1,9 @@
+{
+  "id": "0",
+  "jsonrpc": "2.0",
+  "result": {
+    "block_id": "9e7f48b227239428ba595484e8c4b4b085c1f80cf78f02f5f935723ef51ea2ae",
+    "status": "OK",
+    "untrusted": false
+  }
+}
