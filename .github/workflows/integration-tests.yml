@@ -1,10 +1,15 @@
 name: Integration Tests
 
-# Boots the deterministic Monero regtest stack (docker-compose.yml), seeds the
-# chain (tests/integration/seed-monero-regtest-chain.php), then runs the
-# `integration` and `integration-mutating` PHPUnit suites.
+# Boots the deterministic Monero regtest stack (docker-compose.yml) and runs the
+# integration suites. Each suite runs in its OWN parallel job (up -> seed -> one suite ->
+# down) rather than serially in a single job: the full serial cycle had grown close to
+# ~10 minutes (seeding ~120 regtest blocks dominates, and the mutating suite mines heavily),
+# so splitting keeps wall-clock to roughly one seed + the slowest suite while isolating
+# failures. The `integration-destructive` suite MUST run alone — it stops the sacrificial
+# containers — and needs no seeded chain.
 #
 # @see INTEGRATION_TEST_PLAN.md
+# @see TYPED_RESPONSES_AND_FULL_INTEGRATION_COVERAGE_PLAN.md (Phase 7)
 
 on:
   push:
@@ -15,6 +20,18 @@ on:
 jobs:
   integration-tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: integration
+            seed: true
+          - suite: integration-mutating
+            seed: true
+          - suite: integration-destructive
+            seed: false
+
+    name: ${{ matrix.suite }}
 
     steps:
 
@@ -35,15 +52,11 @@ jobs:
         run: docker compose up -d --wait --quiet-pull
 
       - name: Seed the deterministic regtest chain
+        if: ${{ matrix.seed }}
         run: php tests/integration/seed-monero-regtest-chain.php
 
-      - name: Run integration test suite (read-only)
-        run: vendor/bin/phpunit --testsuite integration
-        env:
-          MONERO_INTEGRATION_TESTS: '1'
-
-      - name: Run integration test suite (mutating state)
-        run: vendor/bin/phpunit --testsuite integration-mutating
+      - name: Run ${{ matrix.suite }} suite
+        run: vendor/bin/phpunit --testsuite ${{ matrix.suite }}
         env:
           MONERO_INTEGRATION_TESTS: '1'
 
