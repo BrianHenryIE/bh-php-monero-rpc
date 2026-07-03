@@ -1,0 +1,25 @@
+{
+    "id": "0",
+    "jsonrpc": "2.0",
+    "result": {
+        "amount": 48191600000,
+        "amounts_by_dest": {
+            "amounts": [
+                48191600000
+            ]
+        },
+        "fee": 1808400000,
+        "multisig_txset": "",
+        "spent_key_images": {
+            "key_images": [
+                "d4c53b5559ac520935299803d610f6b68913706775d25e793786eb571be26f56"
+            ]
+        },
+        "tx_blob": "",
+        "tx_hash": "f2671e61193f87edaaf72255f75b0e87b940b60c0009ab17bd3ee137e71bfdfd",
+        "tx_key": "b86886829e2a98faf952b3ac5d0243448d5f4fc7a26f056d014ab4629af7b10e",
+        "tx_metadata": "",
+        "unsigned_txset": "",
+        "weight": 1507
+    }
+}

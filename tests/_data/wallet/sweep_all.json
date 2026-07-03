@@ -1,0 +1,37 @@
+{
+    "id": "0",
+    "jsonrpc": "2.0",
+    "result": {
+        "amount_list": [
+            48191600000
+        ],
+        "amounts_by_dest_list": [
+            {
+                "amounts": [
+                    48191600000
+                ]
+            }
+        ],
+        "fee_list": [
+            1808400000
+        ],
+        "multisig_txset": "",
+        "spent_key_images_list": [
+            {
+                "key_images": [
+                    "94665424b96e377f048c7c91d1e0665e8e5869455bb1ba0b9ea22ee6d8a57168"
+                ]
+            }
+        ],
+        "tx_hash_list": [
+            "66b0f515200ff1a17126ddcb632ef75005e2c5270f6b007558bc34ab174f5796"
+        ],
+        "tx_key_list": [
+            "7164caef88da28bf677c6b2e140736c889217b240784d07051c06d8cd9bb600f"
+        ],
+        "unsigned_txset": "",
+        "weight_list": [
+            1507
+        ]
+    }
+}

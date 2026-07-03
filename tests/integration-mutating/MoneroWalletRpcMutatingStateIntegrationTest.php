@@ -19,9 +19,12 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
 use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
 use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
+use BrianHenryIE\MoneroRpc\Wallet\SweepAllResult;
 use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
+use BrianHenryIE\MoneroRpc\Wallet\SweepSingleResult;
 use BrianHenryIE\MoneroRpc\Wallet\TransferSplitResult;
 use BrianHenryIE\MoneroRpc\Wallet\WalletKeyType;
 
@@ -156,6 +159,101 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
             '',
             0
         );
+    }
+
+    /**
+     * Create a fresh throwaway wallet on the recipient wallet-rpc server, fund it from the
+     * miner, and confirm. Returns [filename, address]. NEVER sweeps a fixture wallet.
+     *
+     * @return array{0: string, 1: string}
+     */
+    private function createAndFundThrowawayWallet(string $xmrAmount): array
+    {
+        $recipientRpc = self::$recipientWalletRpcClient;
+        $filename = uniqid('throwaway_sweep_');
+        $recipientRpc->createWallet($filename, 'pw');
+        $address = $recipientRpc->getAddress()->address;
+        self::forgetOpenWalletState();
+
+        $miner = $this->openMinerWallet();
+        $miner->refresh();
+        $miner->transfer(MoneroAmount::fromXmr($xmrAmount), $address);
+        self::$daemonPrimaryRpcClient->generateBlocks(
+            15,
+            MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
+            '',
+            0
+        );
+        self::pollUntil(
+            fn() => self::$daemonPeerRpcClient->getHeight()->height
+                === self::$daemonPrimaryRpcClient->getHeight()->height,
+            60,
+            'Daemons did not converge after funding throwaway wallet'
+        );
+
+        return [$filename, $address];
+    }
+
+    public function testSweepAllEmptiesTheWallet(): void
+    {
+        [$filename] = $this->createAndFundThrowawayWallet('0.05');
+
+        try {
+            $throwaway = self::$recipientWalletRpcClient;
+            $throwaway->openWallet($filename, 'pw');
+            $throwaway->refresh();
+            self::assertFalse($throwaway->getBalance()->unlockedBalance->isZero());
+
+            $result = $throwaway->sweepAll(MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS);
+
+            self::assertInstanceOf(SweepAllResult::class, $result);
+            self::assertNotEmpty($result->txHashList);
+            self::assertContainsOnlyInstancesOf(MoneroAmount::class, $result->amountList);
+
+            self::$daemonPrimaryRpcClient->generateBlocks(
+                10,
+                MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
+                '',
+                0
+            );
+            $throwaway->refresh();
+            self::assertTrue($throwaway->getBalance()->balance->isZero());
+        } finally {
+            self::forgetOpenWalletState();
+        }
+    }
+
+    public function testSweepSingleEmptiesTheOutput(): void
+    {
+        [$filename] = $this->createAndFundThrowawayWallet('0.05');
+
+        try {
+            $throwaway = self::$recipientWalletRpcClient;
+            $throwaway->openWallet($filename, 'pw');
+            $throwaway->refresh();
+
+            $keyImage = $throwaway->incomingTransfers(IncomingTransferType::Available)->transfers[0]->keyImage;
+
+            $result = $throwaway->sweepSingle(
+                $keyImage,
+                MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS
+            );
+
+            self::assertInstanceOf(SweepSingleResult::class, $result);
+            self::assertNotEmpty($result->txHash);
+            self::assertFalse($result->amount->isZero());
+
+            self::$daemonPrimaryRpcClient->generateBlocks(
+                10,
+                MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
+                '',
+                0
+            );
+            $throwaway->refresh();
+            self::assertTrue($throwaway->getBalance()->balance->isZero());
+        } finally {
+            self::forgetOpenWalletState();
+        }
     }
 
     public function testSweepDustFindsNoDust(): void

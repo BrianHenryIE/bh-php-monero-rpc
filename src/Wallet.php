@@ -45,7 +45,9 @@ use BrianHenryIE\MoneroRpc\Wallet\RefreshResult;
 use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
 use BrianHenryIE\MoneroRpc\Wallet\RestoreDeterministicWalletResult;
 use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
+use BrianHenryIE\MoneroRpc\Wallet\SweepAllResult;
 use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
+use BrianHenryIE\MoneroRpc\Wallet\SweepSingleResult;
 use BrianHenryIE\MoneroRpc\Wallet\TransferPriority;
 use BrianHenryIE\MoneroRpc\Wallet\TransferByTxid;
 use BrianHenryIE\MoneroRpc\Wallet\TransferResult;
@@ -776,11 +778,11 @@ class Wallet extends RpcClient
         ?MoneroAmount $belowAmount = null,
         int $unlockTime = 0,
         bool $doNotRelay = false
-    ) {
-        $params = array( 'address' => $address, 'mixin' => $mixin, 'get_tx_key' => true, 'subaddr_indices' => $subaddrIndices, 'account_index' => $accountIndex, 'payment_id' => $paymentId, 'priority' => $priority->value, 'below_amount' => $belowAmount === null ? 0 : $this->amountToRequestInt($belowAmount), 'unlock_time' => $unlockTime, 'do_not_relay' => $doNotRelay);
-        $sweepAllMethod = $this->runJsonRpc('sweep_all', $params);
+    ): SweepAllResult {
+        $params = array( 'address' => $address, 'mixin' => $mixin, 'get_tx_keys' => true, 'subaddr_indices' => $subaddrIndices, 'account_index' => $accountIndex, 'payment_id' => $paymentId, 'priority' => $priority->value, 'below_amount' => $belowAmount === null ? 0 : $this->amountToRequestInt($belowAmount), 'unlock_time' => $unlockTime, 'do_not_relay' => $doNotRelay);
+        $sweepAllMethod = $this->runJsonRpc('sweep_all', $params, SweepAllResult::class);
 
-        $save = $this->store(); // Save wallet state after transfer
+        $this->store(); // Save wallet state after transfer
 
         return $sweepAllMethod;
     }
@@ -788,20 +790,18 @@ class Wallet extends RpcClient
   /**
    * Sweep a single key image to an address.
    *
-   * Typed parameters only; the former params-dictionary overload has been removed. (The
-   * `$accountIndex` parameter is now explicit — previously it was only reachable through the
-   * removed dictionary path and was otherwise an undefined variable.)
+   * Typed parameters only; the former params-dictionary overload has been removed. Unlike
+   * sweep_all, sweep_single sweeps ONE key image and accepts neither an account index nor a
+   * below-amount filter (the account is derived from the key image).
    *
-   * @param  string           $keyImage     Key image to sweep
+   * @param  string           $keyImage     Key image of the output to sweep
    * @param  string           $address      Address to receive funds
    * @param  string           $paymentId    Payment ID                                  (optional)
    * @param  int              $mixin        Mixin number (ringsize - 1)                 (optional)
    * @param  TransferPriority $priority     Transaction fee priority                    (optional)
-   * @param  ?MoneroAmount    $belowAmount  Only send outputs below this amount; null = no limit  (optional)
    * @param  int              $unlockTime   Block HEIGHT or UNIX time to unlock output (height when
    *                                        < 500000000, else epoch timestamp) — a raw int.  (optional)
    * @param  boolean          $doNotRelay   Do not relay transaction                    (optional)
-   * @param  int              $accountIndex Index of the account to sweep from          (optional)
    *
    * @return object  Example: {
    *   "amount": "1000000000000",
@@ -816,25 +816,27 @@ class Wallet extends RpcClient
         string $paymentId = '',
         int $mixin = 15,
         TransferPriority $priority = TransferPriority::Normal,
-        ?MoneroAmount $belowAmount = null,
         int $unlockTime = 0,
-        bool $doNotRelay = false,
-        int $accountIndex = 0
-    ) {
+        bool $doNotRelay = false
+    ): SweepSingleResult {
+        // NB: sweep_single derives the account from the key image and does NOT accept
+        // account_index or below_amount (unlike sweep_all); sending them yields "Invalid params".
+        // An empty payment_id is also rejected, so it is only included when set.
         $params = array(
             'address' => $address,
+            'key_image' => $keyImage,
             'mixin' => $mixin,
             'get_tx_key' => true,
-            'account_index' => $accountIndex,
-            'payment_id' => $paymentId,
             'priority' => $priority->value,
-            'below_amount' => $belowAmount === null ? 0 : $this->amountToRequestInt($belowAmount),
             'unlock_time' => $unlockTime,
-            'do_not_relay' => $doNotRelay ? 1 : 0
+            'do_not_relay' => $doNotRelay,
         );
-        $sweepSingleMethod = $this->runJsonRpc('sweep_single', $params);
+        if ($paymentId !== '') {
+            $params['payment_id'] = $paymentId;
+        }
+        $sweepSingleMethod = $this->runJsonRpc('sweep_single', $params, SweepSingleResult::class);
 
-        $save = $this->store(); // Save wallet state after transfer
+        $this->store(); // Save wallet state after transfer
 
         return $sweepSingleMethod;
     }
