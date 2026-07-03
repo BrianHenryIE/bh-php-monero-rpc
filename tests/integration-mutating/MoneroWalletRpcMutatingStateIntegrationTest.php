@@ -20,6 +20,7 @@
 namespace BrianHenryIE\MoneroRpc;
 
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
+use BrianHenryIE\MoneroRpc\Wallet\Payments;
 use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
 use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
 use BrianHenryIE\MoneroRpc\Wallet\SweepAllResult;
@@ -254,6 +255,46 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
         } finally {
             self::forgetOpenWalletState();
         }
+    }
+
+    public function testGetPaymentsAndBulkPaymentsViaIntegratedAddress(): void
+    {
+        $recipient = $this->openRecipientWallet();
+        $recipient->refresh();
+
+        // Standalone payment ids are dead, but an integrated address still carries an 8-byte one.
+        $integrated = $recipient->makeIntegratedAddress();
+        $paymentId = $integrated->paymentId;
+
+        $miner = $this->openMinerWallet();
+        $miner->refresh();
+        $miner->transfer(MoneroAmount::fromXmr('0.02'), $integrated->integratedAddress);
+
+        self::$daemonPrimaryRpcClient->generateBlocks(
+            12,
+            MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
+            '',
+            0
+        );
+        self::pollUntil(
+            fn() => self::$daemonPeerRpcClient->getHeight()->height
+                === self::$daemonPrimaryRpcClient->getHeight()->height,
+            60,
+            'Daemons did not converge after integrated-address payment'
+        );
+
+        $recipient = $this->openRecipientWallet();
+        $recipient->refresh();
+
+        $payments = $recipient->getPayments($paymentId);
+        self::assertInstanceOf(Payments::class, $payments);
+        self::assertNotEmpty($payments->payments);
+        self::assertSame($paymentId, $payments->payments[0]->paymentId);
+        self::assertSame('20000000000', $payments->payments[0]->amount->toAtomicUnitsString());
+
+        $bulk = $recipient->getBulkPayments([$paymentId], 0);
+        self::assertInstanceOf(Payments::class, $bulk);
+        self::assertNotEmpty($bulk->payments);
     }
 
     public function testSweepDustFindsNoDust(): void

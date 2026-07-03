@@ -41,6 +41,7 @@ use BrianHenryIE\MoneroRpc\Wallet\IncomingTransfers;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
 use BrianHenryIE\MoneroRpc\Wallet\IntegratedAddress;
 use BrianHenryIE\MoneroRpc\Wallet\Key;
+use BrianHenryIE\MoneroRpc\Wallet\Payments;
 use BrianHenryIE\MoneroRpc\Wallet\RefreshResult;
 use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
 use BrianHenryIE\MoneroRpc\Wallet\RestoreDeterministicWalletResult;
@@ -884,12 +885,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getPayments(string $paymentId)
+    public function getPayments(string $paymentId): Payments
     {
-      // $params = array('payment_id' => $paymentId); // does not work
-        $params = [];
-        $params['payment_id'] = $paymentId;
-        return $this->runJsonRpc('get_payments', $params);
+        $params = array('payment_id' => $paymentId);
+        return $this->runJsonRpc('get_payments', $params, Payments::class);
     }
 
   /**
@@ -909,21 +908,16 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getBulkPayments($paymentIds, $minBlockHeight)
+    public function getBulkPayments($paymentIds, $minBlockHeight): Payments
     {
-      // $params = array('payment_ids' => $paymentIds, 'min_block_height' => $minBlockHeight); // does not work
-      //$params = array('min_block_height' => $minBlockHeight); // does not work
-        $params = [];
         if (!is_array($paymentIds)) {
             throw new Exception('Error: Payment IDs must be array.');
         }
-        if ($paymentIds) {
-            $params['payment_ids'] = [];
-            foreach ($paymentIds as $paymentId) {
-                $params['payment_ids'][] = $paymentId;
-            }
-        }
-        return $this->runJsonRpc('get_bulk_payments', $params);
+        $params = array(
+            'payment_ids' => array_values($paymentIds),
+            'min_block_height' => $minBlockHeight,
+        );
+        return $this->runJsonRpc('get_bulk_payments', $params, Payments::class);
     }
 
   /**

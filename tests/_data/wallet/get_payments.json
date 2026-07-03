@@ -1,0 +1,21 @@
+{
+    "id": "0",
+    "jsonrpc": "2.0",
+    "result": {
+        "payments": [
+            {
+                "address": "4AMjwQbYCwUGJbv5WUwNwV5jj1gTnCnTqRFBugw258F9bhG5RYUkRAj3wCpj4X6rxxcX8vDiWKT77LFz88SFv2WsEiLa8bq",
+                "amount": 20000000000,
+                "block_height": 323,
+                "locked": false,
+                "payment_id": "96c31232b5125f09",
+                "subaddr_index": {
+                    "major": 0,
+                    "minor": 0
+                },
+                "tx_hash": "8ebcb015ae5e6032603beaaad252333464b9b192f3149e7f46865667ab4aa7ac",
+                "unlock_time": 0
+            }
+        ]
+    }
+}

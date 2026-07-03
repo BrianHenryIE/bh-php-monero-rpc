@@ -25,6 +25,7 @@ use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
 use BrianHenryIE\MoneroRpc\Daemon\Transactions;
 use BrianHenryIE\MoneroRpc\RpcClient;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransfers;
+use BrianHenryIE\MoneroRpc\Wallet\Payments;
 use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
 use BrianHenryIE\MoneroRpc\Wallet\SweepAllResult;
 use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
@@ -85,6 +86,7 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'wallet/relay_tx.json' => ['wallet/relay_tx.json', RelayTxResult::class],
             'wallet/sweep_all.json' => ['wallet/sweep_all.json', SweepAllResult::class],
             'wallet/sweep_single.json' => ['wallet/sweep_single.json', SweepSingleResult::class],
+            'wallet/get_payments.json' => ['wallet/get_payments.json', Payments::class],
         ];
     }
 
