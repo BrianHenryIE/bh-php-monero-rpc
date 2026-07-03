@@ -7,6 +7,7 @@ use BrianHenryIE\MoneroRpc\Daemon\Block;
 use BrianHenryIE\MoneroRpc\Daemon\BlockCount;
 use BrianHenryIE\MoneroRpc\Daemon\BlockHeaderBy;
 use BrianHenryIE\MoneroRpc\Daemon\Connections;
+use BrianHenryIE\MoneroRpc\Daemon\HardForkInfo;
 use BrianHenryIE\MoneroRpc\Daemon\Info;
 use BrianHenryIE\MoneroRpc\Daemon\InPeers;
 use BrianHenryIE\MoneroRpc\Daemon\Limit;
@@ -38,6 +39,7 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'stop_daemon.json' => ['stop_daemon.json', ResponseBase::class],
             'get_limit.json' => ['get_limit.json', Limit::class],
             'json_rpc-get_info.json' => ['json_rpc-get_info.json', Info::class],
+            'json_rpc-hard_fork_info.json' => ['json_rpc-hard_fork_info.json', HardForkInfo::class],
             'json_rpc-getlastblockheader.json' => ['json_rpc-getlastblockheader.json', BlockHeaderBy::class],
             'stop_mining.json' => ['stop_mining.json', ResponseBase::class],
             'get_peer_list.json' => ['get_peer_list.json', PeerList::class ],

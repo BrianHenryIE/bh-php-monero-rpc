@@ -51,6 +51,7 @@ use BrianHenryIE\MoneroRpc\Daemon\BlockTemplate;
 use BrianHenryIE\MoneroRpc\Daemon\Connection;
 use BrianHenryIE\MoneroRpc\Daemon\Connections;
 use BrianHenryIE\MoneroRpc\Daemon\GenerateBlocks;
+use BrianHenryIE\MoneroRpc\Daemon\HardForkInfo;
 use BrianHenryIE\MoneroRpc\Daemon\Height;
 use BrianHenryIE\MoneroRpc\Daemon\Info;
 use BrianHenryIE\MoneroRpc\Daemon\InPeers;
@@ -401,9 +402,9 @@ class Daemon extends RpcClient
    * }
    *
    */
-    public function getHardForkInfo()
+    public function getHardForkInfo(): HardForkInfo
     {
-        return $this->runJsonRpc('hard_fork_info');
+        return $this->runJsonRpc('hard_fork_info', null, HardForkInfo::class);
     }
 
   /**

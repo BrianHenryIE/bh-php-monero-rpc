@@ -240,6 +240,9 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         $result = self::$daemonPrimaryRpcClient->getHardForkInfo();
 
         self::assertSame(16, $result->version);
+        self::assertTrue($result->enabled);
+        self::assertSame(1, $result->earliestHeight);
+        self::assertSame('OK', $result->status);
     }
 
     public function testMiningStatusIsNotMining(): void
