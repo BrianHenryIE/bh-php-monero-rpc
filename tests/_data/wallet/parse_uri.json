@@ -1,0 +1,13 @@
+{
+  "id": "0",
+  "jsonrpc": "2.0",
+  "result": {
+    "uri": {
+      "address": "43zjHrEvKytNk8YG7JEa2M9XJsPtfkG23jFBukXBj43sETTrwZhVYr1Pup4HH9qox9GuNeUuTvquyYc8Sk8PTVSaPbhVN81",
+      "amount": 1230000000000,
+      "payment_id": "",
+      "recipient_name": "Bob",
+      "tx_description": ""
+    }
+  }
+}

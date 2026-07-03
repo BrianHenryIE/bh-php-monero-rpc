@@ -1,0 +1,10 @@
+{
+  "id": "0",
+  "jsonrpc": "2.0",
+  "result": {
+    "index": {
+      "major": 0,
+      "minor": 0
+    }
+  }
+}

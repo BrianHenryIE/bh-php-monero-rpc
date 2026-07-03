@@ -14,6 +14,10 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Wallet\AddressValidation;
+use BrianHenryIE\MoneroRpc\Wallet\KeyImagesExport;
+use BrianHenryIE\MoneroRpc\Wallet\MakeUriResult;
+use BrianHenryIE\MoneroRpc\Wallet\ParseUriResult;
 use BrianHenryIE\MoneroRpc\Wallet\TransferType;
 use BrianHenryIE\MoneroRpc\Wallet\WalletKeyType;
 
@@ -284,7 +288,50 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         $result = $minerWallet->exportKeyImages(true);
 
-        self::assertIsObject($result);
+        self::assertInstanceOf(KeyImagesExport::class, $result);
         self::assertNotEmpty($result->signedKeyImages);
+        self::assertNotEmpty($result->signedKeyImages[0]->keyImage);
+    }
+
+    public function testValidateAddress(): void
+    {
+        $miner = $this->openMinerWallet();
+
+        $valid = $miner->validateAddress(MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS);
+        self::assertInstanceOf(AddressValidation::class, $valid);
+        self::assertTrue($valid->valid);
+        self::assertFalse($valid->integrated);
+        self::assertFalse($valid->subaddress);
+
+        // A corrupted-checksum address is invalid.
+        $corrupted = substr(MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS, 0, -1) . 'X';
+        self::assertFalse($miner->validateAddress($corrupted)->valid);
+
+        // An integrated address is flagged as such.
+        $integratedAddress = $miner->makeIntegratedAddress()->integratedAddress;
+        $integrated = $miner->validateAddress($integratedAddress);
+        self::assertTrue($integrated->valid);
+        self::assertTrue($integrated->integrated);
+    }
+
+    public function testMakeAndParseUriRoundTrip(): void
+    {
+        $miner = $this->openMinerWallet();
+
+        $uri = $miner->makeUri(
+            MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
+            MoneroAmount::fromXmr('1.23'),
+            recipientName: 'Alice',
+            txDescription: 'lunch'
+        );
+        self::assertInstanceOf(MakeUriResult::class, $uri);
+        self::assertStringStartsWith('monero:', $uri->uri);
+
+        $parsed = $miner->parseUri($uri->uri);
+        self::assertInstanceOf(ParseUriResult::class, $parsed);
+        self::assertSame(MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS, $parsed->uri->address);
+        self::assertSame('1230000000000', $parsed->uri->amount->toAtomicUnitsString());
+        self::assertSame('Alice', $parsed->uri->recipientName);
+        self::assertSame('lunch', $parsed->uri->txDescription);
     }
 }

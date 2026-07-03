@@ -24,8 +24,16 @@ use BrianHenryIE\MoneroRpc\Daemon\TransactionPool;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
 use BrianHenryIE\MoneroRpc\Daemon\Transactions;
 use BrianHenryIE\MoneroRpc\RpcClient;
+use BrianHenryIE\MoneroRpc\Wallet\AddressIndex;
+use BrianHenryIE\MoneroRpc\Wallet\AddressValidation;
 use BrianHenryIE\MoneroRpc\Wallet\CheckReserveProof;
 use BrianHenryIE\MoneroRpc\Wallet\CheckSpendProof;
+use BrianHenryIE\MoneroRpc\Wallet\KeyImagesExport;
+use BrianHenryIE\MoneroRpc\Wallet\Languages;
+use BrianHenryIE\MoneroRpc\Wallet\MakeUriResult;
+use BrianHenryIE\MoneroRpc\Wallet\OutputsData;
+use BrianHenryIE\MoneroRpc\Wallet\ParseUriResult;
+use BrianHenryIE\MoneroRpc\Wallet\SplitIntegratedAddress;
 use BrianHenryIE\MoneroRpc\Wallet\CheckTxKey;
 use BrianHenryIE\MoneroRpc\Wallet\CheckTxProof;
 use BrianHenryIE\MoneroRpc\Wallet\DescribeTransferResult;
@@ -104,6 +112,14 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'wallet/check_reserve_proof.json' => ['wallet/check_reserve_proof.json', CheckReserveProof::class],
             'wallet/sign.json' => ['wallet/sign.json', Signature::class],
             'wallet/verify.json' => ['wallet/verify.json', Verify::class],
+            'wallet/validate_address.json' => ['wallet/validate_address.json', AddressValidation::class],
+            'wallet/make_uri.json' => ['wallet/make_uri.json', MakeUriResult::class],
+            'wallet/parse_uri.json' => ['wallet/parse_uri.json', ParseUriResult::class],
+            'wallet/export_outputs.json' => ['wallet/export_outputs.json', OutputsData::class],
+            'wallet/export_key_images.json' => ['wallet/export_key_images.json', KeyImagesExport::class],
+            'wallet/get_languages.json' => ['wallet/get_languages.json', Languages::class],
+            'wallet/get_address_index.json' => ['wallet/get_address_index.json', AddressIndex::class],
+            'wallet/split_integrated_address.json' => ['wallet/split_integrated_address.json', SplitIntegratedAddress::class],
         ];
     }
 

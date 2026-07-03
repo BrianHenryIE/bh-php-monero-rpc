@@ -1,0 +1,9 @@
+{
+  "id": "0",
+  "jsonrpc": "2.0",
+  "result": {
+    "is_subaddress": false,
+    "payment_id": "dbcb43794cf69119",
+    "standard_address": "43zjHrEvKytNk8YG7JEa2M9XJsPtfkG23jFBukXBj43sETTrwZhVYr1Pup4HH9qox9GuNeUuTvquyYc8Sk8PTVSaPbhVN81"
+  }
+}

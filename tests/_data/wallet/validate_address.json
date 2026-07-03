@@ -1,0 +1,11 @@
+{
+  "id": "0",
+  "jsonrpc": "2.0",
+  "result": {
+    "integrated": false,
+    "nettype": "mainnet",
+    "openalias_address": "",
+    "subaddress": false,
+    "valid": true
+  }
+}

@@ -35,8 +35,16 @@
 namespace BrianHenryIE\MoneroRpc;
 
 use BrianHenryIE\MoneroRpc\Daemon\Height;
+use BrianHenryIE\MoneroRpc\Wallet\AddressIndex;
+use BrianHenryIE\MoneroRpc\Wallet\AddressValidation;
 use BrianHenryIE\MoneroRpc\Wallet\Balance;
 use BrianHenryIE\MoneroRpc\Wallet\CheckReserveProof;
+use BrianHenryIE\MoneroRpc\Wallet\KeyImagesExport;
+use BrianHenryIE\MoneroRpc\Wallet\Languages;
+use BrianHenryIE\MoneroRpc\Wallet\MakeUriResult;
+use BrianHenryIE\MoneroRpc\Wallet\OutputsData;
+use BrianHenryIE\MoneroRpc\Wallet\ParseUriResult;
+use BrianHenryIE\MoneroRpc\Wallet\SplitIntegratedAddress;
 use BrianHenryIE\MoneroRpc\Wallet\CheckSpendProof;
 use BrianHenryIE\MoneroRpc\Wallet\CheckTxKey;
 use BrianHenryIE\MoneroRpc\Wallet\CheckTxProof;
@@ -336,17 +344,17 @@ class Wallet extends RpcClient
      * }
      *
      */
-    public function getLanguages()
+    public function getLanguages(): Languages
     {
-        return $this->runJsonRpc('get_languages');
+        return $this->runJsonRpc('get_languages', null, Languages::class);
     }
 
     /**
      * Export all outputs in hex format
      */
-    public function exportOutputs()
+    public function exportOutputs(): OutputsData
     {
-        return $this->runJsonRpc('export_outputs');
+        return $this->runJsonRpc('export_outputs', null, OutputsData::class);
     }
 
     /**
@@ -431,10 +439,10 @@ class Wallet extends RpcClient
     * }
     * }
      */
-    public function getAddressIndex(string $address)
+    public function getAddressIndex(string $address): AddressIndex
     {
         $params = array('address' => $address);
-        return $this->runJsonRpc('get_address_index', $params);
+        return $this->runJsonRpc('get_address_index', $params, AddressIndex::class);
     }
 
   /**
@@ -1007,10 +1015,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function splitIntegratedAddress(string $integratedAddress)
+    public function splitIntegratedAddress(string $integratedAddress): SplitIntegratedAddress
     {
         $params = array('integrated_address' => $integratedAddress);
-        return $this->runJsonRpc('split_integrated_address', $params);
+        return $this->runJsonRpc('split_integrated_address', $params, SplitIntegratedAddress::class);
     }
 
   /**
@@ -1343,12 +1351,12 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function exportKeyImages(bool $all = false)
+    public function exportKeyImages(bool $all = false): KeyImagesExport
     {
         // Without `all`, only key images since the last export ("offset") are
         // returned, and the `signed_key_images` key is omitted when there are none.
         $params = array('all' => $all);
-        return $this->runJsonRpc('export_key_images', $params);
+        return $this->runJsonRpc('export_key_images', $params, KeyImagesExport::class);
     }
 
   /**
@@ -1384,10 +1392,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function makeUri(string $address, MoneroAmount $amount, ?string $paymentId = null, ?string $recipientName = null, ?string $txDescription = null)
+    public function makeUri(string $address, MoneroAmount $amount, ?string $paymentId = null, ?string $recipientName = null, ?string $txDescription = null): MakeUriResult
     {
         $params = array( 'address' => $address, 'amount' => $this->amountToRequestInt($amount), 'payment_id' => $paymentId, 'recipient_name' => $recipientName, 'tx_description' => $txDescription);
-        return $this->runJsonRpc('make_uri', $params);
+        return $this->runJsonRpc('make_uri', $params, MakeUriResult::class);
     }
 
   /**
@@ -1406,10 +1414,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function parseUri(string $uri)
+    public function parseUri(string $uri): ParseUriResult
     {
         $params = array('uri' => $uri);
-        return $this->runJsonRpc('parse_uri', $params);
+        return $this->runJsonRpc('parse_uri', $params, ParseUriResult::class);
     }
 
   /**
@@ -1623,14 +1631,14 @@ class Wallet extends RpcClient
    *         openalias_address - boolean; True if the address is OpenAlias-formatted.
    *
    */
-    public function validateAddress(string $address, bool $strictNettype = false, bool $allowOpenalias = false)
+    public function validateAddress(string $address, bool $strictNettype = false, bool $allowOpenalias = false): AddressValidation
     {
         $params = array(
         'address' => $address,
         'any_net_type' => $strictNettype,
         'allow_openalias' => $allowOpenalias
         );
-        return $this->runJsonRpc('validate_address', $params);
+        return $this->runJsonRpc('validate_address', $params, AddressValidation::class);
     }
 
   /**
