@@ -416,14 +416,14 @@ class Daemon extends RpcClient
    * }
    *
    */
-    public function setBans($bans)
+    public function setBans($bans): ResponseBase
     {
         if (is_string($bans)) {
             $bans = array($bans);
         }
         $params = array('bans' => $bans);
 
-        return $this->runJsonRpc('set_bans', $params);
+        return $this->runJsonRpc('set_bans', $params, ResponseBase::class);
     }
 
   /**
@@ -444,16 +444,18 @@ class Daemon extends RpcClient
     }
 
   /**
-   * Flush Transaction Pool
+   * Flush the transaction pool.
    *
-   * @param $txids - array
-   * Optional, list of transactions IDs to flush from pool (all tx ids flushed if empty).
+   * monerod expects the tx ids wrapped as `{txids: [...]}`; passing them as the bare
+   * params array (as this method previously did) is not the documented request shape.
    *
-   * @return array status - string; General RPC error code. "OK" means everything looks good.
+   * @param ?string[] $txids Transaction IDs to flush; null/empty flushes the entire pool.
    */
-    public function flushTxPool($txids)
+    public function flushTxPool(?array $txids = null): ResponseBase
     {
-        return $this->runJsonRpc('flush_txpool', $txids);
+        $params = ($txids === null || $txids === []) ? null : array('txids' => $txids);
+
+        return $this->runJsonRpc('flush_txpool', $params, ResponseBase::class);
     }
 
     /**

@@ -16,6 +16,8 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
+
 /**
  * @coversDefaultClass \BrianHenryIE\MoneroRpc\Daemon
  */
@@ -132,7 +134,7 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
                 ],
             ]);
 
-            // `Daemon::setBans()` is untyped; the response is stdClass.
+            self::assertInstanceOf(ResponseBase::class, $setResult);
             self::assertSame('OK', $setResult->status);
         } finally {
             self::$daemonPrimaryRpcClient->setBans([
@@ -152,7 +154,7 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
     {
         $result = self::$daemonPrimaryRpcClient->flushTxPool(null);
 
-        self::assertIsObject($result);
+        self::assertInstanceOf(ResponseBase::class, $result);
         self::assertSame('OK', $result->status);
     }
 }
