@@ -18,6 +18,24 @@ on:
   pull_request:
 
 jobs:
+  # Static invariant: every public Daemon/Wallet method must have an integration test.
+  # Reflection + grep only — no Docker, so it is fast and gates PRs early.
+  coverage-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: bcmath
+          coverage: none
+      - name: Install composer dependencies
+        run: composer install --prefer-dist --no-progress
+      - name: Audit integration coverage
+        run: composer audit-coverage
+
   integration-tests:
     runs-on: ubuntu-latest
     strategy:

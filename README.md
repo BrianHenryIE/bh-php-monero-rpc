@@ -131,6 +131,8 @@ Write a single `final readonly class` (no interface, no mapper) whose constructo
 
 Add the new class to the `MappersTest.php` dataprovider (using the shared `RpcClient::buildResponseMapper()`), and add an integration test assertion against the live value.
 
+**Every public method needs an integration test.** A new (or newly-typed) `Daemon`/`Wallet` method requires: a typed readonly model + captured fixture JSON in `tests/_data` + a `MappersTest` entry + an integration test that calls it (LIVE against the seeded stack, DESTRUCTIVE against the sacrificial containers, or ERROR-CONTRACT asserting the specific error monerod returns). `composer audit-coverage` (run in CI, `tests/audit-integration-coverage.php`) reflects every public method and **fails your PR** if one has no test reference — a method whose coverage is genuinely indirect must be added to that script's `ALLOWLIST` with the covering test named.
+
 ## Documentation
 
 * https://github.com/monero-project/monero/wiki/Daemon-RPC-documentation

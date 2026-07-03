@@ -140,6 +140,9 @@
             "phpcbf || true",
             "phpcs || true",
             "phpstan"
+        ],
+        "audit-coverage": [
+            "php tests/audit-integration-coverage.php"
         ]
     }
 }
