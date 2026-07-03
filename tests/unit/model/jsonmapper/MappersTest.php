@@ -52,7 +52,10 @@ use BrianHenryIE\MoneroRpc\Wallet\IncomingTransfers;
 use BrianHenryIE\MoneroRpc\Wallet\Signature;
 use BrianHenryIE\MoneroRpc\Wallet\TxKey;
 use BrianHenryIE\MoneroRpc\Wallet\Verify;
+use BrianHenryIE\MoneroRpc\Wallet\MultisigResult;
+use BrianHenryIE\MoneroRpc\Wallet\MultisigStatus;
 use BrianHenryIE\MoneroRpc\Wallet\Payments;
+use BrianHenryIE\MoneroRpc\Wallet\PreparedMultisig;
 use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
 use BrianHenryIE\MoneroRpc\Wallet\SweepAllResult;
 use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
@@ -142,6 +145,9 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'wallet/generate_from_keys.json' => ['wallet/generate_from_keys.json', GeneratedWallet::class],
             'wallet/import_outputs.json' => ['wallet/import_outputs.json', ImportOutputsResult::class],
             'wallet/import_key_images.json' => ['wallet/import_key_images.json', ImportKeyImagesResult::class],
+            'wallet/is_multisig.json' => ['wallet/is_multisig.json', MultisigStatus::class],
+            'wallet/prepare_multisig.json' => ['wallet/prepare_multisig.json', PreparedMultisig::class],
+            'wallet/make_multisig.json' => ['wallet/make_multisig.json', MultisigResult::class],
         ];
     }
 

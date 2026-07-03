@@ -68,7 +68,14 @@ use BrianHenryIE\MoneroRpc\Wallet\IncomingTransfers;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
 use BrianHenryIE\MoneroRpc\Wallet\IntegratedAddress;
 use BrianHenryIE\MoneroRpc\Wallet\Key;
+use BrianHenryIE\MoneroRpc\Wallet\MultisigInfoExport;
+use BrianHenryIE\MoneroRpc\Wallet\MultisigInfoImport;
+use BrianHenryIE\MoneroRpc\Wallet\MultisigResult;
+use BrianHenryIE\MoneroRpc\Wallet\MultisigStatus;
 use BrianHenryIE\MoneroRpc\Wallet\Payments;
+use BrianHenryIE\MoneroRpc\Wallet\PreparedMultisig;
+use BrianHenryIE\MoneroRpc\Wallet\SignedMultisig;
+use BrianHenryIE\MoneroRpc\Wallet\SubmittedMultisig;
 use BrianHenryIE\MoneroRpc\Wallet\RefreshResult;
 use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
 use BrianHenryIE\MoneroRpc\Wallet\RestoreDeterministicWalletResult;
@@ -1502,128 +1509,90 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Check if wallet is multisig
-   *
-   * @return object  Example: (non-multisignature wallet) {
-   *   "multisig": ,
-   *   "ready": ,
-   *   "threshold": 0,
-   *   "total": 0
-   * } // TODO multisig wallet example
-   *
+   * Check whether the wallet is a multisig wallet, and its M-of-N setup state.
    */
-    public function isMultisig()
+    public function isMultisig(): MultisigStatus
     {
-        return $this->runJsonRpc('is_multisig');
+        return $this->runJsonRpc('is_multisig', null, MultisigStatus::class);
     }
 
   /**
-   * Create information needed to create a multisignature wallet
-   *
-   * @return object  Example: {
-   *   "multisig_info": "MultisigV1WBnkPKszceUBriuPZ6zoDsU6RYJuzQTiwUqE5gYSAD1yGTz85vqZGetawVvioaZB5cL86kYkVJmKbXvNrvEz7o5kibr7tHtenngGUSK4FgKbKhKSZxVXRYjMRKEdkcbwFBaSbsBZxJFFVYwLUrtGccSihta3F4GJfYzbPMveCFyT53oK"
-   * }
-   *
+   * Create the information needed to turn this wallet into a multisig wallet.
    */
-    public function prepareMultisig()
+    public function prepareMultisig(): PreparedMultisig
     {
-        return $this->runJsonRpc('prepare_multisig');
+        return $this->runJsonRpc('prepare_multisig', null, PreparedMultisig::class);
     }
 
     /**
-     * Create a multisignature wallet
+     * Turn this wallet into a multisig wallet.
      *
-     * @param string $multisigInfo  Multisignature information (from eg. prepare_multisig)
-   * @param  string  $threshold      Threshold required to spend from multisignature wallet
-   * @param  string  $password       Passphrase to apply to multisignature wallet
-   *
-   * @return object  Example: {
-   *   // TODO example
-   * }
-   *
-   */
-    public function makeMultisig(string $multisigInfo, string $threshold, string $password = '')
+     * NB: `multisig_info` is an ARRAY of the OTHER participants' prepare_multisig outputs, and
+     * `threshold` is an integer (the M in M-of-N).
+     *
+     * @param string[] $multisigInfo The other participants' prepare_multisig info.
+     * @param int      $threshold    Signatures required to spend (M).
+     * @param string   $password     Wallet password.
+     */
+    public function makeMultisig(array $multisigInfo, int $threshold, string $password = ''): MultisigResult
     {
-        $params = array( 'multisig_info' => $multisigInfo, 'threshold' => $threshold, 'password' => $password);
-        return $this->runJsonRpc('make_multisig', $params);
+        $params = array('multisig_info' => array_values($multisigInfo), 'threshold' => $threshold, 'password' => $password);
+        return $this->runJsonRpc('make_multisig', $params, MultisigResult::class);
     }
 
   /**
-   * Export multisignature information
-   *
-   * @return object  Example: {
-   *   // TODO example
-   * }
-   *
+   * Export this wallet's partial key images for the other multisig participants.
    */
-    public function exportMultisigInfo()
+    public function exportMultisigInfo(): MultisigInfoExport
     {
-        return $this->runJsonRpc('export_multisig_info');
+        return $this->runJsonRpc('export_multisig_info', null, MultisigInfoExport::class);
     }
 
   /**
-   * Import mutlisignature information
+   * Import the other participants' multisig info.
    *
-   * @param  string  $info  Multisignature info (from eg. prepare_multisig)
-   *
-   * @return object   Example: {
-   *   // TODO example
-   * }
-   *
+   * @param string[] $info The other participants' export_multisig_info outputs.
    */
-    public function importMultisigInfo(string $info)
+    public function importMultisigInfo(array $info): MultisigInfoImport
     {
-        $params = array('info' => $info);
-        return $this->runJsonRpc('import_multisig_info', $params);
+        $params = array('info' => array_values($info));
+        return $this->runJsonRpc('import_multisig_info', $params, MultisigInfoImport::class);
     }
 
   /**
-   * Finalize a multisignature wallet
+   * Finalize a multisig wallet.
    *
-   * @param  string  $multisigInfo  Multisignature info (from eg. prepare_multisig)
-   * @param  string  $password       Multisignature info (from eg. prepare_multisig)
+   * @deprecated Superseded by exchange_multisig_keys; retained for older setups.
    *
-   * @return object   Example: {
-   *   // TODO example
-   * }
-   *
+   * @param string[] $multisigInfo The other participants' make_multisig outputs.
+   * @param string   $password     Wallet password.
    */
-    public function finalizeMultisig(string $multisigInfo, string $password = '')
+    public function finalizeMultisig(array $multisigInfo, string $password = ''): MultisigResult
     {
-        $params = array( 'multisig_info' => $multisigInfo, 'password' => $password);
-        return $this->runJsonRpc('finalize_multisig', $params);
+        $params = array('multisig_info' => array_values($multisigInfo), 'password' => $password);
+        return $this->runJsonRpc('finalize_multisig', $params, MultisigResult::class);
     }
 
   /**
-   * Sign a multisignature transaction
+   * Sign a multisig transaction with this wallet's key.
    *
-   * @param  string  $txDataHex  Blob of transaction to sign
-   *
-   * @return object  Example: {
-   *   // TODO example
-   * }
-   *
+   * @param string $txDataHex The multisig transaction data (from transfer or a prior signer).
    */
-    public function signMultisig(string $txDataHex)
+    public function signMultisig(string $txDataHex): SignedMultisig
     {
         $params = array('tx_data_hex' => $txDataHex);
-        return $this->runJsonRpc('sign_multisig', $params);
+        return $this->runJsonRpc('sign_multisig', $params, SignedMultisig::class);
     }
 
   /**
-   * Submit (relay) a multisignature transaction
+   * Submit (relay) a fully-signed multisig transaction.
    *
-   * @param  string  $txDataHex  Blob of transaction to submit
-   *
-   * @return \BrianHenryIE\MoneroRpc\Wallet\AddressValidation   Example: {
-   *   // TODO example
-   * }
-   *
+   * @param string $txDataHex The fully-signed multisig transaction data.
    */
-    public function submitMultisig(string $txDataHex)
+    public function submitMultisig(string $txDataHex): SubmittedMultisig
     {
         $params = array('tx_data_hex' => $txDataHex);
-        return $this->runJsonRpc('submit_multisig', $params);
+        return $this->runJsonRpc('submit_multisig', $params, SubmittedMultisig::class);
     }
 
   /**
@@ -1657,13 +1626,19 @@ class Wallet extends RpcClient
    * @param  $multisigInfo info (from eg. prepare_multisig)
    *
    */
-    public function exchangeMultisigKeys(string $password, $multisigInfo)
+    /**
+     * Perform one round of multisig key exchange.
+     *
+     * @param string   $password     Wallet password.
+     * @param string[] $multisigInfo The other participants' info from the previous round.
+     */
+    public function exchangeMultisigKeys(string $password, array $multisigInfo): MultisigResult
     {
         $params = array(
             'password' => $password,
-            'multisig_info' => $multisigInfo
+            'multisig_info' => array_values($multisigInfo),
         );
-        return $this->runJsonRpc('exchange_multisig_keys', $params);
+        return $this->runJsonRpc('exchange_multisig_keys', $params, MultisigResult::class);
     }
 
   /**

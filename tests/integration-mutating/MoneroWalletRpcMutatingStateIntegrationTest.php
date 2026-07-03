@@ -22,7 +22,9 @@ use BrianHenryIE\MoneroRpc\Wallet\DescribeTransferResult;
 use BrianHenryIE\MoneroRpc\Wallet\ImportKeyImagesResult;
 use BrianHenryIE\MoneroRpc\Wallet\ImportOutputsResult;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
+use BrianHenryIE\MoneroRpc\Wallet\MultisigResult;
 use BrianHenryIE\MoneroRpc\Wallet\Payments;
+use BrianHenryIE\MoneroRpc\Wallet\PreparedMultisig;
 use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
 use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
 use BrianHenryIE\MoneroRpc\Wallet\SweepAllResult;
@@ -437,6 +439,88 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
             60,
             'Daemons did not converge after wallet mining'
         );
+    }
+
+    /**
+     * LIVE: drive 2-of-2 multisig setup as far as the pinned monerod allows via RPC —
+     * prepare_multisig and make_multisig work; the wallet then reports multisig 2/2.
+     */
+    public function testMultisigPrepareAndMake(): void
+    {
+        $walletA = $this->openMinerWallet();      // miner wallet-rpc server
+        $walletB = self::$recipientWalletRpcClient; // recipient wallet-rpc server
+        $fileA = uniqid('ms_a_');
+        $fileB = uniqid('ms_b_');
+
+        try {
+            $walletA->createWallet($fileA, '');
+            $walletB->createWallet($fileB, '');
+            self::forgetOpenWalletState();
+
+            self::assertFalse($walletA->isMultisig()->multisig);
+
+            $infoA = $walletA->prepareMultisig();
+            $infoB = $walletB->prepareMultisig();
+            self::assertInstanceOf(PreparedMultisig::class, $infoA);
+            self::assertNotEmpty($infoA->multisigInfo);
+
+            $madeA = $walletA->makeMultisig([$infoB->multisigInfo], 2);
+            $madeB = $walletB->makeMultisig([$infoA->multisigInfo], 2);
+            self::assertInstanceOf(MultisigResult::class, $madeA);
+            self::assertNotEmpty($madeA->address);
+
+            $status = $walletA->isMultisig();
+            self::assertTrue($status->multisig);
+            self::assertSame(2, $status->threshold);
+            self::assertSame(2, $status->total);
+        } finally {
+            self::forgetOpenWalletState();
+        }
+    }
+
+    /**
+     * ERROR-CONTRACT: v0.18.5 gates the remaining multisig steps behind
+     * `enable-multisig-experimental`, which is only settable via monero-wallet-cli (there is no
+     * wallet-rpc flag or method). So exchange/export/import/finalize/sign/submit are unreachable
+     * over RPC and error (either "multisig is disabled" or "not yet finalized"). Pin that these
+     * always throw so consumers know they cannot be driven over RPC on the pinned version.
+     *
+     * @dataProvider provideExperimentalGatedMultisigCalls
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideExperimentalGatedMultisigCalls')]
+    public function testMultisigExperimentalStepsAreGated(string $method, array $args): void
+    {
+        $walletA = $this->openMinerWallet();
+        $walletB = self::$recipientWalletRpcClient;
+        $fileA = uniqid('msg_a_');
+        $fileB = uniqid('msg_b_');
+
+        try {
+            $walletA->createWallet($fileA, '');
+            $walletB->createWallet($fileB, '');
+            self::forgetOpenWalletState();
+            $infoB = $walletB->prepareMultisig();
+            $walletA->prepareMultisig();
+            $walletA->makeMultisig([$infoB->multisigInfo], 2);
+
+            $this->expectException(\Exception::class);
+            $walletA->{$method}(...$args);
+        } finally {
+            self::forgetOpenWalletState();
+        }
+    }
+
+    /** @return array<string, array{0: string, 1: array<int, mixed>}> */
+    public static function provideExperimentalGatedMultisigCalls(): array
+    {
+        return [
+            'exchangeMultisigKeys' => ['exchangeMultisigKeys', ['', ['x']]],
+            'exportMultisigInfo' => ['exportMultisigInfo', []],
+            'importMultisigInfo' => ['importMultisigInfo', [['x']]],
+            'finalizeMultisig' => ['finalizeMultisig', [['x']]],
+            'signMultisig' => ['signMultisig', ['00']],
+            'submitMultisig' => ['submitMultisig', ['00']],
+        ];
     }
 
     public function testAddressBookCrud(): void

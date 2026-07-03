@@ -1,0 +1,8 @@
+{
+    "id": "0",
+    "jsonrpc": "2.0",
+    "result": {
+        "address": "48QXXeSxbJJ1HqHXPZocoF4yPkrRXE7emVyEWNm2G9NDRhavUmX8mozEi5i8v5LSz9FxvJXCzTkUjiYTR6DrihHs5w7Pc37",
+        "multisig_info": "MultisigxV2Rn1LWH882iprAMaKYuHMW1HKcoy9UiHqwdb3TP6WHWBCt2SBnU9bEDP3nQdyypvL65Y43QD4CCAghnqcd5VhenBeF5VTroZRYGAyFTAevN9TfTQHa35xAU5GPBgMrrBU3sBeAhXErw7m2XGgj9CvAawvWwpDhTg32K3LFDPAVy5aRUb2fjfUrokjNA4ZxSHEPrS6XQgoJNUR8RQHSwQGuWJveC3nvr6BM"
+    }
+}
