@@ -15,6 +15,7 @@ namespace BrianHenryIE\MoneroRpc;
 
 use BrianHenryIE\MoneroRpc\Daemon\KeyImageSpentStatus;
 use BrianHenryIE\MoneroRpc\Daemon\NetType;
+use BrianHenryIE\MoneroRpc\Exception\MoneroRpcErrorException;
 use BrianHenryIE\MoneroRpc\Daemon\SendRawTransactionResult;
 
 /**
@@ -288,14 +289,32 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
     /**
      * ERROR-CONTRACT: a malformed block blob is rejected with a JSON-RPC error
-     * ("Wrong block blob"), which RpcClient surfaces as an exception.
+     * ("Wrong block blob", code -6), surfaced as a typed MoneroRpcErrorException.
      */
     public function testSubmitBlockRejectsMalformedBlob(): void
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Wrong block blob');
+        try {
+            self::$daemonPrimaryRpcClient->submitBlock('0101');
+            self::fail('Expected MoneroRpcErrorException');
+        } catch (MoneroRpcErrorException $e) {
+            self::assertSame(-6, $e->getCode());
+            self::assertStringContainsString('Wrong block blob', $e->getMessage());
+        }
+    }
 
-        self::$daemonPrimaryRpcClient->submitBlock('0101');
+    /**
+     * ERROR CATEGORY (RPC error object): a malformed input surfaces monerod's JSON-RPC
+     * error as a MoneroRpcErrorException carrying its code and message.
+     */
+    public function testRpcErrorObjectSurfacedAsTypedException(): void
+    {
+        try {
+            self::$daemonPrimaryRpcClient->getBlockHeaderByHash('not-a-valid-hash');
+            self::fail('Expected MoneroRpcErrorException');
+        } catch (MoneroRpcErrorException $e) {
+            self::assertSame(-1, $e->getCode());
+            self::assertStringContainsString('Failed to parse', $e->getMessage());
+        }
     }
 
     /**

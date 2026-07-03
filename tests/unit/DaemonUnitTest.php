@@ -114,6 +114,33 @@ EOD;
         self::assertSame('18446744073709551615', $result->blockHeader->reward->toAtomicUnitsString());
     }
 
+    /**
+     * A JSON-RPC error object is surfaced as a MoneroRpcErrorException carrying the numeric
+     * code and message.
+     *
+     * @covers \BrianHenryIE\MoneroRpc\Exception\MoneroRpcErrorException
+     */
+    public function testRpcErrorBecomesTypedException(): void
+    {
+        $responseBody = <<<'EOD'
+{
+  "id": 0,
+  "jsonrpc": "2.0",
+  "error": { "code": -6, "message": "Wrong block blob" }
+}
+EOD;
+
+        $daemonRpcClient = $this->getDaemonClient('json_rpc', $responseBody);
+
+        try {
+            $daemonRpcClient->getBlockCount();
+            self::fail('Expected MoneroRpcErrorException');
+        } catch (\BrianHenryIE\MoneroRpc\Exception\MoneroRpcErrorException $e) {
+            self::assertSame(-6, $e->getCode());
+            self::assertSame('Wrong block blob', $e->getMessage());
+        }
+    }
+
     public function testGetBlockCount(): void
     {
         $responseBody = <<<'EOD'

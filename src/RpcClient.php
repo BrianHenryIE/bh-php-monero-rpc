@@ -7,10 +7,10 @@
 namespace BrianHenryIE\MoneroRpc;
 
 use BrianHenryIE\MoneroRpc\Exception\IncompleteRpcResponseException;
+use BrianHenryIE\MoneroRpc\Exception\MoneroRpcErrorException;
 use BrianHenryIE\MoneroRpc\JsonMapperFactory\DateTimeImmutableFactory;
 use BrianHenryIE\MoneroRpc\JsonMapperFactory\MoneroAmountFactory;
 use DateTimeImmutable;
-use Exception;
 use JsonMapper\Enums\TextNotation;
 use JsonMapper\Handler\FactoryRegistry;
 use JsonMapper\Handler\PropertyMapper;
@@ -158,17 +158,15 @@ abstract class RpcClient
         );
 
         if (is_object($decoded) && isset($decoded->error)) {
-            // TODO: Link to where these errors are emitted in the rpc server code itself.
-            // Method not found
-            // Exception: Internal error: can't get block by hash. Hash = 41aea45eb8e6f627f3d9980de9f2048116bec00b4bd15b669d484681e881f6ef.
-            // start_mining: Couldn't start mining due to unknown error.
-            // rescan_blockchain: no connection to daemon
-            // open_wallet: Failed to open wallet
-            // Exception: Couldn't start mining due to unknown error.
-            // Regtest required when generating blocks
-            // failed to get blocks
-            // Failed to parse wallet address
-            throw new Exception($decoded->error->message ?? 'Unknown JSON-RPC error');
+            // monerod returns a JSON-RPC error object; surface it as a MoneroRpcErrorException
+            // carrying the numeric code + message + optional data. Examples of messages seen:
+            //   -6  "Wrong block blob"; -32601 "Method not found"; -48 "multisig is disabled";
+            //   "Failed to open wallet"; "Failed to parse wallet address"; "no connection to daemon".
+            throw new MoneroRpcErrorException(
+                (string) ($decoded->error->message ?? 'Unknown JSON-RPC error'),
+                (int) ($decoded->error->code ?? 0),
+                $decoded->error->data ?? null
+            );
         }
 
         // For the JSON-RPC envelope the payload is `result`; other daemon endpoints return

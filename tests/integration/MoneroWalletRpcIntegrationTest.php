@@ -14,6 +14,7 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Exception\MoneroRpcErrorException;
 use BrianHenryIE\MoneroRpc\Wallet\AddressValidation;
 use BrianHenryIE\MoneroRpc\Wallet\KeyImagesExport;
 use BrianHenryIE\MoneroRpc\Wallet\MakeUriResult;
@@ -291,6 +292,22 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         self::assertInstanceOf(KeyImagesExport::class, $result);
         self::assertNotEmpty($result->signedKeyImages);
         self::assertNotEmpty($result->signedKeyImages[0]->keyImage);
+    }
+
+    /**
+     * ERROR CATEGORY (wallet-rpc business error): opening a non-existent wallet surfaces the
+     * wallet-rpc's JSON-RPC error as a MoneroRpcErrorException.
+     */
+    public function testOpenWalletFailureSurfacedAsTypedException(): void
+    {
+        try {
+            self::$minerWalletRpcClient->openWallet('this_wallet_does_not_exist', 'wrong');
+            self::fail('Expected MoneroRpcErrorException');
+        } catch (MoneroRpcErrorException $e) {
+            self::assertStringContainsString('Failed to open wallet', $e->getMessage());
+        } finally {
+            self::forgetOpenWalletState();
+        }
     }
 
     public function testValidateAddress(): void
