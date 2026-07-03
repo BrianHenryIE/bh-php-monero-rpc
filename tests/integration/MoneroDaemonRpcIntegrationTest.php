@@ -245,6 +245,18 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         self::assertSame('OK', $result->status);
     }
 
+    public function testGetOuts(): void
+    {
+        // Output (amount 0, global index 0) is the genesis coinbase RingCT output.
+        $result = self::$daemonPrimaryRpcClient->getOuts([['amount' => 0, 'index' => 0]], true);
+
+        self::assertCount(1, $result->outs);
+        self::assertSame(1, $result->outs[0]->height);
+        self::assertNotEmpty($result->outs[0]->key);
+        self::assertNotEmpty($result->outs[0]->txid);
+        self::assertTrue($result->outs[0]->unlocked);
+    }
+
     public function testMiningStatusIsNotMining(): void
     {
         $result = self::$daemonPrimaryRpcClient->miningStatus();

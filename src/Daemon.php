@@ -59,6 +59,7 @@ use BrianHenryIE\MoneroRpc\Daemon\InPeers;
 use BrianHenryIE\MoneroRpc\Daemon\Limit;
 use BrianHenryIE\MoneroRpc\Daemon\MiningStatus;
 use BrianHenryIE\MoneroRpc\Daemon\OutPeers;
+use BrianHenryIE\MoneroRpc\Daemon\Outs;
 use BrianHenryIE\MoneroRpc\Daemon\PeerList;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
@@ -635,9 +636,15 @@ class Daemon extends RpcClient
         return $this->runRpc('stop_save_graph');
     }
 
-    public function getOuts($outputs)
+    /**
+     * Look up output keys/masks by (amount, global index).
+     *
+     * @param array<int, array{amount:int, index:int}> $outputs Outputs to fetch.
+     * @param bool $getTxid Also return each output's transaction id.
+     */
+    public function getOuts(array $outputs, bool $getTxid = false): Outs
     {
-        $params = array('outputs' => $outputs);
-        return $this->runRpc('get_outs', $params);
+        $params = array('outputs' => $outputs, 'get_txid' => $getTxid);
+        return $this->runRpc('get_outs', $params, Outs::class);
     }
 }
