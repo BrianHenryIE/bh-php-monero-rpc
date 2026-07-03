@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <title>Dashboard for /home/runner/work/bh-php-monero-rpc/bh-php-monero-rpc/src/Daemon</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="../css/bootstrap.min.css?v=10.1.4" rel="stylesheet" type="text/css">
-  <link href="../css/nv.d3.min.css?v=10.1.4" rel="stylesheet" type="text/css">
-  <link href="../css/style.css?v=10.1.4" rel="stylesheet" type="text/css">
+  <link href="../css/bootstrap.min.css?v=12.5.7" rel="stylesheet" type="text/css">
+  <link href="../css/billboard.min.css?v=12.5.7" rel="stylesheet" type="text/css">
+  <link href="../css/style.css?v=12.5.7" rel="stylesheet" type="text/css">
   <link href="../css/custom.css" rel="stylesheet" type="text/css">
  </head>
  <body>
@@ -35,7 +35,7 @@
    <div class="row">
     <div class="col-md-6">
      <h3>Coverage Distribution</h3>
-     <div id="classCoverageDistribution" style="height: 300px;">
+     <div id="classesCoverageDistribution" style="height: 300px;">
        <svg></svg>
      </div>
     </div>
@@ -48,7 +48,7 @@
    </div>
    <div class="row">
     <div class="col-md-6">
-     <h3>Insufficient Coverage</h3>
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
      <div class="scrollbox">
       <table class="table">
        <thead>
@@ -58,31 +58,22 @@
         </tr>
        </thead>
        <tbody>
-       <tr><td><a href="JsonMapper/AltBlocksHashesMapper.php.html#7">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\AltBlocksHashesMapper</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderByMapper.php.html#8">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderByMapper</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#7">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/BlockMapper.php.html#8">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockMapper</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/InPeersMapper.php.html#7">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InPeersMapper</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#7">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/LimitMapper.php.html#7">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\LimitMapper</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListEntryMapper.php.html#7">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListEntryMapper</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListMapper.php.html#8">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListMapper</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsMapper.php.html#8">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsMapper</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#7">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/ResponseBaseTrait.php.html#5">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\ResponseBaseTrait</a></td><td class="text-right">50%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#7">BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper</a></td><td class="text-right">52%</td></tr>
+       <tr><td><a href="BlockTemplate.php.html#26">BrianHenryIE\MoneroRpc\Daemon\BlockTemplate</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateBlocks.php.html#5">BrianHenryIE\MoneroRpc\Daemon\GenerateBlocks</a></td><td class="text-right">0%</td></tr>
 
        </tbody>
       </table>
      </div>
     </div>
     <div class="col-md-6">
-     <h3>Project Risks</h3>
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
      <div class="scrollbox">
       <table class="table">
        <thead>
         <tr>
          <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
          <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
         </tr>
        </thead>
@@ -95,13 +86,13 @@
    </div>
    <div class="row">
     <div class="col-md-12">
-     <h2>Methods</h2>
+     <h2 style="margin-top: 3rem;">Methods</h2>
     </div>
    </div>
    <div class="row">
     <div class="col-md-6">
      <h3>Coverage Distribution</h3>
-     <div id="methodCoverageDistribution" style="height: 300px;">
+     <div id="methodsCoverageDistribution" style="height: 300px;">
        <svg></svg>
      </div>
     </div>
@@ -114,7 +105,7 @@
    </div>
    <div class="row">
     <div class="col-md-6">
-     <h3>Insufficient Coverage</h3>
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
      <div class="scrollbox">
       <table class="table">
        <thead>
@@ -124,139 +115,22 @@
         </tr>
        </thead>
        <tbody>
-       <tr><td><a href="JsonMapper/AltBlocksHashesMapper.php.html#14"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\AltBlocksHashesMapper::getCredits">getCredits</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/AltBlocksHashesMapper.php.html#19"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\AltBlocksHashesMapper::getTopHash">getTopHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderByMapper.php.html#16"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderByMapper::getBlockHeader">getBlockHeader</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderByMapper.php.html#21"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderByMapper::getCredits">getCredits</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderByMapper.php.html#26"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderByMapper::getTopHash">getTopHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#32"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getBlockSize">getBlockSize</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#37"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getBlockWeight">getBlockWeight</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#42"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getCumulativeDifficulty">getCumulativeDifficulty</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#47"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getCumulativeDifficultyTop64">getCumulativeDifficultyTop64</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#52"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getDepth">getDepth</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#57"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getDifficulty">getDifficulty</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#62"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getDifficultyTop64">getDifficultyTop64</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#67"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getHash">getHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#72"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getHeight">getHeight</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#77"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getLongTermWeight">getLongTermWeight</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#82"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getMajorVersion">getMajorVersion</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#87"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getMinerTxHash">getMinerTxHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#92"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getMinorVersion">getMinorVersion</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#97"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getNonce">getNonce</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#102"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getNumTxes">getNumTxes</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#107"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getOrphanStatus">getOrphanStatus</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#112"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getPowHash">getPowHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#117"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getPrevHash">getPrevHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#122"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getReward">getReward</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#127"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getTimestamp">getTimestamp</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#132"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getWideCumulativeDifficulty">getWideCumulativeDifficulty</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockHeaderMapper.php.html#137"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockHeaderMapper::getWideDifficulty">getWideDifficulty</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockMapper.php.html#21"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockMapper::getBlob">getBlob</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockMapper.php.html#26"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockMapper::getBlockHeader">getBlockHeader</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockMapper.php.html#31"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockMapper::getCredits">getCredits</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockMapper.php.html#36"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockMapper::getJson">getJson</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockMapper.php.html#41"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockMapper::getMinerTxHash">getMinerTxHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockMapper.php.html#46"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockMapper::getTopHash">getTopHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/BlockMapper.php.html#54"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\BlockMapper::getTxHashes">getTxHashes</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InPeersMapper.php.html#13"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InPeersMapper::getInPeers">getInPeers</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#53"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getAdjustedTime">getAdjustedTime</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#58"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getAltBlocksCount">getAltBlocksCount</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#63"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getBlockSizeLimit">getBlockSizeLimit</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#68"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getBlockSizeMedian">getBlockSizeMedian</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#73"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getBlockWeightLimit">getBlockWeightLimit</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#78"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getBlockWeightMedian">getBlockWeightMedian</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#83"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getBootstrapDaemonAddress">getBootstrapDaemonAddress</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#88"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getBusySyncing">getBusySyncing</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#93"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getCredits">getCredits</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#98"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getCumulativeDifficulty">getCumulativeDifficulty</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#103"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getCumulativeDifficultyTop64">getCumulativeDifficultyTop64</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#108"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getDatabaseSize">getDatabaseSize</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#113"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getDifficulty">getDifficulty</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#118"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getDifficultyTop64">getDifficultyTop64</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#123"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getFreeSpace">getFreeSpace</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#128"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getGreyPeerlistSize">getGreyPeerlistSize</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#133"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getHeight">getHeight</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#138"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getHeightWithoutBootstrap">getHeightWithoutBootstrap</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#143"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getIncomingConnectionsCount">getIncomingConnectionsCount</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#148"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getMainnet">getMainnet</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#153"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getNettype">getNettype</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#158"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getOffline">getOffline</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#163"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getOutgoingConnectionsCount">getOutgoingConnectionsCount</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#168"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getRestricted">getRestricted</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#173"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getRpcConnectionsCount">getRpcConnectionsCount</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#178"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getStagenet">getStagenet</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#183"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getStartTime">getStartTime</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#188"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getSynchronized">getSynchronized</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#193"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getTarget">getTarget</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#198"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getTargetHeight">getTargetHeight</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#203"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getTestnet">getTestnet</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#208"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getTopBlockHash">getTopBlockHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#213"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getTopHash">getTopHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#218"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getTxCount">getTxCount</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#223"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getTxPoolSize">getTxPoolSize</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#228"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getUpdateAvailable">getUpdateAvailable</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#233"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getVersion">getVersion</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#238"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getWasBootstrapEverUsed">getWasBootstrapEverUsed</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#243"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getWhitePeerlistSize">getWhitePeerlistSize</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#248"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getWideCumulativeDifficulty">getWideCumulativeDifficulty</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/InfoMapper.php.html#253"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\InfoMapper::getWideDifficulty">getWideDifficulty</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/LimitMapper.php.html#14"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\LimitMapper::getLimitDown">getLimitDown</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/LimitMapper.php.html#19"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\LimitMapper::getLimitUp">getLimitUp</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#34"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getAddress">getAddress</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#39"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getBgIdleThreshold">getBgIdleThreshold</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#44"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getBgIgnoreBattery">getBgIgnoreBattery</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#49"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getBgMinIdleSeconds">getBgMinIdleSeconds</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#54"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getBgTarget">getBgTarget</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#59"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getBlockReward">getBlockReward</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#64"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getBlockTarget">getBlockTarget</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#69"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getDifficulty">getDifficulty</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#74"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getDifficultyTop64">getDifficultyTop64</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#79"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getIsBackgroundMiningEnabled">getIsBackgroundMiningEnabled</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#84"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getPowAlgorithm">getPowAlgorithm</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#89"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getSpeed">getSpeed</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#94"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getStatus">getStatus</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#99"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getThreadsCount">getThreadsCount</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#104"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getUntrusted">getUntrusted</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/MiningStatusMapper.php.html#109"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\MiningStatusMapper::getWideDifficulty">getWideDifficulty</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListEntryMapper.php.html#18"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListEntryMapper::getHost">getHost</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListEntryMapper.php.html#23"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListEntryMapper::getId">getId</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListEntryMapper.php.html#28"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListEntryMapper::getIp">getIp</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListEntryMapper.php.html#33"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListEntryMapper::getLastSeen">getLastSeen</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListEntryMapper.php.html#38"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListEntryMapper::getPort">getPort</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListEntryMapper.php.html#43"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListEntryMapper::getPruningSeed">getPruningSeed</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListEntryMapper.php.html#48"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListEntryMapper::getRpcPort">getRpcPort</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListEntryMapper.php.html#53"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListEntryMapper::getRpcCreditsPerHash">getRpcCreditsPerHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListMapper.php.html#21"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListMapper::getGrayList">getGrayList</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/PeerListMapper.php.html#29"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\PeerListMapper::getWhiteList">getWhiteList</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsMapper.php.html#16"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsMapper::getCredits">getCredits</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsMapper.php.html#21"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsMapper::getPoolStats">getPoolStats</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsMapper.php.html#26"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsMapper::getTopHash">getTopHash</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#22"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getBytesMax">getBytesMax</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#27"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getBytesMed">getBytesMed</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#32"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getBytesMin">getBytesMin</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#37"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getBytesTotal">getBytesTotal</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#42"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getFeeTotal">getFeeTotal</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#47"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getHisto98pc">getHisto98pc</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#52"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getNum10m">getNum10m</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#57"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getNumDoubleSpends">getNumDoubleSpends</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#62"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getNumFailing">getNumFailing</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#67"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getNumNotRelayed">getNumNotRelayed</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#72"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getOldest">getOldest</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/TransactionPoolStatsStatsMapper.php.html#77"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\TransactionPoolStatsStatsMapper::getTxsTotal">getTxsTotal</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/ResponseBaseTrait.php.html#10"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\ResponseBaseTrait::getStatus">getStatus</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="JsonMapper/ResponseBaseTrait.php.html#15"><abbr title="BrianHenryIE\MoneroRpc\Daemon\JsonMapper\ResponseBaseTrait::getUntrusted">getUntrusted</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BlockTemplate.php.html#32"><abbr title="BrianHenryIE\MoneroRpc\Daemon\BlockTemplate::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateBlocks.php.html#10"><abbr title="BrianHenryIE\MoneroRpc\Daemon\GenerateBlocks::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
 
        </tbody>
       </table>
      </div>
     </div>
     <div class="col-md-6">
-     <h3>Project Risks</h3>
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
      <div class="scrollbox">
       <table class="table">
        <thead>
         <tr>
          <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
          <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
         </tr>
        </thead>
@@ -270,149 +144,163 @@
    <footer>
     <hr/>
     <p>
-     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 10.1.4</a> using <a href="https://www.php.net/" target="_top">PHP 8.1.22</a> and <a href="https://phpunit.de/">PHPUnit 10.3.3</a> at Sat Sep 9 3:04:05 UTC 2023.</small>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.7</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.22</a> and <a href="https://phpunit.de/">PHPUnit 12.5.30</a> at Fri Jul 3 18:14:38 UTC 2026.</small>
     </p>
    </footer>
   </div>
-  <script src="../js/jquery.min.js?v=10.1.4" type="text/javascript"></script>
-  <script src="../js/d3.min.js?v=10.1.4" type="text/javascript"></script>
-  <script src="../js/nv.d3.min.js?v=10.1.4" type="text/javascript"></script>
-  <script type="text/javascript">
-$(document).ready(function() {
-  nv.addGraph(function() {
-    var chart = nv.models.multiBarChart();
-    chart.tooltips(false)
-      .showControls(false)
-      .showLegend(false)
-      .reduceXTicks(false)
-      .staggerLabels(true)
-      .yAxis.tickFormat(d3.format('d'));
-
-    d3.select('#classCoverageDistribution svg')
-      .datum(getCoverageDistributionData([0,0,0,0,0,0,13,0,0,0,0,2], "Class Coverage"))
-      .transition().duration(500).call(chart);
-
-    nv.utils.windowResize(chart.update);
-
-    return chart;
+  <script src="../js/billboard.pkgd.min.js?v=12.5.7" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,1,"BlockTemplate.php.html#26","BrianHenryIE\\MoneroRpc\\Daemon\\BlockTemplate","2"],[0,1,"GenerateBlocks.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\GenerateBlocks","2"],[100,1,"AltBlocksHashes.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\AltBlocksHashes","1"],[100,1,"Block.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\Block","1"],[100,1,"BlockCount.php.html#9","BrianHenryIE\\MoneroRpc\\Daemon\\BlockCount","1"],[100,1,"BlockHeader.php.html#8","BrianHenryIE\\MoneroRpc\\Daemon\\BlockHeader","1"],[100,1,"BlockHeaderBy.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\BlockHeaderBy","1"],[100,1,"Connection.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\Connection","1"],[100,0,"ConnectionState.php.html#18","BrianHenryIE\\MoneroRpc\\Daemon\\ConnectionState","0"],[100,1,"Connections.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\Connections","1"],[100,1,"HardForkInfo.php.html#10","BrianHenryIE\\MoneroRpc\\Daemon\\HardForkInfo","1"],[100,1,"Height.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\Height","1"],[100,1,"InPeers.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\InPeers","1"],[100,1,"Info.php.html#7","BrianHenryIE\\MoneroRpc\\Daemon\\Info","1"],[100,1,"KeyImageSpent.php.html#9","BrianHenryIE\\MoneroRpc\\Daemon\\KeyImageSpent","1"],[100,0,"KeyImageSpentStatus.php.html#13","BrianHenryIE\\MoneroRpc\\Daemon\\KeyImageSpentStatus","0"],[100,1,"Limit.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\Limit","1"],[100,1,"LogCategories.php.html#8","BrianHenryIE\\MoneroRpc\\Daemon\\LogCategories","1"],[100,1,"MiningStatus.php.html#7","BrianHenryIE\\MoneroRpc\\Daemon\\MiningStatus","1"],[100,0,"NetType.php.html#16","BrianHenryIE\\MoneroRpc\\Daemon\\NetType","0"],[100,1,"OutEntry.php.html#8","BrianHenryIE\\MoneroRpc\\Daemon\\OutEntry","1"],[100,1,"OutPeers.php.html#9","BrianHenryIE\\MoneroRpc\\Daemon\\OutPeers","1"],[100,1,"Outs.php.html#8","BrianHenryIE\\MoneroRpc\\Daemon\\Outs","1"],[100,1,"PeerList.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\PeerList","1"],[100,1,"PeerListEntry.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\PeerListEntry","1"],[100,1,"ResponseBase.php.html#18","BrianHenryIE\\MoneroRpc\\Daemon\\ResponseBase","1"],[100,1,"SendRawTransactionResult.php.html#11","BrianHenryIE\\MoneroRpc\\Daemon\\SendRawTransactionResult","1"],[100,1,"SpentKeyImage.php.html#9","BrianHenryIE\\MoneroRpc\\Daemon\\SpentKeyImage","1"],[100,1,"SubmitBlockResult.php.html#12","BrianHenryIE\\MoneroRpc\\Daemon\\SubmitBlockResult","1"],[100,1,"TransactionEntry.php.html#15","BrianHenryIE\\MoneroRpc\\Daemon\\TransactionEntry","1"],[100,1,"TransactionPool.php.html#12","BrianHenryIE\\MoneroRpc\\Daemon\\TransactionPool","1"],[100,1,"TransactionPoolEntry.php.html#12","BrianHenryIE\\MoneroRpc\\Daemon\\TransactionPoolEntry","1"],[100,1,"TransactionPoolStats.php.html#5","BrianHenryIE\\MoneroRpc\\Daemon\\TransactionPoolStats","1"],[100,1,"TransactionPoolStatsStats.php.html#8","BrianHenryIE\\MoneroRpc\\Daemon\\TransactionPoolStatsStats","1"],[100,1,"Transactions.php.html#8","BrianHenryIE\\MoneroRpc\\Daemon\\Transactions","1"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"BlockTemplate.php.html#32","BrianHenryIE\\MoneroRpc\\Daemon\\BlockTemplate::__construct","2"],[0,1,"GenerateBlocks.php.html#10","BrianHenryIE\\MoneroRpc\\Daemon\\GenerateBlocks::__construct","2"],[100,1,"AltBlocksHashes.php.html#7","BrianHenryIE\\MoneroRpc\\Daemon\\AltBlocksHashes::__construct","1"],[100,1,"Block.php.html#12","BrianHenryIE\\MoneroRpc\\Daemon\\Block::__construct","1"],[100,1,"BlockCount.php.html#16","BrianHenryIE\\MoneroRpc\\Daemon\\BlockCount::__construct","1"],[100,1,"BlockHeader.php.html#15","BrianHenryIE\\MoneroRpc\\Daemon\\BlockHeader::__construct","1"],[100,1,"BlockHeaderBy.php.html#7","BrianHenryIE\\MoneroRpc\\Daemon\\BlockHeaderBy::__construct","1"],[100,1,"Connection.php.html#15","BrianHenryIE\\MoneroRpc\\Daemon\\Connection::__construct","1"],[100,1,"Connections.php.html#10","BrianHenryIE\\MoneroRpc\\Daemon\\Connections::__construct","1"],[100,1,"HardForkInfo.php.html#24","BrianHenryIE\\MoneroRpc\\Daemon\\HardForkInfo::__construct","1"],[100,1,"Height.php.html#11","BrianHenryIE\\MoneroRpc\\Daemon\\Height::__construct","1"],[100,1,"InPeers.php.html#7","BrianHenryIE\\MoneroRpc\\Daemon\\InPeers::__construct","1"],[100,1,"Info.php.html#18","BrianHenryIE\\MoneroRpc\\Daemon\\Info::__construct","1"],[100,1,"KeyImageSpent.php.html#16","BrianHenryIE\\MoneroRpc\\Daemon\\KeyImageSpent::__construct","1"],[100,1,"Limit.php.html#7","BrianHenryIE\\MoneroRpc\\Daemon\\Limit::__construct","1"],[100,1,"LogCategories.php.html#13","BrianHenryIE\\MoneroRpc\\Daemon\\LogCategories::__construct","1"],[100,1,"MiningStatus.php.html#15","BrianHenryIE\\MoneroRpc\\Daemon\\MiningStatus::__construct","1"],[100,1,"OutEntry.php.html#18","BrianHenryIE\\MoneroRpc\\Daemon\\OutEntry::__construct","1"],[100,1,"OutPeers.php.html#11","BrianHenryIE\\MoneroRpc\\Daemon\\OutPeers::__construct","1"],[100,1,"Outs.php.html#15","BrianHenryIE\\MoneroRpc\\Daemon\\Outs::__construct","1"],[100,1,"PeerList.php.html#12","BrianHenryIE\\MoneroRpc\\Daemon\\PeerList::__construct","1"],[100,1,"PeerListEntry.php.html#13","BrianHenryIE\\MoneroRpc\\Daemon\\PeerListEntry::__construct","1"],[100,1,"ResponseBase.php.html#27","BrianHenryIE\\MoneroRpc\\Daemon\\ResponseBase::__construct","1"],[100,1,"SendRawTransactionResult.php.html#30","BrianHenryIE\\MoneroRpc\\Daemon\\SendRawTransactionResult::__construct","1"],[100,1,"SpentKeyImage.php.html#15","BrianHenryIE\\MoneroRpc\\Daemon\\SpentKeyImage::__construct","1"],[100,1,"SubmitBlockResult.php.html#17","BrianHenryIE\\MoneroRpc\\Daemon\\SubmitBlockResult::__construct","1"],[100,1,"TransactionEntry.php.html#31","BrianHenryIE\\MoneroRpc\\Daemon\\TransactionEntry::__construct","1"],[100,1,"TransactionPool.php.html#20","BrianHenryIE\\MoneroRpc\\Daemon\\TransactionPool::__construct","1"],[100,1,"TransactionPoolEntry.php.html#32","BrianHenryIE\\MoneroRpc\\Daemon\\TransactionPoolEntry::__construct","1"],[100,1,"TransactionPoolStats.php.html#7","BrianHenryIE\\MoneroRpc\\Daemon\\TransactionPoolStats::__construct","1"],[100,1,"TransactionPoolStatsStats.php.html#15","BrianHenryIE\\MoneroRpc\\Daemon\\TransactionPoolStatsStats::__construct","1"],[100,1,"Transactions.php.html#18","BrianHenryIE\\MoneroRpc\\Daemon\\Transactions::__construct","1"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
   });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [2,0,0,0,0,0,0,0,0,0,0,33])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [2,0,0,0,0,0,0,0,0,0,0,30])
+  );
 
-  nv.addGraph(function() {
-    var chart = nv.models.multiBarChart();
-    chart.tooltips(false)
-      .showControls(false)
-      .showLegend(false)
-      .reduceXTicks(false)
-      .staggerLabels(true)
-      .yAxis.tickFormat(d3.format('d'));
-
-    d3.select('#methodCoverageDistribution svg')
-      .datum(getCoverageDistributionData([121,0,0,0,0,0,0,0,0,0,0,125], "Method Coverage"))
-      .transition().duration(500).call(chart);
-
-    nv.utils.windowResize(chart.update);
-
-    return chart;
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
   });
-
-  function getCoverageDistributionData(data, label) {
-    var labels = [
-      '0%',
-      '0-10%',
-      '10-20%',
-      '20-30%',
-      '30-40%',
-      '40-50%',
-      '50-60%',
-      '60-70%',
-      '70-80%',
-      '80-90%',
-      '90-100%',
-      '100%'
-    ];
-    var values = [];
-    $.each(labels, function(key) {
-      values.push({x: labels[key], y: data[key]});
-    });
-
-    return [
-      {
-        key: label,
-        values: values,
-        color: "#4572A7"
-      }
-    ];
-  }
-  nv.addGraph(function() {
-    var chart = nv.models.scatterChart()
-      .showDistX(true)
-      .showDistY(true)
-      .showLegend(false)
-      .forceX([0, 100]);
-    chart.tooltipContent(function(graph) {
-      return '<p>' + graph.point.class + '</p>';
-    });
-
-    chart.xAxis.axisLabel('Code Coverage (in percent)');
-    chart.yAxis.axisLabel('Cyclomatic Complexity');
-
-    d3.select('#classComplexity svg')
-      .datum(getComplexityData([[50,4,"<a href=\"JsonMapper\/AltBlocksHashesMapper.php.html#7\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\AltBlocksHashesMapper<\/a>"],[100,2,"<a href=\"JsonMapper\/BlockCountMapper.php.html#7\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockCountMapper<\/a>"],[50,6,"<a href=\"JsonMapper\/BlockHeaderByMapper.php.html#8\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderByMapper<\/a>"],[50,44,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#7\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper<\/a>"],[50,14,"<a href=\"JsonMapper\/BlockMapper.php.html#8\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper<\/a>"],[50,2,"<a href=\"JsonMapper\/InPeersMapper.php.html#7\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InPeersMapper<\/a>"],[50,82,"<a href=\"JsonMapper\/InfoMapper.php.html#7\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper<\/a>"],[50,4,"<a href=\"JsonMapper\/LimitMapper.php.html#7\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\LimitMapper<\/a>"],[52.94117647058824,34,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#7\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper<\/a>"],[50,16,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#7\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper<\/a>"],[50,4,"<a href=\"JsonMapper\/PeerListMapper.php.html#8\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListMapper<\/a>"],[100,0,"<a href=\"JsonMapper\/ResponseBaseMapper.php.html#7\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\ResponseBaseMapper<\/a>"],[50,6,"<a href=\"JsonMapper\/TransactionPoolStatsMapper.php.html#8\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsMapper<\/a>"],[50,24,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#7\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper<\/a>"],[50,4,"<a href=\"JsonMapper\/ResponseBaseTrait.php.html#5\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\ResponseBaseTrait<\/a>"]], 'Class Complexity'))
-      .transition()
-      .duration(500)
-      .call(chart);
-
-    nv.utils.windowResize(chart.update);
-
-    return chart;
-  });
-
-  nv.addGraph(function() {
-    var chart = nv.models.scatterChart()
-      .showDistX(true)
-      .showDistY(true)
-      .showLegend(false)
-      .forceX([0, 100]);
-    chart.tooltipContent(function(graph) {
-      return '<p>' + graph.point.class + '</p>';
-    });
-
-    chart.xAxis.axisLabel('Code Coverage (in percent)');
-    chart.yAxis.axisLabel('Method Complexity');
-
-    d3.select('#methodComplexity svg')
-      .datum(getComplexityData([[0,1,"<a href=\"JsonMapper\/AltBlocksHashesMapper.php.html#14\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\AltBlocksHashesMapper::getCredits<\/a>"],[0,1,"<a href=\"JsonMapper\/AltBlocksHashesMapper.php.html#19\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\AltBlocksHashesMapper::getTopHash<\/a>"],[100,1,"<a href=\"JsonMapper\/AltBlocksHashesMapper.php.html#24\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\AltBlocksHashesMapper::setCredits<\/a>"],[100,1,"<a href=\"JsonMapper\/AltBlocksHashesMapper.php.html#29\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\AltBlocksHashesMapper::setTopHash<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockCountMapper.php.html#13\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockCountMapper::getCount<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockCountMapper.php.html#18\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockCountMapper::setCount<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderByMapper.php.html#16\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderByMapper::getBlockHeader<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderByMapper.php.html#21\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderByMapper::getCredits<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderByMapper.php.html#26\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderByMapper::getTopHash<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderByMapper.php.html#31\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderByMapper::setBlockHeader<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderByMapper.php.html#36\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderByMapper::setCredits<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderByMapper.php.html#42\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderByMapper::setTopHash<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#32\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getBlockSize<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#37\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getBlockWeight<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#42\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getCumulativeDifficulty<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#47\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getCumulativeDifficultyTop64<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#52\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getDepth<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#57\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getDifficulty<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#62\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getDifficultyTop64<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#67\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getHash<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#72\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getHeight<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#77\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getLongTermWeight<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#82\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getMajorVersion<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#87\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getMinerTxHash<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#92\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getMinorVersion<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#97\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getNonce<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#102\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getNumTxes<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#107\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getOrphanStatus<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#112\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getPowHash<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#117\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getPrevHash<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#122\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getReward<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#127\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getTimestamp<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#132\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getWideCumulativeDifficulty<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#137\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::getWideDifficulty<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#142\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setBlockSize<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#147\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setBlockWeight<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#152\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setCumulativeDifficulty<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#157\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setCumulativeDifficultyTop64<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#162\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setDepth<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#167\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setDifficulty<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#172\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setDifficultyTop64<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#177\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setHash<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#182\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setHeight<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#187\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setLongTermWeight<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#192\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setMajorVersion<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#197\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setMinerTxHash<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#202\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setMinorVersion<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#207\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setNonce<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#212\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setNumTxes<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#217\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setOrphanStatus<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#222\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setPowHash<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#227\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setPrevHash<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#232\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setReward<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#237\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setTimestamp<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#242\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setWideCumulativeDifficulty<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockHeaderMapper.php.html#247\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockHeaderMapper::setWideDifficulty<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockMapper.php.html#21\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::getBlob<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockMapper.php.html#26\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::getBlockHeader<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockMapper.php.html#31\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::getCredits<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockMapper.php.html#36\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::getJson<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockMapper.php.html#41\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::getMinerTxHash<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockMapper.php.html#46\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::getTopHash<\/a>"],[0,1,"<a href=\"JsonMapper\/BlockMapper.php.html#54\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::getTxHashes<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockMapper.php.html#59\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::setBlob<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockMapper.php.html#64\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::setBlockHeader<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockMapper.php.html#69\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::setCredits<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockMapper.php.html#74\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::setJson<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockMapper.php.html#79\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::setMinerTxHash<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockMapper.php.html#84\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::setTopHash<\/a>"],[100,1,"<a href=\"JsonMapper\/BlockMapper.php.html#92\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\BlockMapper::setTxHashes<\/a>"],[0,1,"<a href=\"JsonMapper\/InPeersMapper.php.html#13\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InPeersMapper::getInPeers<\/a>"],[100,1,"<a href=\"JsonMapper\/InPeersMapper.php.html#18\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InPeersMapper::setInPeers<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#53\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getAdjustedTime<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#58\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getAltBlocksCount<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#63\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getBlockSizeLimit<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#68\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getBlockSizeMedian<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#73\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getBlockWeightLimit<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#78\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getBlockWeightMedian<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#83\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getBootstrapDaemonAddress<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#88\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getBusySyncing<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#93\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getCredits<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#98\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getCumulativeDifficulty<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#103\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getCumulativeDifficultyTop64<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#108\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getDatabaseSize<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#113\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getDifficulty<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#118\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getDifficultyTop64<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#123\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getFreeSpace<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#128\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getGreyPeerlistSize<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#133\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getHeight<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#138\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getHeightWithoutBootstrap<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#143\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getIncomingConnectionsCount<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#148\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getMainnet<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#153\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getNettype<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#158\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getOffline<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#163\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getOutgoingConnectionsCount<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#168\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getRestricted<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#173\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getRpcConnectionsCount<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#178\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getStagenet<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#183\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getStartTime<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#188\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getSynchronized<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#193\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getTarget<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#198\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getTargetHeight<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#203\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getTestnet<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#208\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getTopBlockHash<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#213\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getTopHash<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#218\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getTxCount<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#223\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getTxPoolSize<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#228\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getUpdateAvailable<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#233\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getVersion<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#238\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getWasBootstrapEverUsed<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#243\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getWhitePeerlistSize<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#248\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getWideCumulativeDifficulty<\/a>"],[0,1,"<a href=\"JsonMapper\/InfoMapper.php.html#253\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::getWideDifficulty<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#258\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setAdjustedTime<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#263\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setAltBlocksCount<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#268\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setBlockSizeLimit<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#273\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setBlockSizeMedian<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#278\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setBlockWeightLimit<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#283\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setBlockWeightMedian<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#288\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setBootstrapDaemonAddress<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#293\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setBusySyncing<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#298\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setCredits<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#303\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setCumulativeDifficulty<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#308\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setCumulativeDifficultyTop64<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#313\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setDatabaseSize<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#318\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setDifficulty<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#323\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setDifficultyTop64<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#328\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setFreeSpace<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#333\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setGreyPeerlistSize<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#338\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setHeight<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#343\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setHeightWithoutBootstrap<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#348\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setIncomingConnectionsCount<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#353\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setMainnet<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#358\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setNettype<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#363\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setOffline<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#368\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setOutgoingConnectionsCount<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#373\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setRestricted<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#378\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setRpcConnectionsCount<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#383\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setStagenet<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#388\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setStartTime<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#393\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setSynchronized<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#398\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setTarget<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#403\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setTargetHeight<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#408\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setTestnet<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#413\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setTopBlockHash<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#418\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setTopHash<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#423\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setTxCount<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#428\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setTxPoolSize<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#434\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setUpdateAvailable<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#439\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setVersion<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#444\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setWasBootstrapEverUsed<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#449\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setWhitePeerlistSize<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#454\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setWideCumulativeDifficulty<\/a>"],[100,1,"<a href=\"JsonMapper\/InfoMapper.php.html#459\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\InfoMapper::setWideDifficulty<\/a>"],[0,1,"<a href=\"JsonMapper\/LimitMapper.php.html#14\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\LimitMapper::getLimitDown<\/a>"],[0,1,"<a href=\"JsonMapper\/LimitMapper.php.html#19\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\LimitMapper::getLimitUp<\/a>"],[100,1,"<a href=\"JsonMapper\/LimitMapper.php.html#24\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\LimitMapper::setLimitDown<\/a>"],[100,1,"<a href=\"JsonMapper\/LimitMapper.php.html#29\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\LimitMapper::setLimitUp<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#29\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getActive<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#34\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getAddress<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#39\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getBgIdleThreshold<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#44\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getBgIgnoreBattery<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#49\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getBgMinIdleSeconds<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#54\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getBgTarget<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#59\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getBlockReward<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#64\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getBlockTarget<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#69\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getDifficulty<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#74\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getDifficultyTop64<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#79\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getIsBackgroundMiningEnabled<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#84\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getPowAlgorithm<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#89\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getSpeed<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#94\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getStatus<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#99\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getThreadsCount<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#104\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getUntrusted<\/a>"],[0,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#109\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::getWideDifficulty<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#114\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setActive<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#119\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setAddress<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#124\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setBgIdleThreshold<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#129\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setBgIgnoreBattery<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#134\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setBgMinIdleSeconds<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#139\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setBgTarget<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#144\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setBlockReward<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#149\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setBlockTarget<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#154\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setDifficulty<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#159\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setDifficultyTop64<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#164\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setIsBackgroundMiningEnabled<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#169\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setPowAlgorithm<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#174\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setSpeed<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#179\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setStatus<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#184\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setThreadsCount<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#189\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setUntrusted<\/a>"],[100,1,"<a href=\"JsonMapper\/MiningStatusMapper.php.html#194\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\MiningStatusMapper::setWideDifficulty<\/a>"],[0,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#18\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::getHost<\/a>"],[0,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#23\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::getId<\/a>"],[0,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#28\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::getIp<\/a>"],[0,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#33\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::getLastSeen<\/a>"],[0,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#38\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::getPort<\/a>"],[0,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#43\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::getPruningSeed<\/a>"],[0,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#48\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::getRpcPort<\/a>"],[0,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#53\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::getRpcCreditsPerHash<\/a>"],[100,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#58\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::setHost<\/a>"],[100,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#63\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::setId<\/a>"],[100,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#68\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::setIp<\/a>"],[100,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#73\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::setLastSeen<\/a>"],[100,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#78\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::setPort<\/a>"],[100,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#83\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::setPruningSeed<\/a>"],[100,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#88\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::setRpcPort<\/a>"],[100,1,"<a href=\"JsonMapper\/PeerListEntryMapper.php.html#93\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListEntryMapper::setRpcCreditsPerHash<\/a>"],[0,1,"<a href=\"JsonMapper\/PeerListMapper.php.html#21\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListMapper::getGrayList<\/a>"],[0,1,"<a href=\"JsonMapper\/PeerListMapper.php.html#29\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListMapper::getWhiteList<\/a>"],[100,1,"<a href=\"JsonMapper\/PeerListMapper.php.html#37\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListMapper::setGrayList<\/a>"],[100,1,"<a href=\"JsonMapper\/PeerListMapper.php.html#45\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\PeerListMapper::setWhiteList<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsMapper.php.html#16\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsMapper::getCredits<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsMapper.php.html#21\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsMapper::getPoolStats<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsMapper.php.html#26\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsMapper::getTopHash<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsMapper.php.html#31\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsMapper::setCredits<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsMapper.php.html#36\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsMapper::setPoolStats<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsMapper.php.html#41\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsMapper::setTopHash<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#22\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getBytesMax<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#27\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getBytesMed<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#32\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getBytesMin<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#37\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getBytesTotal<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#42\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getFeeTotal<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#47\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getHisto98pc<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#52\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getNum10m<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#57\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getNumDoubleSpends<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#62\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getNumFailing<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#67\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getNumNotRelayed<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#72\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getOldest<\/a>"],[0,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#77\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::getTxsTotal<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#82\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setBytesMax<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#87\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setBytesMed<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#92\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setBytesMin<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#97\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setBytesTotal<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#102\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setFeeTotal<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#107\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setHisto98pc<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#112\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setNum10m<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#117\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setNumDoubleSpends<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#122\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setNumFailing<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#127\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setNumNotRelayed<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#132\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setOldest<\/a>"],[100,1,"<a href=\"JsonMapper\/TransactionPoolStatsStatsMapper.php.html#137\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\TransactionPoolStatsStatsMapper::setTxsTotal<\/a>"],[0,1,"<a href=\"JsonMapper\/ResponseBaseTrait.php.html#10\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\ResponseBaseTrait::getStatus<\/a>"],[0,1,"<a href=\"JsonMapper\/ResponseBaseTrait.php.html#15\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\ResponseBaseTrait::getUntrusted<\/a>"],[100,1,"<a href=\"JsonMapper\/ResponseBaseTrait.php.html#20\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\ResponseBaseTrait::setStatus<\/a>"],[100,1,"<a href=\"JsonMapper\/ResponseBaseTrait.php.html#25\">BrianHenryIE\\MoneroRpc\\Daemon\\JsonMapper\\ResponseBaseTrait::setUntrusted<\/a>"]], 'Method Complexity'))
-      .transition()
-      .duration(500)
-      .call(chart);
-
-    nv.utils.windowResize(chart.update);
-
-    return chart;
-  });
-
-  function getComplexityData(data, label) {
-    var values = [];
-    $.each(data, function(key) {
-      var value = Math.round(data[key][0]*100) / 100;
-      values.push({
-        x: value,
-        y: data[key][1],
-        class: data[key][2],
-        size: 0.05,
-        shape: 'diamond'
-      });
-    });
-
-    return [
-      {
-        key: label,
-        values: values,
-        color: "#4572A7"
-      }
-    ];
-  }
-});
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
   </script>
  </body>
 </html>
