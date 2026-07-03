@@ -269,11 +269,11 @@ class Daemon extends RpcClient
    * }
    *
    */
-    public function getBlockByHash($hash)
+    public function getBlockByHash($hash): Block
     {
         $params = array('hash' => $hash);
 
-        return $this->runJsonRpc('getblock', $params);
+        return $this->runJsonRpc('getblock', $params, Block::class);
     }
 
   /**

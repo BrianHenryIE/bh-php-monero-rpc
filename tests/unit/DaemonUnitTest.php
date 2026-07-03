@@ -78,33 +78,40 @@ EOD;
     }
 
     /**
-     * Regression net for the float trap: a JSON-RPC result value above PHP's signed
-     * int64 max (here uint64 max, 18446744073709551615) must survive decoding exactly.
-     * `RpcClient::run()` decodes with JSON_BIGINT_AS_STRING, so the value reaches an
-     * untyped stdClass result as the exact numeric string rather than a lossy float.
+     * Regression net for the float trap, end-to-end through the client: a block reward
+     * above PHP's signed int64 max (here uint64 max, 18446744073709551615) must survive
+     * `RpcClient::run()`'s JSON_BIGINT_AS_STRING decode and hydrate into an exact
+     * MoneroAmount rather than a lossy float.
      *
      * @covers \BrianHenryIE\MoneroRpc\RpcClient::run
      */
-    public function testBigIntegerResultValuePreservedExactly(): void
+    public function testBigIntegerRewardPreservedExactly(): void
     {
         $responseBody = <<<'EOD'
 {
   "id": 0,
   "jsonrpc": "2.0",
   "result": {
-    "reward": 18446744073709551615,
-    "status": "OK",
-    "untrusted": false
+    "blob": "00",
+    "block_header": {
+      "block_size": 1, "block_weight": 1, "cumulative_difficulty": 1,
+      "cumulative_difficulty_top64": 0, "depth": 0, "difficulty": 1, "difficulty_top64": 0,
+      "hash": "h", "height": 1, "long_term_weight": 1, "major_version": 16, "miner_tx_hash": "m",
+      "minor_version": 16, "nonce": 0, "num_txes": 0, "orphan_status": false, "pow_hash": "",
+      "prev_hash": "p", "reward": 18446744073709551615, "timestamp": 1700000000,
+      "wide_cumulative_difficulty": "0x1", "wide_difficulty": "0x1"
+    },
+    "credits": 0, "json": "{}", "miner_tx_hash": "m", "top_hash": "",
+    "status": "OK", "untrusted": false
   }
 }
 EOD;
 
         $daemonRpcClient = $this->getDaemonClient('json_rpc', $responseBody);
 
-        // getBlockByHash returns an untyped stdClass, so no scalar coercion occurs.
         $result = $daemonRpcClient->getBlockByHash('any');
 
-        self::assertSame('18446744073709551615', $result->reward);
+        self::assertSame('18446744073709551615', $result->blockHeader->reward->toAtomicUnitsString());
     }
 
     public function testGetBlockCount(): void
