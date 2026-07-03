@@ -600,7 +600,7 @@ class Wallet extends RpcClient
    * @param  string  $tag          Tag to describe
    * @param  string  $description  Description to apply to tag
    *
-   * @return object  Example: {
+   * @return TransferSplitResult  Example: {
    *   // TODO example
    * }
    *
@@ -638,7 +638,7 @@ class Wallet extends RpcClient
    * @param  boolean          $getTxHex        Return the raw transaction hex (needed to relayTx/sendRawTransaction later)  (optional)
    * @param  boolean          $getTxMetadata   Return the transaction metadata blob      (optional)
    *
-   * @return object  Example: {
+   * @return TransferResult  Example: {
    *   "amount": "1000000000000",
    *   "fee": "1000020000",
    *   "tx_hash": "c60a64ddae46154a75af65544f73a7064911289a7760be8fb5390cb57c06f2db",
@@ -763,7 +763,7 @@ class Wallet extends RpcClient
    *                                           < 500000000, else epoch timestamp) — a raw int.  (optional)
    * @param  boolean          $doNotRelay      Do not relay transaction                     (optional)
    *
-   * @return object  Example: {
+   * @return SweepAllResult  Example: {
    *   "amount": "1000000000000",
    *   "fee": "1000020000",
    *   "tx_hash": "c60a64ddae46154a75af65544f73a7064911289a7760be8fb5390cb57c06f2db",
@@ -805,7 +805,7 @@ class Wallet extends RpcClient
    *                                        < 500000000, else epoch timestamp) — a raw int.  (optional)
    * @param  boolean          $doNotRelay   Do not relay transaction                    (optional)
    *
-   * @return object  Example: {
+   * @return SweepSingleResult  Example: {
    *   "amount": "1000000000000",
    *   "fee": "1000020000",
    *   "tx_hash": "c60a64ddae46154a75af65544f73a7064911289a7760be8fb5390cb57c06f2db",
@@ -875,7 +875,7 @@ class Wallet extends RpcClient
    *
    * @param  string  $paymentId  Payment ID to look up
    *
-   * @return object  Example: {
+   * @return Payments  Example: {
    *   "payments": [{
    *     "amount": 10350000000000,
    *     "block_height": 994327,
@@ -895,10 +895,10 @@ class Wallet extends RpcClient
   /**
    * Look up incoming payments by payment ID (or a list of payments IDs) from a given height
    *
-   * @param  array   $paymentIds       Array of payment IDs to look up
-   * @param  string  $minBlockHeight  Height to begin search
+   * @param  string[] $paymentIds      Array of payment IDs to look up
+   * @param  int      $minBlockHeight  Height to begin search
    *
-   * @return object  Example: {
+   * @return Payments  Example: {
    *   "payments": [{
    *     "amount": 10350000000000,
    *     "block_height": 994327,
@@ -928,7 +928,7 @@ class Wallet extends RpcClient
    * @param  int                   $accountIndex    Index of account to look up                            (optional)
    * @param  string                $subaddrIndices  Comma-separated list of subaddress indices to look up  (optional)
    *
-   * @return object  Example: {
+   * @return IncomingTransfers  Example: {
    *   "transfers": [{
    *     "amount": 10000000000000,
    *     "global_index": 711506,
@@ -1227,7 +1227,7 @@ class Wallet extends RpcClient
    * @param  int            $minHeight       Minimum block height                                  (optional)
    * @param  int            $maxHeight       Maximum block height                                  (optional)
    *
-   * @return object  Example: {
+   * @return Transfers  Example: {
    *   "pool": [{
    *     "amount": 500000000000,
    *     "fee": 0,
@@ -1272,7 +1272,7 @@ class Wallet extends RpcClient
    * @param  string  $txid           Transaction ID to look up
    * @param  string  $accountIndex  Index of account to query  (optional)
    *
-   * @return object  Example: {
+   * @return TransferByTxid  Example: {
    *   "transfer": {
    *     "amount": 10000000000000,
    *     "fee": 0,
