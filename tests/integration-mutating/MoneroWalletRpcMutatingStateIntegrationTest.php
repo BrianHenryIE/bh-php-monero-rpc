@@ -19,6 +19,7 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Wallet\DescribeTransferResult;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
 use BrianHenryIE\MoneroRpc\Wallet\Payments;
 use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
@@ -252,6 +253,55 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
             );
             $throwaway->refresh();
             self::assertTrue($throwaway->getBalance()->balance->isZero());
+        } finally {
+            self::forgetOpenWalletState();
+        }
+    }
+
+    public function testDescribeTransferOfAViewOnlyWalletUnsignedTxset(): void
+    {
+        $recipientRpc = self::$recipientWalletRpcClient;
+        $filename = uniqid('viewonly_describe_');
+
+        try {
+            // Build a watch-only copy of the miner wallet on the recipient wallet-rpc server.
+            $miner = $this->openMinerWallet();
+            $miner->refresh();
+            $viewKey = $miner->queryKey(WalletKeyType::ViewKey)->key;
+            $outputsHex = $miner->exportOutputs()->outputsDataHex;
+
+            $recipientRpc->generateFromKeys(
+                $filename,
+                'pw',
+                MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
+                $viewKey
+            );
+            self::forgetOpenWalletState();
+            $recipientRpc->openWallet($filename, 'pw');
+            $recipientRpc->refresh();
+            $recipientRpc->importOutputs($outputsHex);
+            $recipientRpc->refresh();
+
+            // A watch-only wallet can only produce an UNSIGNED tx set.
+            $unsigned = $recipientRpc->transfer(
+                MoneroAmount::fromXmr('0.01'),
+                MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS,
+                doNotRelay: true
+            );
+            self::assertNotEmpty($unsigned->unsignedTxset);
+
+            // describe_transfer must run on the FULL wallet (cold signer), not the watch-only one.
+            $miner = $this->openMinerWallet();
+            $description = $miner->describeTransfer($unsigned->unsignedTxset);
+
+            self::assertInstanceOf(DescribeTransferResult::class, $description);
+            self::assertNotEmpty($description->desc);
+            self::assertFalse($description->desc[0]->fee->isZero());
+            self::assertSame(
+                MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS,
+                $description->desc[0]->recipients[0]->address
+            );
+            self::assertSame('10000000000', $description->desc[0]->recipients[0]->amount->toAtomicUnitsString());
         } finally {
             self::forgetOpenWalletState();
         }

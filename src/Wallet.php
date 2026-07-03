@@ -36,6 +36,7 @@ namespace BrianHenryIE\MoneroRpc;
 
 use BrianHenryIE\MoneroRpc\Daemon\Height;
 use BrianHenryIE\MoneroRpc\Wallet\Balance;
+use BrianHenryIE\MoneroRpc\Wallet\DescribeTransferResult;
 use BrianHenryIE\MoneroRpc\Wallet\GetAddress;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransfers;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
@@ -1647,11 +1648,24 @@ class Wallet extends RpcClient
    * @param  $txInfo txinfo
    *
    */
-    public function describeTransfer($txInfo)
+    /**
+     * Describe an unsigned or multisig transaction set without signing it.
+     *
+     * Runs on a FULL (cold-signing) wallet — a watch-only wallet returns
+     * "command not supported by watch-only wallet".
+     *
+     * @param string $unsignedTxset An unsigned tx set (e.g. from a watch-only wallet's transfer).
+     * @param string $multisigTxset A multisig tx set. Provide exactly one of the two.
+     */
+    public function describeTransfer(string $unsignedTxset = '', string $multisigTxset = ''): DescribeTransferResult
     {
-        $params = array(
-            'multisig_txset' => $txInfo,
-        );
-        return $this->runJsonRpc('describe_transfer', $params);
+        $params = array();
+        if ($unsignedTxset !== '') {
+            $params['unsigned_txset'] = $unsignedTxset;
+        }
+        if ($multisigTxset !== '') {
+            $params['multisig_txset'] = $multisigTxset;
+        }
+        return $this->runJsonRpc('describe_transfer', $params, DescribeTransferResult::class);
     }
 }

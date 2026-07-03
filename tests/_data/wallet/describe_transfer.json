@@ -1,0 +1,53 @@
+{
+    "id": "0",
+    "jsonrpc": "2.0",
+    "result": {
+        "desc": [
+            {
+                "amount_in": 35227255634400,
+                "amount_out": 35217075434400,
+                "change_address": "43zjHrEvKytNk8YG7JEa2M9XJsPtfkG23jFBukXBj43sETTrwZhVYr1Pup4HH9qox9GuNeUuTvquyYc8Sk8PTVSaPbhVN81",
+                "change_amount": 35207075434400,
+                "dummy_outputs": 0,
+                "extra": "01de5126eda7692871d8f5b26072e3db95d2e6679742c153becce4c85353bb4c470209010000000000000000",
+                "fee": 10180200000,
+                "payment_id": "",
+                "recipients": [
+                    {
+                        "address": "4AMjwQbYCwUGJbv5WUwNwV5jj1gTnCnTqRFBugw258F9bhG5RYUkRAj3wCpj4X6rxxcX8vDiWKT77LFz88SFv2WsEiLa8bq",
+                        "amount": 10000000000
+                    }
+                ],
+                "ring_size": 16,
+                "sources": [
+                    {
+                        "amount": 35184338534400,
+                        "global_index": 0,
+                        "pubkey": "23fb611c5e833c1e3664c85053c9ba8df95b19c4cce79c734bce229ef5931c4fa1a7a42155f0abff0353a6008eda2a9b16d9ffcf7584a38933cce3e3976987cd",
+                        "rct": true
+                    },
+                    {
+                        "amount": 42917100000,
+                        "global_index": 8,
+                        "pubkey": "68f1988ef48681ebf97ffde2a2114f21b8abe294a7163b6179ff695ac23966d1eeca9ed04ba72a89dbd85564cf3084daad577634db09d048895524f1ded26b19",
+                        "rct": true
+                    }
+                ],
+                "unlock_time": 0
+            }
+        ],
+        "summary": {
+            "amount_in": 35227255634400,
+            "amount_out": 35217075434400,
+            "change_address": "43zjHrEvKytNk8YG7JEa2M9XJsPtfkG23jFBukXBj43sETTrwZhVYr1Pup4HH9qox9GuNeUuTvquyYc8Sk8PTVSaPbhVN81",
+            "change_amount": 35207075434400,
+            "fee": 10180200000,
+            "recipients": [
+                {
+                    "address": "4AMjwQbYCwUGJbv5WUwNwV5jj1gTnCnTqRFBugw258F9bhG5RYUkRAj3wCpj4X6rxxcX8vDiWKT77LFz88SFv2WsEiLa8bq",
+                    "amount": 10000000000
+                }
+            ]
+        }
+    }
+}
