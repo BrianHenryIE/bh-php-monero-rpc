@@ -443,14 +443,22 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Label a subaddress
+   * Label a subaddress.
    *
-   * @param  int  The index of the subaddress to label
-   * @param  string  The label to apply
+   * monerod's `label_address` expects `index: {major, minor}` (account index + subaddress
+   * index within it), NOT a bare integer — the previous single-int signature produced a
+   * malformed request that monerod rejected.
+   *
+   * @param  int     $accountIndex  The account (major) index the subaddress belongs to.
+   * @param  int     $addressIndex  The subaddress (minor) index within that account.
+   * @param  string  $label         The label to apply.
    */
-    public function labelAddress(int $index, string $label)
+    public function labelAddress(int $accountIndex, int $addressIndex, string $label)
     {
-        $params = array('index' => $index ,'label' => $label);
+        $params = array(
+            'index' => array('major' => $accountIndex, 'minor' => $addressIndex),
+            'label' => $label,
+        );
         return $this->runJsonRpc('label_address', $params);
     }
 
