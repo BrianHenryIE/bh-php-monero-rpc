@@ -266,6 +266,27 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
     }
 
     /**
+     * ERROR-CONTRACT: start_save_graph / stop_save_graph were removed from monerod and now
+     * return HTTP 404 with an empty body, which surfaces as a JsonException when the client
+     * tries to decode it. Pin that so consumers know these deprecated calls always throw.
+     *
+     * @see \BrianHenryIE\MoneroRpc\Daemon::startSaveGraph()
+     */
+    public function testStartSaveGraphIsRemovedUpstream(): void
+    {
+        $this->expectException(\JsonException::class);
+
+        self::$daemonPrimaryRpcClient->startSaveGraph();
+    }
+
+    public function testStopSaveGraphIsRemovedUpstream(): void
+    {
+        $this->expectException(\JsonException::class);
+
+        self::$daemonPrimaryRpcClient->stopSaveGraph();
+    }
+
+    /**
      * ERROR-CONTRACT: a malformed block blob is rejected with a JSON-RPC error
      * ("Wrong block blob"), which RpcClient surfaces as an exception.
      */

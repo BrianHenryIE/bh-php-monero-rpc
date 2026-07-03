@@ -647,11 +647,19 @@ class Daemon extends RpcClient
         return $this->runRpc('in_peers', null, InPeers::class);
     }
 
+    /**
+     * @deprecated Removed from monerod; the `/start_save_graph` endpoint now returns HTTP 404,
+     *             so this always throws. Retained only to pin that behaviour; slated for removal at v1.0.
+     */
     public function startSaveGraph()
     {
         return $this->runRpc('start_save_graph');
     }
 
+    /**
+     * @deprecated Removed from monerod; the `/stop_save_graph` endpoint now returns HTTP 404,
+     *             so this always throws. Retained only to pin that behaviour; slated for removal at v1.0.
+     */
     public function stopSaveGraph()
     {
         return $this->runRpc('stop_save_graph');
