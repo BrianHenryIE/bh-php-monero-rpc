@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Test suites:
-   - unit:                 no network access; runs by default (`composer test`).
-   - integration:          read-only tests against the seeded Docker regtest stack.
-   - integration-mutating: tests that mutate chain/wallet/daemon state; run LAST.
+   - unit:                    no network access; runs by default (`composer test`).
+   - integration:             read-only tests against the seeded Docker regtest stack.
+   - integration-mutating:    tests that mutate chain/wallet/daemon state; run after `integration`.
+   - integration-destructive: LIVE tests that STOP sacrificial containers; run LAST.
 
   Integration suites require:  make integration-up && make integration-seed
   Then:                        composer test-integration
@@ -19,6 +20,9 @@
     </testsuite>
     <testsuite name="integration-mutating">
       <directory>tests/integration-mutating</directory>
+    </testsuite>
+    <testsuite name="integration-destructive">
+      <directory>tests/integration-destructive</directory>
     </testsuite>
   </testsuites>
   <source>
