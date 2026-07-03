@@ -15,6 +15,7 @@ namespace BrianHenryIE\MoneroRpc;
 
 use BrianHenryIE\MoneroRpc\Daemon\KeyImageSpentStatus;
 use BrianHenryIE\MoneroRpc\Daemon\NetType;
+use BrianHenryIE\MoneroRpc\Daemon\SendRawTransactionResult;
 
 /**
  * @coversDefaultClass \BrianHenryIE\MoneroRpc\Daemon
@@ -262,6 +263,18 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
             [KeyImageSpentStatus::SpentInBlockchain, KeyImageSpentStatus::Unspent],
             $result->spentStatus
         );
+    }
+
+    /**
+     * ERROR-CONTRACT: malformed tx hex is rejected with status "Failed" (not an RPC
+     * error envelope), so no exception is thrown — pin that contract.
+     */
+    public function testSendRawTransactionRejectsGarbageHex(): void
+    {
+        $result = self::$daemonPrimaryRpcClient->sendRawTransaction('zz');
+
+        self::assertInstanceOf(SendRawTransactionResult::class, $result);
+        self::assertSame('Failed', $result->status);
     }
 
     public function testGetOuts(): void

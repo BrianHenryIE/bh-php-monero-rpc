@@ -19,6 +19,7 @@ namespace BrianHenryIE\MoneroRpc;
 use BrianHenryIE\MoneroRpc\Daemon\LogCategories;
 use BrianHenryIE\MoneroRpc\Daemon\OutPeers;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
+use BrianHenryIE\MoneroRpc\Daemon\SendRawTransactionResult;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPool;
 
 /**
@@ -146,6 +147,51 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
         } finally {
             // Restore monerod's default so outbound peering is unconstrained for later tests.
             self::$daemonPrimaryRpcClient->outPeers(12);
+        }
+    }
+
+    public function testSendRawTransactionBroadcastsAndConfirms(): void
+    {
+        $minerWallet = $this->openMinerWallet();
+        $minerWallet->refresh();
+
+        try {
+            // Build a signed tx WITHOUT relaying it, and get its raw hex.
+            $built = $minerWallet->transfer(
+                MoneroAmount::fromXmr('0.01'),
+                MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS,
+                doNotRelay: true,
+                getTxHex: true
+            );
+
+            $result = self::$daemonPrimaryRpcClient->sendRawTransaction($built->txBlob);
+
+            self::assertInstanceOf(SendRawTransactionResult::class, $result);
+            self::assertSame('OK', $result->status);
+            self::assertFalse($result->notRelayed);
+            self::assertFalse($result->doubleSpend);
+
+            self::pollUntil(
+                fn() => count(self::$daemonPrimaryRpcClient->getTransactionPool()->transactions) > 0,
+                30,
+                'Broadcast raw transaction did not reach the pool'
+            );
+        } finally {
+            self::$daemonPrimaryRpcClient->generateBlocks(
+                2,
+                MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
+                '',
+                0
+            );
+            self::$daemonPrimaryRpcClient->flushTxPool();
+            self::pollUntil(
+                function () {
+                    return self::$daemonPeerRpcClient->getHeight()->height
+                        === self::$daemonPrimaryRpcClient->getHeight()->height;
+                },
+                60,
+                'Daemons did not converge after broadcasting the raw transaction'
+            );
         }
     }
 

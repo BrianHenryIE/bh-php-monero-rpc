@@ -63,6 +63,7 @@ use BrianHenryIE\MoneroRpc\Daemon\OutPeers;
 use BrianHenryIE\MoneroRpc\Daemon\Outs;
 use BrianHenryIE\MoneroRpc\Daemon\PeerList;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
+use BrianHenryIE\MoneroRpc\Daemon\SendRawTransactionResult;
 use BrianHenryIE\MoneroRpc\Daemon\Transactions;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPool;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
@@ -508,10 +509,20 @@ class Daemon extends RpcClient
         return $this->runRpc('is_key_image_spent', $params, KeyImageSpent::class);
     }
 
-    public function sendRawTransaction($txAsHex, $doNotRelay = false, $doSanityChecks = true)
-    {
+    /**
+     * Broadcast a raw (already-signed) transaction to the network.
+     *
+     * @param string $txAsHex        The serialized transaction, hex-encoded.
+     * @param bool   $doNotRelay     Add to the pool without relaying to peers.
+     * @param bool   $doSanityChecks Run client-side sanity checks before submitting.
+     */
+    public function sendRawTransaction(
+        string $txAsHex,
+        bool $doNotRelay = false,
+        bool $doSanityChecks = true
+    ): SendRawTransactionResult {
         $params = array( 'tx_as_hex' => $txAsHex, 'do_not_relay' => $doNotRelay, 'do_sanity_checks' => $doSanityChecks);
-        return $this->runRpc('send_raw_transaction', $params);
+        return $this->runRpc('send_raw_transaction', $params, SendRawTransactionResult::class);
     }
 
     /**
