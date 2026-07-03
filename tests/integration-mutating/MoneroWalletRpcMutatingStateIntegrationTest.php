@@ -19,7 +19,9 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
 use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
+use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
 use BrianHenryIE\MoneroRpc\Wallet\TransferSplitResult;
 use BrianHenryIE\MoneroRpc\Wallet\WalletKeyType;
 
@@ -158,13 +160,69 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
 
     public function testSweepDustFindsNoDust(): void
     {
-        $this->expectNotToPerformAssertions();
-
         $minerWallet = $this->openMinerWallet();
         $minerWallet->refresh();
 
-        // Modern chains produce no unmixable dust; asserts only that the call succeeds.
-        $minerWallet->sweepDust();
+        // Modern chains produce no dust: the contract is an empty result (no tx sets).
+        $result = $minerWallet->sweepDust();
+
+        self::assertInstanceOf(SweepDust::class, $result);
+        self::assertSame('', $result->multisigTxset);
+        self::assertSame('', $result->unsignedTxset);
+    }
+
+    public function testSweepUnmixableFindsNothing(): void
+    {
+        $minerWallet = $this->openMinerWallet();
+        $minerWallet->refresh();
+
+        $result = $minerWallet->sweepUnmixable();
+
+        self::assertInstanceOf(SweepDust::class, $result);
+        self::assertSame('', $result->multisigTxset);
+    }
+
+    public function testRelayTx(): void
+    {
+        $minerWallet = $this->openMinerWallet();
+        $minerWallet->refresh();
+
+        try {
+            // Build a tx without relaying, capturing its metadata, then relay it separately.
+            $built = $minerWallet->transfer(
+                MoneroAmount::fromXmr('0.01'),
+                MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS,
+                doNotRelay: true,
+                getTxMetadata: true
+            );
+
+            $result = $minerWallet->relayTx($built->txMetadata);
+
+            self::assertInstanceOf(RelayTxResult::class, $result);
+            self::assertSame($built->txHash, $result->txHash);
+
+            self::pollUntil(
+                fn() => count(self::$daemonPrimaryRpcClient->getTransactionPool()->transactions) > 0,
+                30,
+                'Relayed transaction did not reach the pool'
+            );
+        } finally {
+            self::$daemonPrimaryRpcClient->generateBlocks(
+                2,
+                MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
+                '',
+                0
+            );
+            self::$daemonPrimaryRpcClient->flushTxPool();
+            self::pollUntil(
+                function () {
+                    return self::$daemonPeerRpcClient->getHeight()->height
+                        === self::$daemonPrimaryRpcClient->getHeight()->height;
+                },
+                60,
+                'Daemons did not converge after relayTx'
+            );
+        }
     }
 
     public function testSetAndGetAttribute(): void

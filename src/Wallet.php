@@ -42,6 +42,7 @@ use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
 use BrianHenryIE\MoneroRpc\Wallet\IntegratedAddress;
 use BrianHenryIE\MoneroRpc\Wallet\Key;
 use BrianHenryIE\MoneroRpc\Wallet\RefreshResult;
+use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
 use BrianHenryIE\MoneroRpc\Wallet\RestoreDeterministicWalletResult;
 use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
 use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
@@ -732,16 +733,14 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Send all unmixable outputs back to the wallet
+   * Send all unmixable outputs back to the wallet.
    *
-   * @return object  Example: {
-   *   // TODO example
-   * }
-   *
+   * Modern chains have no unmixable outputs, so this returns only the (empty) tx sets —
+   * the same shape as {@see sweepDust()}, so it reuses {@see SweepDust}.
    */
-    public function sweepUnmixable()
+    public function sweepUnmixable(): SweepDust
     {
-        return $this->runJsonRpc('sweep_unmixable');
+        return $this->runJsonRpc('sweep_unmixable', null, SweepDust::class);
     }
 
   /**
@@ -850,21 +849,21 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Relay a transaction
+   * Relay a previously-created transaction.
    *
-   * @param  string  $hex  Blob of transaction to relay
+   * The RPC method is `relay_tx` (the previous implementation mistakenly called
+   * `relay_tx_method`, then issued a second bogus paramless call).
    *
-   * @return object  // TODO example
-   *
+   * @param  string  $hex  The transaction METADATA (from a transfer with get_tx_metadata).
    */
-    public function relayTx(string $hex)
+    public function relayTx(string $hex): RelayTxResult
     {
         $params = array('hex' => $hex);
-        $relayTxMethod = $this->runJsonRpc('relay_tx_method', $params);
+        $relayTxResult = $this->runJsonRpc('relay_tx', $params, RelayTxResult::class);
 
-        $save = $this->store(); // Save wallet state after transaction relay
+        $this->store(); // Save wallet state after transaction relay
 
-        return $this->runJsonRpc('relay_tx');
+        return $relayTxResult;
     }
 
   /**
