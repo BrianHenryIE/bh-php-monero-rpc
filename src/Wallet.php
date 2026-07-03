@@ -44,7 +44,10 @@ use BrianHenryIE\MoneroRpc\Wallet\AddressValidation;
 use BrianHenryIE\MoneroRpc\Wallet\Balance;
 use BrianHenryIE\MoneroRpc\Wallet\CreatedAccount;
 use BrianHenryIE\MoneroRpc\Wallet\CreatedAddress;
+use BrianHenryIE\MoneroRpc\Wallet\GeneratedWallet;
 use BrianHenryIE\MoneroRpc\Wallet\GetAttribute;
+use BrianHenryIE\MoneroRpc\Wallet\ImportKeyImagesResult;
+use BrianHenryIE\MoneroRpc\Wallet\ImportOutputsResult;
 use BrianHenryIE\MoneroRpc\Wallet\TxNotes;
 use BrianHenryIE\MoneroRpc\Wallet\CheckReserveProof;
 use BrianHenryIE\MoneroRpc\Wallet\KeyImagesExport;
@@ -232,7 +235,7 @@ class Wallet extends RpcClient
         string $language = 'English',
         int $restoreHeight = 0,
         bool $saveCurrent = true
-    ) {
+    ): GeneratedWallet {
         $params = array(
             'filename'          => $filename,
             'password'          => $password,
@@ -243,7 +246,7 @@ class Wallet extends RpcClient
             'restore_height'    => $restoreHeight,
             'autosave_current'  => $saveCurrent
         );
-        return $this->runJsonRpc('generate_from_keys', $params);
+        return $this->runJsonRpc('generate_from_keys', $params, GeneratedWallet::class);
     }
 
     /**
@@ -252,9 +255,9 @@ class Wallet extends RpcClient
      * @return object  Example:
      *
      */
-    public function store()
+    public function store(): void
     {
-        return $this->runJsonRpc('store');
+        $this->runJsonRpc('store');
     }
 
     /**
@@ -268,9 +271,9 @@ class Wallet extends RpcClient
     /**
      * Close wallet
      */
-    public function closeWallet()
+    public function closeWallet(): void
     {
-        return $this->runJsonRpc('close_wallet');
+        $this->runJsonRpc('close_wallet');
     }
 
     /**
@@ -279,13 +282,13 @@ class Wallet extends RpcClient
      * @param string $oldPassword old password or blank
      * @param string $newPassword new password or blank
      */
-    public function changeWalletPassword(string $oldPassword = '', string $newPassword = '')
+    public function changeWalletPassword(string $oldPassword = '', string $newPassword = ''): void
     {
         $params = array(
             'old_password' => $oldPassword,
             'new_password' => $newPassword
         );
-        return $this->runJsonRpc('change_wallet_password', $params);
+        $this->runJsonRpc('change_wallet_password', $params);
     }
 
 
@@ -372,12 +375,12 @@ class Wallet extends RpcClient
      *
      *
      */
-    public function importOutputs($outputsDataHex)
+    public function importOutputs($outputsDataHex): ImportOutputsResult
     {
         $params = array(
             'outputs_data_hex' => $outputsDataHex,
         );
-        return $this->runJsonRpc('import_outputs', $params);
+        return $this->runJsonRpc('import_outputs', $params, ImportOutputsResult::class);
     }
 
 
@@ -870,9 +873,9 @@ class Wallet extends RpcClient
      * Rescan the blockchain for spent outputs
      *
      */
-    public function rescanSpent()
+    public function rescanSpent(): void
     {
-        return $this->runJsonRpc('rescan_spent');
+        $this->runJsonRpc('rescan_spent');
     }
 
   /**
@@ -1035,10 +1038,10 @@ class Wallet extends RpcClient
    * @param  array  $txIds  Array of transaction IDs to note
    * @param  array  $notes  Array of notes (strings) to add
    */
-    public function setTxNotes($txIds, $notes)
+    public function setTxNotes($txIds, $notes): void
     {
         $params = array( 'txids' => $txIds, 'notes' => $notes);
-        return $this->runJsonRpc('set_tx_notes', $params);
+        $this->runJsonRpc('set_tx_notes', $params);
     }
 
   /**
@@ -1063,10 +1066,10 @@ class Wallet extends RpcClient
    * @param  string  $key    Option to set
    * @param  string  $value  Value to set
    */
-    public function setAttribute(string $key, string $value)
+    public function setAttribute(string $key, string $value): void
     {
         $params = array('key' => $key, 'value' => $value);
-        return $this->runJsonRpc('set_attribute', $params);
+        $this->runJsonRpc('set_attribute', $params);
     }
 
   /**
@@ -1380,10 +1383,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function importKeyImages($signedKeyImages)
+    public function importKeyImages($signedKeyImages): ImportKeyImagesResult
     {
         $params = array('signed_key_images' => $signedKeyImages);
-        return $this->runJsonRpc('import_key_images', $params);
+        return $this->runJsonRpc('import_key_images', $params, ImportKeyImagesResult::class);
     }
 
   /**
@@ -1468,10 +1471,10 @@ class Wallet extends RpcClient
    *
    * @param  array   $index  Index of the address book entry to remove
    */
-    public function deleteAddressBook($index)
+    public function deleteAddressBook($index): void
     {
         $params = array('index' => $index);
-        return $this->runJsonRpc('delete_address_book', $params);
+        $this->runJsonRpc('delete_address_book', $params);
     }
 
   /**

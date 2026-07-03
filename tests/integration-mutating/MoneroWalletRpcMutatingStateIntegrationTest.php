@@ -22,6 +22,8 @@ namespace BrianHenryIE\MoneroRpc;
 use BrianHenryIE\MoneroRpc\Wallet\AddressBook;
 use BrianHenryIE\MoneroRpc\Wallet\AddressBookIndex;
 use BrianHenryIE\MoneroRpc\Wallet\DescribeTransferResult;
+use BrianHenryIE\MoneroRpc\Wallet\ImportKeyImagesResult;
+use BrianHenryIE\MoneroRpc\Wallet\ImportOutputsResult;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
 use BrianHenryIE\MoneroRpc\Wallet\Payments;
 use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
@@ -347,6 +349,49 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
         $bulk = $recipient->getBulkPayments([$paymentId], 0);
         self::assertInstanceOf(Payments::class, $bulk);
         self::assertNotEmpty($bulk->payments);
+    }
+
+    public function testImportOutputsAndKeyImages(): void
+    {
+        $recipientRpc = self::$recipientWalletRpcClient;
+        $filename = uniqid('viewonly_import_');
+
+        try {
+            $miner = $this->openMinerWallet();
+            $miner->refresh();
+            $viewKey = $miner->queryKey(WalletKeyType::ViewKey)->key;
+            $outputsHex = $miner->exportOutputs()->outputsDataHex;
+            $keyImages = $miner->exportKeyImages(true);
+
+            $recipientRpc->generateFromKeys(
+                $filename,
+                'pw',
+                MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
+                $viewKey
+            );
+            self::forgetOpenWalletState();
+            $recipientRpc->openWallet($filename, 'pw');
+            $recipientRpc->refresh();
+
+            $importOutputs = $recipientRpc->importOutputs($outputsHex);
+            self::assertInstanceOf(ImportOutputsResult::class, $importOutputs);
+            // generate_from_keys already auto-synced the outputs, so the count may be 0.
+            self::assertGreaterThanOrEqual(0, $importOutputs->numImported);
+
+            $recipientRpc->refresh();
+
+            // Importing the key images teaches the watch-only wallet which outputs are spent.
+            $signed = array_map(
+                fn($k) => ['key_image' => $k->keyImage, 'signature' => $k->signature],
+                $keyImages->signedKeyImages
+            );
+            $importKeyImages = $recipientRpc->importKeyImages($signed);
+            self::assertInstanceOf(ImportKeyImagesResult::class, $importKeyImages);
+            self::assertInstanceOf(MoneroAmount::class, $importKeyImages->spent);
+            self::assertInstanceOf(MoneroAmount::class, $importKeyImages->unspent);
+        } finally {
+            self::forgetOpenWalletState();
+        }
     }
 
     public function testAddressBookCrud(): void

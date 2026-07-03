@@ -32,7 +32,10 @@ use BrianHenryIE\MoneroRpc\Wallet\AddressIndex;
 use BrianHenryIE\MoneroRpc\Wallet\AddressValidation;
 use BrianHenryIE\MoneroRpc\Wallet\CreatedAccount;
 use BrianHenryIE\MoneroRpc\Wallet\CreatedAddress;
+use BrianHenryIE\MoneroRpc\Wallet\GeneratedWallet;
 use BrianHenryIE\MoneroRpc\Wallet\GetAttribute;
+use BrianHenryIE\MoneroRpc\Wallet\ImportKeyImagesResult;
+use BrianHenryIE\MoneroRpc\Wallet\ImportOutputsResult;
 use BrianHenryIE\MoneroRpc\Wallet\TxNotes;
 use BrianHenryIE\MoneroRpc\Wallet\CheckReserveProof;
 use BrianHenryIE\MoneroRpc\Wallet\CheckSpendProof;
@@ -136,6 +139,9 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'wallet/get_attribute.json' => ['wallet/get_attribute.json', GetAttribute::class],
             'wallet/get_account_tags.json' => ['wallet/get_account_tags.json', AccountTags::class],
             'wallet/get_tx_notes.json' => ['wallet/get_tx_notes.json', TxNotes::class],
+            'wallet/generate_from_keys.json' => ['wallet/generate_from_keys.json', GeneratedWallet::class],
+            'wallet/import_outputs.json' => ['wallet/import_outputs.json', ImportOutputsResult::class],
+            'wallet/import_key_images.json' => ['wallet/import_key_images.json', ImportKeyImagesResult::class],
         ];
     }
 
