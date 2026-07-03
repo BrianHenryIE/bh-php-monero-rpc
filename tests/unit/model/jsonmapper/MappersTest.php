@@ -24,6 +24,7 @@ use BrianHenryIE\MoneroRpc\Daemon\TransactionPool;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
 use BrianHenryIE\MoneroRpc\Daemon\Transactions;
 use BrianHenryIE\MoneroRpc\RpcClient;
+use BrianHenryIE\MoneroRpc\Wallet\TransferResult;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
@@ -67,6 +68,7 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'json_rpc-getblockheaderbyhash.json' => ['json_rpc-getblockheaderbyhash.json', BlockHeaderBy::class],
             'set_limit.json' => ['set_limit.json', Limit::class],
             'get_connections.json' => ['get_connections.json', Connections::class],
+            'wallet/transfer.json' => ['wallet/transfer.json', TransferResult::class],
         ];
     }
 
@@ -78,7 +80,10 @@ class MappersTest extends \PHPUnit\Framework\TestCase
     #[DataProvider('data')]
     public function testMappers(string $filename, string $type): void
     {
-        $json = (string) file_get_contents(__DIR__ . '/../../../_data/daemon/' . $filename);
+        // A filename with a directory separator is treated as relative to tests/_data;
+        // a bare name defaults to the daemon fixtures directory.
+        $relativePath = str_contains($filename, '/') ? $filename : ('daemon/' . $filename);
+        $json = (string) file_get_contents(__DIR__ . '/../../../_data/' . $relativePath);
 
         // `json_rpc` responses wrap the payload in an envelope; the model maps the `result` (this
         // mirrors RpcClient::run()). "Other" endpoint bodies ARE the payload. Decode with

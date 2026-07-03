@@ -45,6 +45,7 @@ use BrianHenryIE\MoneroRpc\Wallet\RestoreDeterministicWalletResult;
 use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
 use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
 use BrianHenryIE\MoneroRpc\Wallet\TransferPriority;
+use BrianHenryIE\MoneroRpc\Wallet\TransferResult;
 use BrianHenryIE\MoneroRpc\Wallet\TransferType;
 use BrianHenryIE\MoneroRpc\Wallet\Version;
 use BrianHenryIE\MoneroRpc\Wallet\WalletKeyType;
@@ -648,11 +649,11 @@ class Wallet extends RpcClient
         int $ringsize = 11,
         bool $getTxHex = false,
         bool $getTxMetadata = false
-    ) {
+    ): TransferResult {
         $destinations = array(array('amount' => $this->amountToRequestInt($amount), 'address' => $address));
 
         $params = array( 'destinations' => $destinations, 'mixin' => $mixin, 'get_tx_key' => true, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'priority' => $priority->value, 'do_not_relay' => $doNotRelay, 'ringsize' => $ringsize, 'get_tx_hex' => $getTxHex, 'get_tx_metadata' => $getTxMetadata);
-        $transferMethod = $this->runJsonRpc('transfer', $params);
+        $transferMethod = $this->runJsonRpc('transfer', $params, TransferResult::class);
 
         $save = $this->store(); // Save wallet state after transfer
 
