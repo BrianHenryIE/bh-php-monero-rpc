@@ -63,6 +63,7 @@ use BrianHenryIE\MoneroRpc\Daemon\OutPeers;
 use BrianHenryIE\MoneroRpc\Daemon\Outs;
 use BrianHenryIE\MoneroRpc\Daemon\PeerList;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
+use BrianHenryIE\MoneroRpc\Daemon\Transactions;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
 use Exception;
 
@@ -473,14 +474,14 @@ class Daemon extends RpcClient
     }
 
    /**
-    * Get transactions
+    * Look up transactions by hash.
     *
-    * TODO: obviously incomplete.
+    * @param ?string[] $txsHashes Transaction ids to fetch.
     */
-    public function getTransactions(?array $txsHashes = null)
+    public function getTransactions(?array $txsHashes = null): Transactions
     {
         $params = array( 'txs_hashes' => $txsHashes, 'decode_as_json' => true);
-        return $this->runRpc('get_transactions', $params);
+        return $this->runRpc('get_transactions', $params, Transactions::class);
     }
 
 

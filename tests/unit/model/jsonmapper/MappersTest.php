@@ -19,6 +19,7 @@ use BrianHenryIE\MoneroRpc\Daemon\MiningStatus;
 use BrianHenryIE\MoneroRpc\Daemon\PeerList;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
+use BrianHenryIE\MoneroRpc\Daemon\Transactions;
 use BrianHenryIE\MoneroRpc\RpcClient;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -55,6 +56,7 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'out_peers.json' => ['out_peers.json', OutPeers::class],
             'get_outs.json' => ['get_outs.json', Outs::class],
             'is_key_image_spent.json' => ['is_key_image_spent.json', KeyImageSpent::class],
+            'get_transactions.json' => ['get_transactions.json', Transactions::class],
             'set_log_categories.json' => ['set_log_categories.json', LogCategories::class],
             'json_rpc-getblockheaderbyhash.json' => ['json_rpc-getblockheaderbyhash.json', BlockHeaderBy::class],
             'set_limit.json' => ['set_limit.json', Limit::class],

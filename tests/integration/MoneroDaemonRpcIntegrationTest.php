@@ -186,10 +186,10 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         $result = self::$daemonPrimaryRpcClient->getTransactions([self::$manifest['transfer_txid']]);
 
         self::assertCount(1, $result->txs);
-        // NB: top-level response keys are camelCased by RpcClient, but objects
-        // nested inside arrays retain their original snake_case keys.
-        self::assertSame(self::$manifest['transfer_txid'], $result->txs[0]->tx_hash);
-        self::assertSame(self::$manifest['transfer_block_height'], $result->txs[0]->block_height);
+        self::assertSame(self::$manifest['transfer_txid'], $result->txs[0]->txHash);
+        self::assertSame(self::$manifest['transfer_block_height'], $result->txs[0]->blockHeight);
+        self::assertFalse($result->txs[0]->inPool);
+        self::assertNotNull($result->txs[0]->blockTimestamp);
     }
 
     public function testGetTransactionPoolStatsIsEmpty(): void
@@ -250,7 +250,7 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
     {
         // Recover the key image the seed transfer spent, from the transaction's first input.
         $txResult = self::$daemonPrimaryRpcClient->getTransactions([self::$manifest['transfer_txid']]);
-        $txJson = json_decode($txResult->txs[0]->as_json, true);
+        $txJson = json_decode($txResult->txs[0]->asJson, true);
         $spentKeyImage = $txJson['vin'][0]['key']['k_image'];
 
         // A random key image that has never been spent.
