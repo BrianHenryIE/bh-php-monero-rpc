@@ -198,7 +198,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         );
 
         self::assertTrue($result->good);
-        self::assertGreaterThan(0, (int) $result->total);
+        self::assertFalse($result->total->isZero());
     }
 
     public function testMakeAndSplitIntegratedAddressRoundTrip(): void

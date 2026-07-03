@@ -36,7 +36,14 @@ namespace BrianHenryIE\MoneroRpc;
 
 use BrianHenryIE\MoneroRpc\Daemon\Height;
 use BrianHenryIE\MoneroRpc\Wallet\Balance;
+use BrianHenryIE\MoneroRpc\Wallet\CheckReserveProof;
+use BrianHenryIE\MoneroRpc\Wallet\CheckSpendProof;
+use BrianHenryIE\MoneroRpc\Wallet\CheckTxKey;
+use BrianHenryIE\MoneroRpc\Wallet\CheckTxProof;
 use BrianHenryIE\MoneroRpc\Wallet\DescribeTransferResult;
+use BrianHenryIE\MoneroRpc\Wallet\Signature;
+use BrianHenryIE\MoneroRpc\Wallet\TxKey;
+use BrianHenryIE\MoneroRpc\Wallet\Verify;
 use BrianHenryIE\MoneroRpc\Wallet\GetAddress;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransfers;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
@@ -1072,10 +1079,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getTxKey(string $txId)
+    public function getTxKey(string $txId): TxKey
     {
         $params = array('txid' => $txId);
-        return $this->runJsonRpc('get_tx_key', $params);
+        return $this->runJsonRpc('get_tx_key', $params, TxKey::class);
     }
 
   /**
@@ -1092,10 +1099,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function checkTxKey(string $address, string $txId, string $txKey)
+    public function checkTxKey(string $address, string $txId, string $txKey): CheckTxKey
     {
         $params = array( 'address' => $address, 'txid' => $txId, 'tx_key' => $txKey);
-        return $this->runJsonRpc('check_tx_key', $params);
+        return $this->runJsonRpc('check_tx_key', $params, CheckTxKey::class);
     }
 
   /**
@@ -1109,10 +1116,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getTxProof(string $address, string $txid)
+    public function getTxProof(string $address, string $txid): Signature
     {
         $params = array('address' => $address, 'txid' => $txid);
-        return $this->runJsonRpc('get_tx_proof', $params);
+        return $this->runJsonRpc('get_tx_proof', $params, Signature::class);
     }
 
   /**
@@ -1130,10 +1137,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function checkTxProof(string $address, string $txid, string $signature)
+    public function checkTxProof(string $address, string $txid, string $signature): CheckTxProof
     {
         $params = array('address' => $address, 'txid' => $txid, 'signature' => $signature);
-        return $this->runJsonRpc('check_tx_proof', $params);
+        return $this->runJsonRpc('check_tx_proof', $params, CheckTxProof::class);
     }
 
   /**
@@ -1146,13 +1153,13 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getSpendProof(string $txId, ?string $message = null)
+    public function getSpendProof(string $txId, ?string $message = null): Signature
     {
         $params = array('txid' => $txId);
         if ($message !== null) {
             $params['message'] = $message;
         }
-        return $this->runJsonRpc('get_spend_proof', $params);
+        return $this->runJsonRpc('get_spend_proof', $params, Signature::class);
     }
 
   /**
@@ -1166,13 +1173,13 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function checkSpendProof(string $txId, string $signature, ?string $message = null)
+    public function checkSpendProof(string $txId, string $signature, ?string $message = null): CheckSpendProof
     {
         $params = array( 'txid' => $txId, 'signature' => $signature);
         if ($message !== null) {
             $params['message'] = $message;
         }
-        return $this->runJsonRpc('check_spend_proof', $params);
+        return $this->runJsonRpc('check_spend_proof', $params, CheckSpendProof::class);
     }
 
   /**
@@ -1185,7 +1192,7 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getReserveProof($accountIndex = 'all')
+    public function getReserveProof($accountIndex = 'all'): Signature
     {
         if ($accountIndex == 'all') {
             $params = array('all' => true);
@@ -1193,7 +1200,7 @@ class Wallet extends RpcClient
             $params = array('account_index' => $accountIndex);
         }
 
-        return $this->runJsonRpc('get_reserve_proof', $params);
+        return $this->runJsonRpc('get_reserve_proof', $params, Signature::class);
     }
 
   /**
@@ -1209,10 +1216,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function checkReserveProof(string $address, string $signature)
+    public function checkReserveProof(string $address, string $signature): CheckReserveProof
     {
         $params = array('address' => $address, 'signature' => $signature);
-        return $this->runJsonRpc('check_reserve_proof', $params);
+        return $this->runJsonRpc('check_reserve_proof', $params, CheckReserveProof::class);
     }
 
   /**
@@ -1302,12 +1309,12 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function sign($data)
+    public function sign($data): Signature
     {
         // NB: the request field is named `data`; this previously sent `string`,
         // which monero-wallet-rpc ignored, signing an empty string instead.
         $params = array('data' => $data);
-        return $this->runJsonRpc('sign', $params);
+        return $this->runJsonRpc('sign', $params, Signature::class);
     }
 
   /**
@@ -1322,10 +1329,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function verify(string $data, string $address, string $signature)
+    public function verify(string $data, string $address, string $signature): Verify
     {
         $params = array('data' => $data, 'address' => $address, 'signature' => $signature);
-        return $this->runJsonRpc('verify', $params);
+        return $this->runJsonRpc('verify', $params, Verify::class);
     }
 
   /**

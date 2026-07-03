@@ -24,8 +24,15 @@ use BrianHenryIE\MoneroRpc\Daemon\TransactionPool;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
 use BrianHenryIE\MoneroRpc\Daemon\Transactions;
 use BrianHenryIE\MoneroRpc\RpcClient;
+use BrianHenryIE\MoneroRpc\Wallet\CheckReserveProof;
+use BrianHenryIE\MoneroRpc\Wallet\CheckSpendProof;
+use BrianHenryIE\MoneroRpc\Wallet\CheckTxKey;
+use BrianHenryIE\MoneroRpc\Wallet\CheckTxProof;
 use BrianHenryIE\MoneroRpc\Wallet\DescribeTransferResult;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransfers;
+use BrianHenryIE\MoneroRpc\Wallet\Signature;
+use BrianHenryIE\MoneroRpc\Wallet\TxKey;
+use BrianHenryIE\MoneroRpc\Wallet\Verify;
 use BrianHenryIE\MoneroRpc\Wallet\Payments;
 use BrianHenryIE\MoneroRpc\Wallet\RelayTxResult;
 use BrianHenryIE\MoneroRpc\Wallet\SweepAllResult;
@@ -89,6 +96,14 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'wallet/sweep_single.json' => ['wallet/sweep_single.json', SweepSingleResult::class],
             'wallet/get_payments.json' => ['wallet/get_payments.json', Payments::class],
             'wallet/describe_transfer.json' => ['wallet/describe_transfer.json', DescribeTransferResult::class],
+            'wallet/get_tx_key.json' => ['wallet/get_tx_key.json', TxKey::class],
+            'wallet/check_tx_key.json' => ['wallet/check_tx_key.json', CheckTxKey::class],
+            'wallet/get_tx_proof.json' => ['wallet/get_tx_proof.json', Signature::class],
+            'wallet/check_tx_proof.json' => ['wallet/check_tx_proof.json', CheckTxProof::class],
+            'wallet/check_spend_proof.json' => ['wallet/check_spend_proof.json', CheckSpendProof::class],
+            'wallet/check_reserve_proof.json' => ['wallet/check_reserve_proof.json', CheckReserveProof::class],
+            'wallet/sign.json' => ['wallet/sign.json', Signature::class],
+            'wallet/verify.json' => ['wallet/verify.json', Verify::class],
         ];
     }
 

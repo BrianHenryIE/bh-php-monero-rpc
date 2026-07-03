@@ -1,0 +1,10 @@
+{
+  "id": "0",
+  "jsonrpc": "2.0",
+  "result": {
+    "confirmations": 10,
+    "good": true,
+    "in_pool": false,
+    "received": 1230000000000
+  }
+}

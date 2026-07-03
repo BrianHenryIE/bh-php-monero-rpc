@@ -1,0 +1,9 @@
+{
+  "id": "0",
+  "jsonrpc": "2.0",
+  "result": {
+    "good": true,
+    "spent": 0,
+    "total": 4572171347974391
+  }
+}
