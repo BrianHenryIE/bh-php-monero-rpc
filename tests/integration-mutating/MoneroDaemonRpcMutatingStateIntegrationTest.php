@@ -16,6 +16,7 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Daemon\LogCategories;
 use BrianHenryIE\MoneroRpc\Daemon\OutPeers;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
 
@@ -77,6 +78,13 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
                 MoneroRegtestFixture::MINER_WALLET_PRIMARY_ADDRESS,
                 self::$daemonPeerRpcClient->miningStatus()->address
             );
+
+            // set_log_hash_rate only returns OK while the daemon is mining ("NOT MINING"
+            // otherwise), so exercise it here where mining is active.
+            $logHashRateResult = self::$daemonPeerRpcClient->setLogHashRate(true);
+            self::assertInstanceOf(ResponseBase::class, $logHashRateResult);
+            self::assertSame('OK', $logHashRateResult->status);
+            self::$daemonPeerRpcClient->setLogHashRate(false);
         } finally {
             // NB: stop_mining blocks while the miner thread shuts down (~20s observed).
             self::$daemonPeerRpcClient->stopMining();
@@ -137,6 +145,31 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
         } finally {
             // Restore monerod's default so outbound peering is unconstrained for later tests.
             self::$daemonPrimaryRpcClient->outPeers(12);
+        }
+    }
+
+    public function testSetLogLevel(): void
+    {
+        try {
+            $result = self::$daemonPrimaryRpcClient->setLogLevel(1);
+
+            self::assertInstanceOf(ResponseBase::class, $result);
+            self::assertSame('OK', $result->status);
+        } finally {
+            self::$daemonPrimaryRpcClient->setLogLevel(0);
+        }
+    }
+
+    public function testSetLogCategories(): void
+    {
+        try {
+            $result = self::$daemonPrimaryRpcClient->setLogCategories('*:WARNING');
+
+            self::assertInstanceOf(LogCategories::class, $result);
+            self::assertSame('*:WARNING', $result->categories);
+            self::assertSame('OK', $result->status);
+        } finally {
+            self::$daemonPrimaryRpcClient->setLogCategories('');
         }
     }
 

@@ -53,6 +53,7 @@ use BrianHenryIE\MoneroRpc\Daemon\Connections;
 use BrianHenryIE\MoneroRpc\Daemon\GenerateBlocks;
 use BrianHenryIE\MoneroRpc\Daemon\HardForkInfo;
 use BrianHenryIE\MoneroRpc\Daemon\Height;
+use BrianHenryIE\MoneroRpc\Daemon\LogCategories;
 use BrianHenryIE\MoneroRpc\Daemon\Info;
 use BrianHenryIE\MoneroRpc\Daemon\InPeers;
 use BrianHenryIE\MoneroRpc\Daemon\Limit;
@@ -562,19 +563,21 @@ class Daemon extends RpcClient
         return $this->runRpc('set_log_hash_rate', $params, ResponseBase::class);
     }
 
-    public function setLogLevel(int $logLevel = 0)
+    public function setLogLevel(int $logLevel = 0): ResponseBase
     {
-        if (!is_int($logLevel)) {
-            throw new Exception('Error: log_level must be an integer');
-        }
         $params = array('level' => $logLevel);
-        return $this->runRpc('set_log_level', $params);
+        return $this->runRpc('set_log_level', $params, ResponseBase::class);
     }
 
-    public function setLogCategories($category)
+    /**
+     * Set the daemon's active log categories.
+     *
+     * @param string $category Category spec, e.g. "*:WARNING" or "net:INFO,global:WARNING".
+     */
+    public function setLogCategories(string $category = ''): LogCategories
     {
         $params = array('categories' => $category);
-        return $this->runRpc('set_log_categories', $params);
+        return $this->runRpc('set_log_categories', $params, LogCategories::class);
     }
 
     public function getTransactionPool()
