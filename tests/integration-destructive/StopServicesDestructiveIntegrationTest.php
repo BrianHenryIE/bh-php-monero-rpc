@@ -22,6 +22,9 @@ class StopServicesDestructiveIntegrationTest extends MoneroDestructiveIntegratio
         // Precondition: the sacrificial wallet-rpc is up.
         self::assertGreaterThan(0, self::$sacrificialWalletRpcClient->getVersion()->version);
 
+        // stop_wallet requires an open wallet ("No wallet file" otherwise), so create one.
+        self::$sacrificialWalletRpcClient->createWallet(uniqid('sacrificial_'), 'pw');
+
         // The simple-monero-wallet-rpc image exits its process on stop_wallet.
         self::$sacrificialWalletRpcClient->stopWallet();
 
