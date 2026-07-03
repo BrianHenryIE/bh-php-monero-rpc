@@ -37,6 +37,7 @@ namespace BrianHenryIE\MoneroRpc;
 use BrianHenryIE\MoneroRpc\Daemon\Height;
 use BrianHenryIE\MoneroRpc\Wallet\Balance;
 use BrianHenryIE\MoneroRpc\Wallet\GetAddress;
+use BrianHenryIE\MoneroRpc\Wallet\IncomingTransfers;
 use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
 use BrianHenryIE\MoneroRpc\Wallet\IntegratedAddress;
 use BrianHenryIE\MoneroRpc\Wallet\Key;
@@ -45,8 +46,10 @@ use BrianHenryIE\MoneroRpc\Wallet\RestoreDeterministicWalletResult;
 use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
 use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
 use BrianHenryIE\MoneroRpc\Wallet\TransferPriority;
+use BrianHenryIE\MoneroRpc\Wallet\TransferByTxid;
 use BrianHenryIE\MoneroRpc\Wallet\TransferResult;
 use BrianHenryIE\MoneroRpc\Wallet\TransferSplitResult;
+use BrianHenryIE\MoneroRpc\Wallet\Transfers;
 use BrianHenryIE\MoneroRpc\Wallet\TransferType;
 use BrianHenryIE\MoneroRpc\Wallet\Version;
 use BrianHenryIE\MoneroRpc\Wallet\WalletKeyType;
@@ -955,9 +958,9 @@ class Wallet extends RpcClient
         IncomingTransferType $type = IncomingTransferType::All,
         int $accountIndex = 0,
         string $subaddrIndices = ''
-    ) {
+    ): IncomingTransfers {
         $params = array( 'transfer_type' => $type->value, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices);
-        return $this->runJsonRpc('incoming_transfers', $params);
+        return $this->runJsonRpc('incoming_transfers', $params, IncomingTransfers::class);
     }
 
   /**
@@ -1254,7 +1257,7 @@ class Wallet extends RpcClient
         string $subaddrIndices = '',
         int $minHeight = 0,
         int $maxHeight = 4206931337
-    ) {
+    ): Transfers {
         $params = array( 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'min_height' => $minHeight, 'max_height' => $maxHeight);
         foreach ($inputTypes as $inputType) {
             $params[$inputType->value] = true;
@@ -1264,7 +1267,7 @@ class Wallet extends RpcClient
             $params['filter_by_height'] = true;
         }
 
-        return $this->runJsonRpc('get_transfers', $params);
+        return $this->runJsonRpc('get_transfers', $params, Transfers::class);
     }
 
   /**
@@ -1287,10 +1290,10 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function getTransferByTxid(string $txid, int $accountIndex = 0)
+    public function getTransferByTxid(string $txid, int $accountIndex = 0): TransferByTxid
     {
         $params = array('txid' => $txid, 'account_index' => $accountIndex);
-        return $this->runJsonRpc('get_transfer_by_txid', $params);
+        return $this->runJsonRpc('get_transfer_by_txid', $params, TransferByTxid::class);
     }
 
   /**

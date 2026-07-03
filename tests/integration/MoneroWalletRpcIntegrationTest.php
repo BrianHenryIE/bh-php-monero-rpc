@@ -110,7 +110,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         $result = $minerWallet->getTransferByTxid(self::$manifest['transfer_txid']);
 
-        self::assertSame('out', $result->transfer->type);
+        self::assertSame(TransferType::Out, $result->transfer->type);
         self::assertSame(MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS, (string) $result->transfer->amount);
         self::assertSame(self::$manifest['transfer_fee_atomic_units'], (string) $result->transfer->fee);
     }

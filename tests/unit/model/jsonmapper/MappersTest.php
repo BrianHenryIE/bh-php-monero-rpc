@@ -24,7 +24,10 @@ use BrianHenryIE\MoneroRpc\Daemon\TransactionPool;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
 use BrianHenryIE\MoneroRpc\Daemon\Transactions;
 use BrianHenryIE\MoneroRpc\RpcClient;
+use BrianHenryIE\MoneroRpc\Wallet\IncomingTransfers;
+use BrianHenryIE\MoneroRpc\Wallet\TransferByTxid;
 use BrianHenryIE\MoneroRpc\Wallet\TransferResult;
+use BrianHenryIE\MoneroRpc\Wallet\Transfers;
 use BrianHenryIE\MoneroRpc\Wallet\TransferSplitResult;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -71,6 +74,9 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'get_connections.json' => ['get_connections.json', Connections::class],
             'wallet/transfer.json' => ['wallet/transfer.json', TransferResult::class],
             'wallet/transfer_split.json' => ['wallet/transfer_split.json', TransferSplitResult::class],
+            'wallet/get_transfers.json' => ['wallet/get_transfers.json', Transfers::class],
+            'wallet/incoming_transfers.json' => ['wallet/incoming_transfers.json', IncomingTransfers::class],
+            'wallet/get_transfer_by_txid.json' => ['wallet/get_transfer_by_txid.json', TransferByTxid::class],
         ];
     }
 

@@ -1,0 +1,35 @@
+{
+  "id": "0",
+  "jsonrpc": "2.0",
+  "result": {
+    "transfers": [{
+      "amount": 1230000000000,
+      "block_height": 121,
+      "frozen": false,
+      "global_index": 121,
+      "key_image": "56a250b81b4db7bd71cae2072173a9d2e607dde06fe5ac2b9c9d01206bd7e743",
+      "pubkey": "b0e69f797fe8079657c68bc9ffdf06eff153238559e26a7e0018b723b7f44929",
+      "spent": false,
+      "subaddr_index": {
+        "major": 0,
+        "minor": 0
+      },
+      "tx_hash": "81ed8fb07dddc45f757b75080f278486df62d18a1b78b88f1945899bde2c7379",
+      "unlocked": true
+    },{
+      "amount": 100000000000,
+      "block_height": 131,
+      "frozen": false,
+      "global_index": 133,
+      "key_image": "afb872bcb4b325534a991dd25d98c763c50b40414603de75f22f97824ad40308",
+      "pubkey": "be8c1985e9ed6a1a3b689831087b56c5ad1556fafaec638aab8be21b939d2de0",
+      "spent": false,
+      "subaddr_index": {
+        "major": 0,
+        "minor": 0
+      },
+      "tx_hash": "cda797a80d17a6fcd8c2ab8e17e766c85ce32a724d8f2491c54ad79ddde3d68c",
+      "unlocked": true
+    }]
+  }
+}
