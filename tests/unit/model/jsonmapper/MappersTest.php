@@ -11,6 +11,7 @@ use BrianHenryIE\MoneroRpc\Daemon\HardForkInfo;
 use BrianHenryIE\MoneroRpc\Daemon\Info;
 use BrianHenryIE\MoneroRpc\Daemon\InPeers;
 use BrianHenryIE\MoneroRpc\Daemon\Limit;
+use BrianHenryIE\MoneroRpc\Daemon\OutPeers;
 use BrianHenryIE\MoneroRpc\Daemon\MiningStatus;
 use BrianHenryIE\MoneroRpc\Daemon\PeerList;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
@@ -48,6 +49,7 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'get_transaction_pool_stats.json' => ['get_transaction_pool_stats.json', TransactionPoolStats::class],
             'json_rpc-getblockcount.json' => ['json_rpc-getblockcount.json', BlockCount::class],
             'in_peers.json' => ['in_peers.json', InPeers::class],
+            'out_peers.json' => ['out_peers.json', OutPeers::class],
             'json_rpc-getblockheaderbyhash.json' => ['json_rpc-getblockheaderbyhash.json', BlockHeaderBy::class],
             'set_limit.json' => ['set_limit.json', Limit::class],
             'get_connections.json' => ['get_connections.json', Connections::class],

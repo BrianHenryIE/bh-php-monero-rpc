@@ -57,6 +57,7 @@ use BrianHenryIE\MoneroRpc\Daemon\Info;
 use BrianHenryIE\MoneroRpc\Daemon\InPeers;
 use BrianHenryIE\MoneroRpc\Daemon\Limit;
 use BrianHenryIE\MoneroRpc\Daemon\MiningStatus;
+use BrianHenryIE\MoneroRpc\Daemon\OutPeers;
 use BrianHenryIE\MoneroRpc\Daemon\PeerList;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
 use BrianHenryIE\MoneroRpc\Daemon\TransactionPoolStats;
@@ -602,9 +603,18 @@ class Daemon extends RpcClient
         return $this->runRpc('set_limit', $params, Limit::class);
     }
 
-    public function outPeers()
+    /**
+     * Set the maximum number of outgoing peer connections and return the new value.
+     *
+     * NB: monerod returns an EMPTY body for `out_peers = -1` (unlimited), which cannot be
+     * hydrated; pass a concrete non-negative limit (12 is monerod's default).
+     *
+     * @param int $outPeers Maximum outgoing connections.
+     */
+    public function outPeers(int $outPeers = 12): OutPeers
     {
-        return $this->runRpc('out_peers');
+        $params = array('out_peers' => $outPeers);
+        return $this->runRpc('out_peers', $params, OutPeers::class);
     }
 
     public function inPeers(): InPeers

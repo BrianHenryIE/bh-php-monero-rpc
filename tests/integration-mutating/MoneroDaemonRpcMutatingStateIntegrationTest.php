@@ -16,6 +16,7 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Daemon\OutPeers;
 use BrianHenryIE\MoneroRpc\Daemon\ResponseBase;
 
 /**
@@ -123,6 +124,20 @@ class MoneroDaemonRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
         $restoredResult = self::$daemonPrimaryRpcClient->getLimit();
 
         self::assertSame($initialLimitDown, $restoredResult->limitDown);
+    }
+
+    public function testOutPeersRoundTrip(): void
+    {
+        try {
+            $result = self::$daemonPrimaryRpcClient->outPeers(8);
+
+            self::assertInstanceOf(OutPeers::class, $result);
+            self::assertSame(8, $result->outPeers);
+            self::assertSame('OK', $result->status);
+        } finally {
+            // Restore monerod's default so outbound peering is unconstrained for later tests.
+            self::$daemonPrimaryRpcClient->outPeers(12);
+        }
     }
 
     public function testSetAndUnsetBans(): void
