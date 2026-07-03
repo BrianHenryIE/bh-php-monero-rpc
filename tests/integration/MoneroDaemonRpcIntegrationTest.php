@@ -13,6 +13,7 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Daemon\KeyImageSpentStatus;
 use BrianHenryIE\MoneroRpc\Daemon\NetType;
 
 /**
@@ -243,6 +244,24 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         self::assertTrue($result->enabled);
         self::assertSame(1, $result->earliestHeight);
         self::assertSame('OK', $result->status);
+    }
+
+    public function testIsKeyImageSpent(): void
+    {
+        // Recover the key image the seed transfer spent, from the transaction's first input.
+        $txResult = self::$daemonPrimaryRpcClient->getTransactions([self::$manifest['transfer_txid']]);
+        $txJson = json_decode($txResult->txs[0]->as_json, true);
+        $spentKeyImage = $txJson['vin'][0]['key']['k_image'];
+
+        // A random key image that has never been spent.
+        $unspentKeyImage = '8d1bd8181bf7d857bdb281e0153d84cd55a3fcaa57c3e570f4a49f935850b5e3';
+
+        $result = self::$daemonPrimaryRpcClient->isKeyImageSpent([$spentKeyImage, $unspentKeyImage]);
+
+        self::assertSame(
+            [KeyImageSpentStatus::SpentInBlockchain, KeyImageSpentStatus::Unspent],
+            $result->spentStatus
+        );
     }
 
     public function testGetOuts(): void

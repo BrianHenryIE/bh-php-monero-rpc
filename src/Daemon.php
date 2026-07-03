@@ -53,6 +53,7 @@ use BrianHenryIE\MoneroRpc\Daemon\Connections;
 use BrianHenryIE\MoneroRpc\Daemon\GenerateBlocks;
 use BrianHenryIE\MoneroRpc\Daemon\HardForkInfo;
 use BrianHenryIE\MoneroRpc\Daemon\Height;
+use BrianHenryIE\MoneroRpc\Daemon\KeyImageSpent;
 use BrianHenryIE\MoneroRpc\Daemon\LogCategories;
 use BrianHenryIE\MoneroRpc\Daemon\Info;
 use BrianHenryIE\MoneroRpc\Daemon\InPeers;
@@ -488,7 +489,12 @@ class Daemon extends RpcClient
         return $this->runRpc('get_alt_blocks_hashes', null, AltBlocksHashes::class);
     }
 
-    public function isKeyImageSpent($keyImages)
+    /**
+     * Check whether each of the given key images has been spent.
+     *
+     * @param string|string[] $keyImages One key image (hex) or a list of them.
+     */
+    public function isKeyImageSpent($keyImages): KeyImageSpent
     {
         if (is_string($keyImages)) {
             $keyImages = array($keyImages);
@@ -497,7 +503,7 @@ class Daemon extends RpcClient
             throw new Exception('Error: key images must be an array or a string');
         }
         $params = array('key_images' => $keyImages);
-        return $this->runRpc('is_key_image_spent', $params);
+        return $this->runRpc('is_key_image_spent', $params, KeyImageSpent::class);
     }
 
     public function sendRawTransaction($txAsHex, $doNotRelay = false, $doSanityChecks = true)

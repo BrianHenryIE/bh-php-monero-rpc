@@ -9,6 +9,7 @@ use BrianHenryIE\MoneroRpc\Daemon\BlockHeaderBy;
 use BrianHenryIE\MoneroRpc\Daemon\Connections;
 use BrianHenryIE\MoneroRpc\Daemon\HardForkInfo;
 use BrianHenryIE\MoneroRpc\Daemon\Info;
+use BrianHenryIE\MoneroRpc\Daemon\KeyImageSpent;
 use BrianHenryIE\MoneroRpc\Daemon\InPeers;
 use BrianHenryIE\MoneroRpc\Daemon\Limit;
 use BrianHenryIE\MoneroRpc\Daemon\LogCategories;
@@ -53,6 +54,7 @@ class MappersTest extends \PHPUnit\Framework\TestCase
             'in_peers.json' => ['in_peers.json', InPeers::class],
             'out_peers.json' => ['out_peers.json', OutPeers::class],
             'get_outs.json' => ['get_outs.json', Outs::class],
+            'is_key_image_spent.json' => ['is_key_image_spent.json', KeyImageSpent::class],
             'set_log_categories.json' => ['set_log_categories.json', LogCategories::class],
             'json_rpc-getblockheaderbyhash.json' => ['json_rpc-getblockheaderbyhash.json', BlockHeaderBy::class],
             'set_limit.json' => ['set_limit.json', Limit::class],
