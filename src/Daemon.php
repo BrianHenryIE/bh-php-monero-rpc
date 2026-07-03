@@ -539,15 +539,15 @@ class Daemon extends RpcClient
         return $this->runRpc('get_peer_list', $params, PeerList::class);
     }
 
-	/**
-	 * Set the log hash rate display mode.
-	 *
-	 * Control whether the hash rate is of the mining hardware is logged.
-	 *
-	 * @see https://www.getmonero.org/resources/developer-guides/daemon-rpc.html#set_log_hash_rate
-	 *
-	 * @param bool $visible
-	 */
+    /**
+     * Set the log hash rate display mode.
+     *
+     * Control whether the hash rate is of the mining hardware is logged.
+     *
+     * @see https://www.getmonero.org/resources/developer-guides/daemon-rpc.html#set_log_hash_rate
+     *
+     * @param bool $visible
+     */
     public function setLogHashRate(bool $visible = true): ResponseBase
     {
         $params = array('visible' => $visible); // TODO: does this need the bool as a string? int?

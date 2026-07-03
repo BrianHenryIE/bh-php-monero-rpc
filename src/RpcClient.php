@@ -7,6 +7,9 @@
 namespace BrianHenryIE\MoneroRpc;
 
 use BrianHenryIE\MoneroRpc\Exception\IncompleteRpcResponseException;
+use BrianHenryIE\MoneroRpc\JsonMapperFactory\DateTimeImmutableFactory;
+use BrianHenryIE\MoneroRpc\JsonMapperFactory\MoneroAmountFactory;
+use DateTimeImmutable;
 use Exception;
 use JsonMapper\Enums\TextNotation;
 use JsonMapper\Handler\FactoryRegistry;
@@ -19,7 +22,6 @@ use Psr\Http\Client\RequestExceptionInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
-use SimPod\JsonRpc\Extractor\ResponseExtractor;
 use SimPod\JsonRpc\HttpJsonRpcRequestFactory;
 use stdClass;
 
@@ -140,23 +142,40 @@ abstract class RpcClient
 
         // Throws RequestExceptionInterface.
         $response = $this->client->sendRequest($request);
-        $extracted = new ResponseExtractor($response);
 
-        if ($extracted->getErrorCode()) {
+        // Decode the raw body ONCE with JSON_BIGINT_AS_STRING. monerod amounts are
+        // unsigned 64-bit atomic units and some fields (cumulative emission/difficulty)
+        // exceed PHP's signed-int64 range; a plain json_decode() — as SimPod's
+        // ResponseExtractor performs — silently degrades those to lossy floats. With this
+        // flag they arrive as numeric strings instead. Re-encoding below then quotes them,
+        // so the mapper's own decode reads them back as strings (which MoneroAmount's
+        // factory accepts) and never sees an out-of-range bare number. See {@see MoneroAmount}.
+        $decoded = json_decode(
+            (string) $response->getBody(),
+            false,
+            512,
+            JSON_BIGINT_AS_STRING | JSON_THROW_ON_ERROR
+        );
+
+        if (is_object($decoded) && isset($decoded->error)) {
             // TODO: Link to where these errors are emitted in the rpc server code itself.
-	        // Method not found
+            // Method not found
             // Exception: Internal error: can't get block by hash. Hash = 41aea45eb8e6f627f3d9980de9f2048116bec00b4bd15b669d484681e881f6ef.
             // start_mining: Couldn't start mining due to unknown error.
             // rescan_blockchain: no connection to daemon
             // open_wallet: Failed to open wallet
-	        // Exception: Couldn't start mining due to unknown error.
-	        // Regtest required when generating blocks
-	        // failed to get blocks
-	        // Failed to parse wallet address
-            throw new Exception($extracted->getErrorMessage());
+            // Exception: Couldn't start mining due to unknown error.
+            // Regtest required when generating blocks
+            // failed to get blocks
+            // Failed to parse wallet address
+            throw new Exception($decoded->error->message ?? 'Unknown JSON-RPC error');
         }
 
-        $data = $path === 'json_rpc' ? json_encode($extracted->getResult()) : (string) $response->getBody();
+        // For the JSON-RPC envelope the payload is `result`; other daemon endpoints return
+        // the payload as the top-level body. Either way, re-encode the bigint-safe decode
+        // so the string carried downstream preserves large values exactly.
+        $payload = ($path === 'json_rpc' && is_object($decoded)) ? ($decoded->result ?? null) : $decoded;
+        $data = (string) json_encode($payload);
 
         if (is_null($type)) {
             return trim($data, '"');
@@ -168,7 +187,7 @@ abstract class RpcClient
             return [];
         }
 
-		// status: Failed, wrong address
+        // status: Failed, wrong address
         // The mapper silently zero-fills a missing scalar (absent int → 0), so strictness
         // (PHP84_READONLY_MODELS_PLAN.md decision 5) is enforced HERE, before mapping: a response
         // missing a required top-level field throws rather than fabricating a value that could flow
@@ -251,10 +270,21 @@ abstract class RpcClient
      *
      * Both {@see RpcClient::run()} and the fixture-mapping tests build the mapper here so the
      * two can never diverge.
+     *
+     * The FactoryRegistry is built by hand rather than via {@see FactoryRegistry::withNativePhpClassesAdded()}
+     * because that helper pre-registers a *string*-based `DateTimeImmutable` factory and
+     * `addFactory()` throws on a duplicate class name — we need an epoch-*integer*
+     * `DateTimeImmutable` factory instead ({@see DateTimeImmutableFactory}). We also register
+     * {@see MoneroAmountFactory} for atomic-unit amounts. Enums need no factory: json-mapper
+     * hydrates a BackedEnum property natively via `Enum::from()`, which throws on an unknown
+     * value — exactly the closed-set behaviour we want.
      */
     public static function buildResponseMapper(): JsonMapperInterface
     {
-        $factoryRegistry = FactoryRegistry::withNativePhpClassesAdded();
+        $factoryRegistry = ( new FactoryRegistry() )
+            ->addFactory(stdClass::class, static fn ($value) => (object) $value)
+            ->addFactory(DateTimeImmutable::class, new DateTimeImmutableFactory())
+            ->addFactory(MoneroAmount::class, new MoneroAmountFactory());
 
         return ( new JsonMapperBuilder() )
             ->withPropertyMapper(new PropertyMapper($factoryRegistry))

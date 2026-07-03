@@ -19,6 +19,9 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
+use BrianHenryIE\MoneroRpc\Wallet\WalletKeyType;
+
 /**
  * @coversDefaultClass \BrianHenryIE\MoneroRpc\Wallet
  */
@@ -92,7 +95,7 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
      */
     public function testTransferEndToEnd(): void
     {
-        $transferAmountAtomicUnits = 500000000000; // 0.5 XMR.
+        $transferAmount = MoneroAmount::fromXmr('0.5');
 
         $recipientWallet = $this->openRecipientWallet();
         $recipientWallet->refresh();
@@ -102,11 +105,11 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
         $minerWallet->refresh();
 
         $transferResult = $minerWallet->transfer(
-            '0.5',
+            $transferAmount,
             MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS
         );
 
-        self::assertSame($transferAmountAtomicUnits, (int) $transferResult->amount);
+        self::assertSame($transferAmount->toAtomicUnitsString(), (string) $transferResult->amount);
         self::assertNotEmpty($transferResult->txHash);
 
         // Confirm the transfer.
@@ -117,11 +120,11 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
             0
         );
 
-        $expectedRecipientBalance = $recipientBalanceBefore + $transferAmountAtomicUnits;
+        $expectedRecipientBalance = $recipientBalanceBefore->plus($transferAmount);
         self::pollUntil(
             function () use ($recipientWallet, $expectedRecipientBalance) {
                 $recipientWallet->refresh();
-                return $recipientWallet->getBalance()->balance === $expectedRecipientBalance;
+                return $recipientWallet->getBalance()->balance->isEqualTo($expectedRecipientBalance);
             },
             60,
             "Recipient balance did not increase to {$expectedRecipientBalance}"
@@ -134,7 +137,7 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
         $minerWallet->refresh();
 
         $result = $minerWallet->transferSplit(
-            '0.1',
+            MoneroAmount::fromXmr('0.1'),
             MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS
         );
 
@@ -231,7 +234,7 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
                 port: (int) (getenv('MONERO_DAEMON_INTERNAL_RPC_PORT')
                     ?: MoneroRegtestFixture::DAEMON_INTERNAL_RPC_PORT),
                 isTrusted: true,
-                sslSupport: 'disabled'
+                sslSupport: SslSupport::Disabled
             );
 
             $recipientWallet->refresh();
@@ -247,7 +250,7 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
                 port: (int) (getenv('MONERO_DAEMON_INTERNAL_RPC_PORT')
                     ?: MoneroRegtestFixture::DAEMON_INTERNAL_RPC_PORT),
                 isTrusted: true,
-                sslSupport: 'disabled'
+                sslSupport: SslSupport::Disabled
             );
         }
     }
@@ -262,7 +265,7 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
         $minerWallet = $this->openMinerWallet();
         $minerWallet->refresh();
         $minerWalletBalance = $minerWallet->getBalance()->balance;
-        $minerWalletViewKey = $minerWallet->queryKey('view_key')->key;
+        $minerWalletViewKey = $minerWallet->queryKey(WalletKeyType::ViewKey)->key;
 
         $recipientWalletRpcServer = self::$recipientWalletRpcClient;
         $viewOnlyWalletFilename = uniqid('view_only_miner_wallet_');
@@ -280,14 +283,14 @@ class MoneroWalletRpcMutatingStateIntegrationTest extends MoneroRpcIntegrationTe
             self::pollUntil(
                 function () use ($recipientWalletRpcServer, $minerWalletBalance) {
                     $recipientWalletRpcServer->refresh();
-                    return $recipientWalletRpcServer->getBalance()->balance >= $minerWalletBalance;
+                    return $recipientWalletRpcServer->getBalance()->balance->compareTo($minerWalletBalance) >= 0;
                 },
                 60,
                 'View-only wallet did not see the miner wallet balance'
             );
             self::assertGreaterThanOrEqual(
-                $minerWalletBalance,
-                $recipientWalletRpcServer->getBalance()->balance
+                0,
+                $recipientWalletRpcServer->getBalance()->balance->compareTo($minerWalletBalance)
             );
         } finally {
             self::forgetOpenWalletState();

@@ -85,8 +85,11 @@ class MoneroRegtestFixture
 
     /**
      * 1.23 XMR, transferred miner → recipient during seeding.
+     *
+     * Atomic-unit amounts are STRINGS so they are exact regardless of magnitude — an
+     * atomic-unit value may exceed PHP's signed int64 range (see {@see MoneroAmount}).
      */
-    public const TRANSFER_AMOUNT_ATOMIC_UNITS = 1230000000000;
+    public const TRANSFER_AMOUNT_ATOMIC_UNITS = '1230000000000';
 
     /**
      * The recipient wallet receives exactly the transfer, nothing else.
@@ -97,7 +100,31 @@ class MoneroRegtestFixture
      * Block reward of the first mined regtest block (observed; the emission
      * curve starts from zero generated coins). ~35.18 XMR.
      */
-    public const EXPECTED_FIRST_BLOCK_REWARD_ATOMIC_UNITS = 35184338534400;
+    public const EXPECTED_FIRST_BLOCK_REWARD_ATOMIC_UNITS = '35184338534400';
+
+    /**
+     * The seed transfer amount (1.23 XMR) as a {@see MoneroAmount}.
+     */
+    public static function getTransferAmount(): MoneroAmount
+    {
+        return MoneroAmount::fromAtomicUnits(self::TRANSFER_AMOUNT_ATOMIC_UNITS);
+    }
+
+    /**
+     * The expected recipient balance after seeding as a {@see MoneroAmount}.
+     */
+    public static function getExpectedRecipientBalance(): MoneroAmount
+    {
+        return MoneroAmount::fromAtomicUnits(self::EXPECTED_RECIPIENT_BALANCE_ATOMIC_UNITS);
+    }
+
+    /**
+     * The first-block reward as a {@see MoneroAmount}.
+     */
+    public static function getExpectedFirstBlockReward(): MoneroAmount
+    {
+        return MoneroAmount::fromAtomicUnits(self::EXPECTED_FIRST_BLOCK_REWARD_ATOMIC_UNITS);
+    }
 
     public const MANIFEST_RELATIVE_PATH = '/../_data/integration/manifest.json';
 

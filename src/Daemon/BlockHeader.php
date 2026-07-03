@@ -2,8 +2,16 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
+use BrianHenryIE\MoneroRpc\MoneroAmount;
+use DateTimeImmutable;
+
 final readonly class BlockHeader
 {
+    /**
+     * @param MoneroAmount $reward Block reward in atomic units (was `int`; see MoneroAmount for why int is unsafe).
+     * @param ?DateTimeImmutable $timestamp Block time (epoch seconds → UTC); null when monerod reports 0
+     *                                      (its "unset" epoch sentinel — e.g. the genesis block).
+     */
     public function __construct(
         public int $blockSize,
         public int $blockWeight,
@@ -23,8 +31,8 @@ final readonly class BlockHeader
         public bool $orphanStatus,
         public string $powHash,
         public string $prevHash,
-        public int $reward,
-        public int $timestamp,
+        public MoneroAmount $reward,
+        public ?DateTimeImmutable $timestamp,
         public string $wideCumulativeDifficulty,
         public string $wideDifficulty,
     ) {

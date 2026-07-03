@@ -37,33 +37,22 @@ namespace BrianHenryIE\MoneroRpc;
 use BrianHenryIE\MoneroRpc\Daemon\Height;
 use BrianHenryIE\MoneroRpc\Wallet\Balance;
 use BrianHenryIE\MoneroRpc\Wallet\GetAddress;
+use BrianHenryIE\MoneroRpc\Wallet\IncomingTransferType;
 use BrianHenryIE\MoneroRpc\Wallet\IntegratedAddress;
 use BrianHenryIE\MoneroRpc\Wallet\Key;
 use BrianHenryIE\MoneroRpc\Wallet\RefreshResult;
 use BrianHenryIE\MoneroRpc\Wallet\RestoreDeterministicWalletResult;
+use BrianHenryIE\MoneroRpc\Wallet\SslSupport;
 use BrianHenryIE\MoneroRpc\Wallet\SweepDust;
+use BrianHenryIE\MoneroRpc\Wallet\TransferPriority;
+use BrianHenryIE\MoneroRpc\Wallet\TransferType;
 use BrianHenryIE\MoneroRpc\Wallet\Version;
+use BrianHenryIE\MoneroRpc\Wallet\WalletKeyType;
 use Exception;
 
 class Wallet extends RpcClient
 {
   /**
-   * Convert from moneroj to tacoshi (piconero)
-   *
-   * NB: was previously typed `int $amount`, which silently truncated
-   * fractional XMR amounts (e.g. '1.23' became 1) via PHP int coercion.
-   *
-   * @used-by Wallet::sweepSingle()
-   * @used-by Wallet::transfer()
-   *
-   * @param  string|int|float  $amount  Amount (in monero) to transform to tacoshi (piconero)  (optional)
-   */
-    public function _transform($amount = 0): int
-    {
-        return intval(bcmul((string) $amount, '1000000000000'));
-    }
-
-    /**
      *
      * `{"address":"http://localhost:18081","trusted":true,"ssl_support":"enabled","ssl_private_key_path":"path/to/ssl/key","ssl_certificate_path":"path/to/ssl/certificate","ssl_ca_file":"path/to/ssl/ca/file","ssl_allowed_fingerprints":["85:A7:68:29:BE:73:49:80:84:91:7A:BB:1F:F1:AD:7E:43:FE:CC:B8"],"ssl_allow_any_cert":true}}`
      *
@@ -73,7 +62,7 @@ class Wallet extends RpcClient
         string $host = 'localhost',
         int $port = 18081,
         bool $isTrusted = true,
-        $sslSupport = 'enabled',
+        SslSupport $sslSupport = SslSupport::Enabled,
         ?string $sslPrivateKeyPath = null,
         ?string $sslCertificatePath = null,
         ?string $sslCaFile = null,
@@ -82,7 +71,7 @@ class Wallet extends RpcClient
     ): void {
         $address = sprintf(
             'http%s://%s:%d/',
-            $sslSupport === 'enabled' ? 's' : '',
+            $sslSupport === SslSupport::Enabled ? 's' : '',
             $host,
             $port
         );
@@ -90,7 +79,7 @@ class Wallet extends RpcClient
         $params = array(
             "address" => $address,
             "trusted" => $isTrusted,
-            "ssl_support" => $sslSupport,
+            "ssl_support" => $sslSupport->value,
             "ssl_private_key_path" => $sslPrivateKeyPath,
             "ssl_certificate_path" => $sslCertificatePath,
             "ssl_ca_file" => $sslCaFile,
@@ -128,9 +117,9 @@ class Wallet extends RpcClient
         string $language = 'English'
     ): void {
         $params = array(
-			'filename' => $filename,
-			'password' => $password,
-			'language' => $language,
+            'filename' => $filename,
+            'password' => $password,
+            'language' => $language,
         );
         $this->runJsonRpc('create_wallet', $params);
     }
@@ -609,23 +598,24 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Send monero
-   * Parameters can be passed in individually (as listed below) or as an object/dictionary (as listed at bottom)
-   * To send to multiple recipients, use the object/dictionary (bottom) format and pass an array of recipient addresses and amount arrays in the destinations field (as in "destinations = [['amount' => 1, 'address' => ...], ['amount' => 2, 'address' => ...]]")
+   * Send monero to a single address.
    *
-   * @param  string   $amount           Amount of monero to send
-   * @param  string   $address          Address to receive funds
-   * @param  string   $paymentId       Payment ID                                                (optional)
-   * @param  int   $mixin            Mixin number (ringsize - 1)                               (optional)
-   * @param  int   $accountIndex    Account to send from                                      (optional)
-   * @param  string   $subaddrIndices  Comma-separated list of subaddress indices to spend from  (optional)
-   * @param  int   $priority         Transaction priority                                      (optional)
-   * @param  int   $unlockTime      UNIX time or block height to unlock output                (optional)
-   * @param  boolean  $doNotRelay     Do not relay transaction                                  (optional)
+   * The amount is a {@see MoneroAmount} (atomic units) — this method no longer accepts an
+   * XMR-denominated string. Callers convert with `MoneroAmount::fromXmr('1.23')`. The former
+   * multi-destination / params-dictionary overload has been removed in favour of typed
+   * parameters.
    *
-   *   OR
-   *
-   * @param  object  $params            Array containing any of the options listed above, where only amount and address or a destination's array are required
+   * @param  MoneroAmount     $amount          Amount to send.
+   * @param  string           $address         Address to receive funds.
+   * @param  string           $paymentId       Payment ID (deprecated by monerod)        (optional)
+   * @param  int              $mixin           Mixin number (ringsize - 1)               (optional)
+   * @param  int              $accountIndex    Account to send from                      (optional)
+   * @param  string           $subaddrIndices  Comma-separated subaddress indices        (optional)
+   * @param  TransferPriority $priority        Transaction fee priority                  (optional)
+   * @param  int              $unlockTime      Block HEIGHT or UNIX time to unlock output; monerod
+   *                                           treats it as a height when < 500000000, otherwise an
+   *                                           epoch timestamp — hence a raw int, not a date type.  (optional)
+   * @param  boolean          $doNotRelay      Do not relay transaction                  (optional)
    *
    * @return object  Example: {
    *   "amount": "1000000000000",
@@ -633,79 +623,22 @@ class Wallet extends RpcClient
    *   "tx_hash": "c60a64ddae46154a75af65544f73a7064911289a7760be8fb5390cb57c06f2db",
    *   "tx_key": "805abdb3882d9440b6c80490c2d6b95a79dbc6d1b05e514131a91768e8040b04"
    * }
-   *
    */
     public function transfer(
-        string $amount,
-        string $address = '',
+        MoneroAmount $amount,
+        string $address,
         string $paymentId = '',
         int $mixin = 15,
         int $accountIndex = 0,
         string $subaddrIndices = '',
-        int $priority = 2,
+        TransferPriority $priority = TransferPriority::Normal,
         int $unlockTime = 0,
         bool $doNotRelay = false,
         int $ringsize = 11
     ) {
-        if (is_array($amount)) { // Parameters passed in as object/dictionary
-            $params = $amount;
+        $destinations = array(array('amount' => $this->amountToRequestInt($amount), 'address' => $address));
 
-            if (array_key_exists('destinations', $params)) {
-                $destinations = $params['destinations'];
-
-                if (!is_array($destinations)) {
-                    throw new Exception('Error: destinations must be an array');
-                }
-
-                foreach ($destinations as $destinationIndex => $destination) {
-                    if (array_key_exists('amount', $destination)) {
-                        $destinations[$destinationIndex]['amount'] = $this->_transform($destination['amount']);
-                    } else {
-                        throw new Exception('Error: Amount required');
-                    }
-                    if (!array_key_exists('address', $destination)) {
-                        throw new Exception('Error: Address required');
-                    }
-                }
-            } else {
-                if (array_key_exists('amount', $params)) {
-                    $amount = $params['amount'];
-                } else {
-                    throw new Exception('Error: Amount required');
-                }
-                if (array_key_exists('address', $params)) {
-                    $address = $params['address'];
-                } else {
-                    throw new Exception('Error: Address required');
-                }
-                $destinations = array(array('amount' => $this->_transform($amount), 'address' => $address));
-            }
-            if (array_key_exists('payment_id', $params)) {
-                throw new Exception('Error: Payment ids have been deprecated.');
-            }
-            if (array_key_exists('mixin', $params)) {
-                $mixin = $params['mixin'];
-            }
-            if (array_key_exists('account_index', $params)) {
-                $accountIndex = $params['account_index'];
-            }
-            if (array_key_exists('subaddr_indices', $params)) {
-                $subaddrIndices = $params['subaddr_indices'];
-            }
-            if (array_key_exists('priority', $params)) {
-                $priority = $params['priority'];
-            }
-            if (array_key_exists('unlock_time', $params)) {
-                $unlockTime = $params['unlock_time'];
-            }
-            if (array_key_exists('do_not_relay', $params)) {
-                $doNotRelay = $params['do_not_relay'];
-            }
-        } else { // Legacy parameters used
-            $destinations = array(array('amount' => $this->_transform($amount), 'address' => $address));
-        }
-
-        $params = array( 'destinations' => $destinations, 'mixin' => $mixin, 'get_tx_key' => true, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'priority' => $priority, 'do_not_relay' => $doNotRelay, 'ringsize' => $ringsize);
+        $params = array( 'destinations' => $destinations, 'mixin' => $mixin, 'get_tx_key' => true, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'priority' => $priority->value, 'do_not_relay' => $doNotRelay, 'ringsize' => $ringsize);
         $transferMethod = $this->runJsonRpc('transfer', $params);
 
         $save = $this->store(); // Save wallet state after transfer
@@ -713,71 +646,48 @@ class Wallet extends RpcClient
         return $transferMethod;
     }
 
-  /**
-   * Same as transfer, but splits transfer into more than one transaction if necessary
-   *
-   */
-    public function transferSplit($amount, $address = '', $paymentId = '', $mixin = 15, $accountIndex = 0, $subaddrIndices = '', $priority = 2, $unlockTime = 0, $doNotRelay = false)
+    /**
+     * Serialize a {@see MoneroAmount} for a request `amount`/`below_amount` param.
+     *
+     * monerod expects a JSON integer of atomic units. Real request amounts are far below
+     * PHP_INT_MAX (~9.2M XMR); a value above it is not a legitimate spend and must throw
+     * rather than silently become a lossy float (design decision 5).
+     */
+    private function amountToRequestInt(MoneroAmount $amount): int
     {
-        if (is_array($amount)) { // Parameters passed in as object/dictionary
-            $params = $amount;
-
-            if (array_key_exists('destinations', $params)) {
-                $destinations = $params['destinations'];
-
-                if (!is_array($destinations)) {
-                    throw new Exception('Error: destinations must be an array');
-                }
-
-                foreach ($destinations as $destination) {
-                    if (array_key_exists('amount', $destinations[$destination])) {
-                        $destinations[$destination]['amount'] = $this->_transform($destinations[$destination]['amount']);
-                    } else {
-                        throw new Exception('Error: Amount required');
-                    }
-                    if (!array_key_exists('address', $destinations[$destination])) {
-                        throw new Exception('Error: Address required');
-                    }
-                }
-            } else {
-                if (array_key_exists('amount', $params)) {
-                    $amount = $params['amount'];
-                } else {
-                    throw new Exception('Error: Amount required');
-                }
-                if (array_key_exists('address', $params)) {
-                    $address = $params['address'];
-                } else {
-                    throw new Exception('Error: Address required');
-                }
-                $destinations = array(array('amount' => $this->_transform($amount), 'address' => $address));
-            }
-            if (array_key_exists('mixin', $params)) {
-                $mixin = $params['mixin'];
-            }
-            if (array_key_exists('payment_id', $params)) {
-                $paymentId = $params['payment_id'];
-            }
-            if (array_key_exists('account_index', $params)) {
-                $accountIndex = $params['account_index'];
-            }
-            if (array_key_exists('subaddr_indices', $params)) {
-                $subaddrIndices = $params['subaddr_indices'];
-            }
-            if (array_key_exists('priority', $params)) {
-                $priority = $params['priority'];
-            }
-            if (array_key_exists('unlock_time', $params)) {
-                $unlockTime = $params['unlock_time'];
-            }
-            if (array_key_exists('do_not_relay', $params)) {
-                $doNotRelay = $params['do_not_relay'];
-            }
-        } else { // Legacy parameters used
-            $destinations = array(array('amount' => $this->_transform($amount), 'address' => $address));
+        if ($amount->atomicUnits->isGreaterThan((string) PHP_INT_MAX)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Amount %s atomic units exceeds PHP_INT_MAX and cannot be sent as a JSON integer.',
+                $amount->toAtomicUnitsString()
+            ));
         }
 
-        $params = array( 'destinations' => $destinations, 'mixin' => $mixin, 'get_tx_key' => true, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'payment_id' => $paymentId, 'priority' => $priority, 'unlock_time' => $unlockTime, 'do_not_relay' => $doNotRelay);
+        return $amount->atomicUnits->toInt();
+    }
+
+  /**
+   * Same as transfer, but splits transfer into more than one transaction if necessary.
+   *
+   * Single-destination, typed parameters only (see {@see transfer()}); the former
+   * multi-destination / params-dictionary overload has been removed.
+   *
+   * @param  int $unlockTime Block HEIGHT or UNIX time to unlock output (height when < 500000000,
+   *                         else epoch timestamp) — a raw int, not a date type.
+   */
+    public function transferSplit(
+        MoneroAmount $amount,
+        string $address,
+        string $paymentId = '',
+        int $mixin = 15,
+        int $accountIndex = 0,
+        string $subaddrIndices = '',
+        TransferPriority $priority = TransferPriority::Normal,
+        int $unlockTime = 0,
+        bool $doNotRelay = false
+    ) {
+        $destinations = array(array('amount' => $this->amountToRequestInt($amount), 'address' => $address));
+
+        $params = array( 'destinations' => $destinations, 'mixin' => $mixin, 'get_tx_key' => true, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'payment_id' => $paymentId, 'priority' => $priority->value, 'unlock_time' => $unlockTime, 'do_not_relay' => $doNotRelay);
         $transferMethod = $this->runJsonRpc('transfer_split', $params);
 
         $save = $this->store(); // Save wallet state after transfer
@@ -813,21 +723,20 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Send all unlocked outputs from an account to an address
+   * Send all unlocked outputs from an account to an address.
    *
-   * @param  string   $address          Address to receive funds
-   * @param  string   $subaddrIndices  Comma-separated list of subaddress indices to sweep  (optional)
-   * @param  int   $accountIndex    Index of the account to sweep                        (optional)
-   * @param  string   $paymentId       Payment ID                                           (optional)
-   * @param  int   $mixin            Mixin number (ringsize - 1)                          (optional)
-   * @param  int   $priority         Payment ID                                           (optional)
-   * @param  number   $belowAmount     Only send outputs below this amount                  (optional)
-   * @param  int   $unlockTime      UNIX time or block height to unlock output           (optional)
-   * @param  boolean  $doNotRelay     Do not relay transaction                             (optional)
+   * Typed parameters only; the former params-dictionary overload has been removed.
    *
-   *   OR
-   *
-   * @param  object  $params            Array containing any of the options listed above, where only address is required
+   * @param  string           $address         Address to receive funds
+   * @param  string           $subaddrIndices  Comma-separated subaddress indices to sweep  (optional)
+   * @param  int              $accountIndex    Index of the account to sweep                (optional)
+   * @param  string           $paymentId       Payment ID                                   (optional)
+   * @param  int              $mixin           Mixin number (ringsize - 1)                  (optional)
+   * @param  TransferPriority $priority        Transaction fee priority                     (optional)
+   * @param  ?MoneroAmount    $belowAmount     Only send outputs below this amount; null = no limit  (optional)
+   * @param  int              $unlockTime      Block HEIGHT or UNIX time to unlock output (height when
+   *                                           < 500000000, else epoch timestamp) — a raw int.  (optional)
+   * @param  boolean          $doNotRelay      Do not relay transaction                     (optional)
    *
    * @return object  Example: {
    *   "amount": "1000000000000",
@@ -835,54 +744,19 @@ class Wallet extends RpcClient
    *   "tx_hash": "c60a64ddae46154a75af65544f73a7064911289a7760be8fb5390cb57c06f2db",
    *   "tx_key": "805abdb3882d9440b6c80490c2d6b95a79dbc6d1b05e514131a91768e8040b04"
    * }
-   *
    */
     public function sweepAll(
         string $address,
-        $subaddrIndices = '',
+        string $subaddrIndices = '',
         int $accountIndex = 0,
         string $paymentId = '',
         int $mixin = 15,
-        int $priority = 2,
-        $belowAmount = 0,
+        TransferPriority $priority = TransferPriority::Normal,
+        ?MoneroAmount $belowAmount = null,
         int $unlockTime = 0,
         bool $doNotRelay = false
     ) {
-        if (is_array($address)) { // Parameters passed in as object/dictionary
-            $params = $address;
-
-            if (array_key_exists('address', $params)) {
-                $address = $params['address'];
-            } else {
-                throw new Exception('Error: Address required');
-            }
-            if (array_key_exists('subaddr_indices', $params)) {
-                $subaddrIndices = $params['subaddr_indices'];
-            }
-            if (array_key_exists('account_index', $params)) {
-                $accountIndex = $params['account_index'];
-            }
-            if (array_key_exists('payment_id', $params)) {
-                $paymentId = $params['payment_id'];
-            }
-            if (array_key_exists('mixin', $params)) {
-                $mixin = $params['mixin'];
-            }
-            if (array_key_exists('priority', $params)) {
-                $priority = $params['priority'];
-            }
-            if (array_key_exists('below_amount', $params)) {
-                $belowAmount = $params['below_amount'];
-            }
-            if (array_key_exists('unlock_time', $params)) {
-                $unlockTime = $params['unlock_time'];
-            }
-            if (array_key_exists('do_not_relay', $params)) {
-                $doNotRelay = $params['do_not_relay'];
-            }
-        }
-
-        $params = array( 'address' => $address, 'mixin' => $mixin, 'get_tx_key' => true, 'subaddr_indices' => $subaddrIndices, 'account_index' => $accountIndex, 'payment_id' => $paymentId, 'priority' => $priority, 'below_amount' => $this->_transform($belowAmount), 'unlock_time' => $unlockTime, 'do_not_relay' => $doNotRelay);
+        $params = array( 'address' => $address, 'mixin' => $mixin, 'get_tx_key' => true, 'subaddr_indices' => $subaddrIndices, 'account_index' => $accountIndex, 'payment_id' => $paymentId, 'priority' => $priority->value, 'below_amount' => $belowAmount === null ? 0 : $this->amountToRequestInt($belowAmount), 'unlock_time' => $unlockTime, 'do_not_relay' => $doNotRelay);
         $sweepAllMethod = $this->runJsonRpc('sweep_all', $params);
 
         $save = $this->store(); // Save wallet state after transfer
@@ -891,20 +765,22 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Sweep a single key image to an address
+   * Sweep a single key image to an address.
    *
-   * @param  string   $keyImage     Key image to sweep
-   * @param  string   $address       Address to receive funds
-   * @param  string   $paymentId    Payment ID                                  (optional)
-   * @param  number   $belowAmount  Only send outputs below this amount         (optional)
-   * @param  int   $mixin         Mixin number (ringsize - 1)                 (optional)
-   * @param  int   $priority      Payment ID                                  (optional)
-   * @param  int   $unlockTime   UNIX time or block height to unlock output  (optional)
-   * @param  boolean  $doNotRelay  Do not relay transaction                    (optional)
+   * Typed parameters only; the former params-dictionary overload has been removed. (The
+   * `$accountIndex` parameter is now explicit — previously it was only reachable through the
+   * removed dictionary path and was otherwise an undefined variable.)
    *
-   *   OR
-   *
-   * @param  object  $params         Array containing any of the options listed above, where only address is required
+   * @param  string           $keyImage     Key image to sweep
+   * @param  string           $address      Address to receive funds
+   * @param  string           $paymentId    Payment ID                                  (optional)
+   * @param  int              $mixin        Mixin number (ringsize - 1)                 (optional)
+   * @param  TransferPriority $priority     Transaction fee priority                    (optional)
+   * @param  ?MoneroAmount    $belowAmount  Only send outputs below this amount; null = no limit  (optional)
+   * @param  int              $unlockTime   Block HEIGHT or UNIX time to unlock output (height when
+   *                                        < 500000000, else epoch timestamp) — a raw int.  (optional)
+   * @param  boolean          $doNotRelay   Do not relay transaction                    (optional)
+   * @param  int              $accountIndex Index of the account to sweep from          (optional)
    *
    * @return object  Example: {
    *   "amount": "1000000000000",
@@ -912,63 +788,26 @@ class Wallet extends RpcClient
    *   "tx_hash": "c60a64ddae46154a75af65544f73a7064911289a7760be8fb5390cb57c06f2db",
    *   "tx_key": "805abdb3882d9440b6c80490c2d6b95a79dbc6d1b05e514131a91768e8040b04"
    * }
-   *
    */
     public function sweepSingle(
-        $keyImage,
+        string $keyImage,
         string $address,
         string $paymentId = '',
         int $mixin = 15,
-        int $priority = 2,
-        $belowAmount = 0,
+        TransferPriority $priority = TransferPriority::Normal,
+        ?MoneroAmount $belowAmount = null,
         int $unlockTime = 0,
-        bool $doNotRelay = false
+        bool $doNotRelay = false,
+        int $accountIndex = 0
     ) {
-        if (is_array($keyImage)) { // Parameters passed in as object/dictionary
-            $params = $keyImage;
-
-            if (array_key_exists('key_image', $params)) {
-                $keyImage = $params['key_image'];
-            } else {
-                throw new Exception('Error: Key image required');
-            }
-            if (array_key_exists('address', $params)) {
-                $address = $params['address'];
-            } else {
-                throw new Exception('Error: Address required');
-            }
-
-            if (array_key_exists('payment_id', $params)) {
-                $paymentId = $params['payment_id'];
-            }
-            if (array_key_exists('mixin', $params)) {
-                $mixin = $params['mixin'];
-            }
-            if (array_key_exists('account_index', $params)) {
-                $accountIndex = $params['account_index'];
-            }
-            if (array_key_exists('priority', $params)) {
-                $priority = $params['priority'];
-            }
-            if (array_key_exists('unlock_time', $params)) {
-                $unlockTime = $params['unlock_time'];
-            }
-            if (array_key_exists('below_amount', $params)) {
-                $belowAmount = $params['below_amount'];
-            }
-            if (array_key_exists('do_not_relay', $params)) {
-                $doNotRelay = $params['do_not_relay'];
-            }
-        }
-
         $params = array(
             'address' => $address,
             'mixin' => $mixin,
             'get_tx_key' => true,
             'account_index' => $accountIndex,
             'payment_id' => $paymentId,
-            'priority' => $priority,
-            'below_amount' => $this->_transform($belowAmount),
+            'priority' => $priority->value,
+            'below_amount' => $belowAmount === null ? 0 : $this->amountToRequestInt($belowAmount),
             'unlock_time' => $unlockTime,
             'do_not_relay' => $doNotRelay ? 1 : 0
         );
@@ -1067,9 +906,9 @@ class Wallet extends RpcClient
   /**
    * Look up incoming transfers
    *
-   * @param  string  $type             Type of transfer to look up; must be 'all', 'available', or 'unavailable' (incoming transfers which have already been spent)
-   * @param  int  $accountIndex    Index of account to look up                                                                                                   (optional)
-   * @param  string  $subaddrIndices  Comma-separated list of subaddress indices to look up                                                                         (optional)
+   * @param  IncomingTransferType  $type            Which outputs to look up (all / available / unavailable, i.e. already spent).
+   * @param  int                   $accountIndex    Index of account to look up                            (optional)
+   * @param  string                $subaddrIndices  Comma-separated list of subaddress indices to look up  (optional)
    *
    * @return object  Example: {
    *   "transfers": [{
@@ -1093,26 +932,23 @@ class Wallet extends RpcClient
    *   }]
    * }
    */
-    public function incomingTransfers(string $type = 'all', int $accountIndex = 0, string $subaddrIndices = '')
-    {
-        $params = array( 'transfer_type' => $type, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices);
+    public function incomingTransfers(
+        IncomingTransferType $type = IncomingTransferType::All,
+        int $accountIndex = 0,
+        string $subaddrIndices = ''
+    ) {
+        $params = array( 'transfer_type' => $type->value, 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices);
         return $this->runJsonRpc('incoming_transfers', $params);
     }
 
   /**
    * Return the spend or view private key, or the wallet mnemonic (seed phrase).
    *
-   * @param  string  $keyType  Type of key to look up; must be 'view_key', 'spend_key', or 'mnemonic'
+   * @param  WalletKeyType  $keyType  Type of key to look up.
    */
-    public function queryKey(string $keyType): Key
+    public function queryKey(WalletKeyType $keyType): Key
     {
-        if (! in_array($keyType, ['view_key', 'spend_key', 'mnemonic'])) {
-            throw new \InvalidArgumentException(
-                "Invalid key type: $keyType, must be one of 'view_key', 'spend_key', or 'mnemonic'."
-            );
-        }
-
-        $params = array('key_type' => $keyType);
+        $params = array('key_type' => $keyType->value);
         return $this->runJsonRpc('query_key', $params, Key::class);
     }
 
@@ -1362,19 +1198,16 @@ class Wallet extends RpcClient
     }
 
   /**
-   * Look up transfers
+   * Look up transfers.
    *
-   * @param  array   $inputTypes      Array of transfer type strings; possible values include 'all', 'in', 'out', 'pending', 'failed', and 'pool'  (optional)
-   * @param  int  $accountIndex    Index of account to look up                                                                                  (optional)
-   * @param  string  $subaddrIndices  Comma-separated list of subaddress indices to look up                                                        (optional)
-   * @param  int  $minHeight       Minimum block height to use when looking up transfers                                                        (optional)
-   * @param  int  $maxHeight       Maximum block height to use when looking up transfers                                                        (optional)
+   * Typed parameters only; the former string / params-dictionary overloads have been removed.
    *
-   *   OR
-   *
-   * @param  string|string[]|array<string,mixed>  $inputTypes  Array of input types (e.g. ['in', 'out']), a single
-   *                                  input type string, or a full parameters array containing any of the options
-   *                                  listed above (where only an input types array is required).
+   * @param  TransferType[] $inputTypes      Categories of transfer to include. Defaults to all
+   *                                         request categories (in, out, pending, failed, pool).  (optional)
+   * @param  int            $accountIndex    Index of account to look up                           (optional)
+   * @param  string         $subaddrIndices  Comma-separated subaddress indices to look up         (optional)
+   * @param  int            $minHeight       Minimum block height                                  (optional)
+   * @param  int            $maxHeight       Maximum block height                                  (optional)
    *
    * @return object  Example: {
    *   "pool": [{
@@ -1390,53 +1223,22 @@ class Wallet extends RpcClient
    * }
    * 4206931337 seems to be "420","69","3","1337". Maybe it could just be null.
    */
-    public function getTransfers($inputTypes = ['all'], int $accountIndex = 0, string $subaddrIndices = '', int $minHeight = 0, int $maxHeight = 4206931337)
-    {
-        if (is_string($inputTypes)) { // If user is using old method
-            $params = array( 'subaddr_indices' => $subaddrIndices, 'min_height' => $minHeight, 'max_height' => $maxHeight);
-            if (is_bool($accountIndex)) { // If user passed eg. get_transfers('in', true)
-                $params['account_index'] = 0;
-                $params[$inputTypes]     = $accountIndex; // $params = array($inputType => $inputValue);
-            } else { // If user passed eg. get_transfers('in')
-                $params['account_index'] = $accountIndex;
-                $params[$inputTypes]     = true;
-            }
-        } else {
-            if (is_object($inputTypes) || is_array($inputTypes)) { // Parameters passed in as object/dictionary
-                $params = $inputTypes;
-
-                if (array_key_exists('input_types', $params)) {
-                    $inputTypes = $params['input_types'];
-                } else {
-                    $inputTypes = ['all'];
-                }
-                if (array_key_exists('account_index', $params)) {
-                    $accountIndex = $params['account_index'];
-                }
-                if (array_key_exists('subaddr_indices', $params)) {
-                    $subaddrIndices = $params['subaddr_indices'];
-                }
-                if (array_key_exists('min_height', $params)) {
-                    $minHeight = $params['min_height'];
-                }
-                if (array_key_exists('max_height', $params)) {
-                    $maxHeight = $params['max_height'];
-                }
-            }
-
-            $params = array( 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'min_height' => $minHeight, 'max_height' => $maxHeight);
-            for ($i = 0, $iMax = count($inputTypes); $i < $iMax; $i++) {
-                $params[$inputTypes[$i]] = true;
-            }
-        }
-
-        if (array_key_exists('all', $params)) {
-            unset($params['all']);
-            $params['in'] = true;
-            $params['out'] = true;
-            $params['pending'] = true;
-            $params['failed'] = true;
-            $params['pool'] = true;
+    public function getTransfers(
+        array $inputTypes = [
+            TransferType::In,
+            TransferType::Out,
+            TransferType::Pending,
+            TransferType::Failed,
+            TransferType::Pool,
+        ],
+        int $accountIndex = 0,
+        string $subaddrIndices = '',
+        int $minHeight = 0,
+        int $maxHeight = 4206931337
+    ) {
+        $params = array( 'account_index' => $accountIndex, 'subaddr_indices' => $subaddrIndices, 'min_height' => $minHeight, 'max_height' => $maxHeight);
+        foreach ($inputTypes as $inputType) {
+            $params[$inputType->value] = true;
         }
 
         if (( $minHeight || $maxHeight) && $maxHeight != 4206931337) {
@@ -1546,20 +1348,20 @@ class Wallet extends RpcClient
   /**
    * Create a payment URI using the official URI specification
    *
-   * @param  string  $address         Address to receive funds
-   * @param  string  $amount          Amount of monero to request
-   * @param  ?string  $paymentId      Payment ID                   (optional)
-   * @param  ?string  $recipientName  Name of recipient            (optional)
-   * @param  ?string  $txDescription  Payment description          (optional)
+   * @param  string        $address         Address to receive funds
+   * @param  MoneroAmount  $amount          Amount to request (atomic units)
+   * @param  ?string       $paymentId      Payment ID                   (optional)
+   * @param  ?string       $recipientName  Name of recipient            (optional)
+   * @param  ?string       $txDescription  Payment description          (optional)
    *
    * @return object  Example: {
    *   // TODO example
    * }
    *
    */
-    public function makeUri(string $address, string $amount, ?string $paymentId = null, ?string $recipientName = null, ?string $txDescription = null)
+    public function makeUri(string $address, MoneroAmount $amount, ?string $paymentId = null, ?string $recipientName = null, ?string $txDescription = null)
     {
-        $params = array( 'address' => $address, 'amount' => $this->_transform($amount), 'payment_id' => $paymentId, 'recipient_name' => $recipientName, 'tx_description' => $txDescription);
+        $params = array( 'address' => $address, 'amount' => $this->amountToRequestInt($amount), 'payment_id' => $paymentId, 'recipient_name' => $recipientName, 'tx_description' => $txDescription);
         return $this->runJsonRpc('make_uri', $params);
     }
 
@@ -1681,14 +1483,15 @@ class Wallet extends RpcClient
    * }
    *
    */
-    public function prepareMultisig() {
-	    return $this->runJsonRpc( 'prepare_multisig' );
+    public function prepareMultisig()
+    {
+        return $this->runJsonRpc('prepare_multisig');
     }
 
-	/**
-	 * Create a multisignature wallet
-	 *
-	 * @param string $multisigInfo  Multisignature information (from eg. prepare_multisig)
+    /**
+     * Create a multisignature wallet
+     *
+     * @param string $multisigInfo  Multisignature information (from eg. prepare_multisig)
    * @param  string  $threshold      Threshold required to spend from multisignature wallet
    * @param  string  $password       Passphrase to apply to multisignature wallet
    *

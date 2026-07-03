@@ -63,8 +63,10 @@ class MappersTest extends \PHPUnit\Framework\TestCase
         $json = (string) file_get_contents(__DIR__ . '/../../../_data/daemon/' . $filename);
 
         // `json_rpc` responses wrap the payload in an envelope; the model maps the `result` (this
-        // mirrors RpcClient::run()). "Other" endpoint bodies ARE the payload.
-        $decoded = json_decode($json);
+        // mirrors RpcClient::run()). "Other" endpoint bodies ARE the payload. Decode with
+        // JSON_BIGINT_AS_STRING exactly as run() does, so large integers reach the mapper as exact
+        // numeric strings rather than lossy floats.
+        $decoded = json_decode($json, false, 512, JSON_BIGINT_AS_STRING);
         $payload = (is_object($decoded) && property_exists($decoded, 'result')) ? $decoded->result : $decoded;
 
         $mapper = RpcClient::buildResponseMapper();
@@ -80,5 +82,36 @@ class MappersTest extends \PHPUnit\Framework\TestCase
         }
 
         self::assertInstanceOf($type, $result);
+    }
+
+    /**
+     * Factory regression: an amount above PHP_INT_MAX (here uint64 max) must hydrate into an exact
+     * MoneroAmount, not a lossy float/int. Mirrors RpcClient::run()'s bigint-safe decode.
+     */
+    public function testBigIntegerAmountHydratesExactly(): void
+    {
+        $uint64Max = '18446744073709551615';
+        $json = <<<JSON
+        {
+          "id": 0,
+          "jsonrpc": "2.0",
+          "result": {
+            "block_header": {
+              "block_size": 1, "block_weight": 1, "cumulative_difficulty": 1,
+              "cumulative_difficulty_top64": 0, "depth": 0, "difficulty": 1, "difficulty_top64": 0,
+              "hash": "h", "height": 1, "long_term_weight": 1, "major_version": 16, "miner_tx_hash": "m",
+              "minor_version": 16, "nonce": 0, "num_txes": 0, "orphan_status": false, "pow_hash": "",
+              "prev_hash": "p", "reward": {$uint64Max}, "timestamp": 1700000000,
+              "wide_cumulative_difficulty": "0x1", "wide_difficulty": "0x1"
+            },
+            "status": "OK", "untrusted": false
+          }
+        }
+        JSON;
+
+        $decoded = json_decode($json, false, 512, JSON_BIGINT_AS_STRING);
+        $result = RpcClient::buildResponseMapper()->mapToClass($decoded->result, BlockHeaderBy::class);
+
+        self::assertSame($uint64Max, $result->blockHeader->reward->toAtomicUnitsString());
     }
 }

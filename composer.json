@@ -104,6 +104,7 @@
         "php": ">=8.4",
         "ext-bcmath": "*",
         "ext-json": "*",
+        "brick/math": "^0.18",
         "json-mapper/json-mapper": "^2.25",
         "psr/http-client-implementation": "*",
         "simpod/json-rpc": "^0.2"

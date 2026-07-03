@@ -55,6 +55,32 @@ $monero = new \BrianHenryIE\MoneroRpc\Daemon(
 $result = $monero->getBlockCount()->count;
 ```
 
+### Amounts, timestamps, and enums
+
+Currency amounts are `MoneroAmount` value objects wrapping a `brick/math` `BigInteger` of atomic
+units (1 XMR = 10¹²). A plain PHP `int` is *signed* 64-bit and cannot represent monerod's full
+`uint64` range — and `json_decode()` silently degrades an out-of-range integer to a lossy `float` —
+so `int` for atomic units is a real precision bug, not a style choice.
+
+```php
+$wallet  = new \BrianHenryIE\MoneroRpc\Wallet($uriFactory, $requestFactory, $client, $streamFactory);
+$balance = $wallet->getBalance();
+
+echo $balance->unlockedBalance->toXmr();               // "1.23"
+echo $balance->unlockedBalance->toAtomicUnitsString(); // "1230000000000"
+
+// Send 1.23 XMR. transfer() takes a MoneroAmount (atomic units) and a typed priority enum.
+$wallet->transfer(
+    \BrianHenryIE\MoneroRpc\MoneroAmount::fromXmr('1.23'),
+    $recipientAddress,
+    priority: \BrianHenryIE\MoneroRpc\Wallet\TransferPriority::Normal,
+);
+```
+
+True epoch timestamps (e.g. `BlockHeader::$timestamp`, `Info::$startTime`) are `DateTimeImmutable`
+in UTC (`0` → `null`); durations in seconds and `unlock_time` stay `int`. Closed monerod value sets
+(`nettype`, connection `state`, key type, priority, …) are string/int-backed enums.
+
 ## Contributing 
 
 > ⚠️ PRs helping improve the PhpDoc of methods are very welcome.
@@ -101,6 +127,7 @@ Write a single `final readonly class` (no interface, no mapper) whose constructo
 - **Fields are required by default** (no constructor default). A response missing a required field throws `IncompleteRpcResponseException` rather than fabricating a value that could flow into a payment decision. Only make a field optional — nullable `?T $x = null`, or `= []` for a list — when you have observed monerod actually omitting it, and record that evidence in the property's docblock. (Optional/defaulted parameters must come after the required ones.)
 - **Document parameters in the constructor `@param` block, not as inline docblocks on the promoted parameters.** The hydrator throws if a promoted property carries a docblock without a `@var` tag, so put descriptions, `@see` links, and array element types (`@param Connection[] $connections`) on the constructor.
 - Responses that carry monerod's `status`/`untrusted` extend `Daemon\ResponseBase` and forward both via `parent::__construct(...)`.
+- **Type by domain, not by wire shape:** currency amounts are `MoneroAmount` (never `int` — see above); true epoch timestamps are `?DateTimeImmutable` (UTC, `0` → `null`); closed monerod value sets are string/int-backed enums (`Enum::from()` throws on an unknown value, which is the desired tripwire). Durations in seconds, hashrates, counts, difficulties, and `unlock_time` (a block height OR a timestamp — document the trap, don't type it) stay `int`. Amounts and epoch fields hydrate through the factories registered in `RpcClient::buildResponseMapper()`.
 
 Add the new class to the `MappersTest.php` dataprovider (using the shared `RpcClient::buildResponseMapper()`), and add an integration test assertion against the live value.
 

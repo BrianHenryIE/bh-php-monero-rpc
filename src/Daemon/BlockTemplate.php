@@ -2,6 +2,8 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
+use BrianHenryIE\MoneroRpc\MoneroAmount;
+
 /**
  *
  * {
@@ -25,13 +27,14 @@ final readonly class BlockTemplate extends ResponseBase
 {
     /**
      * @param string $wideDifficulty base16/hex string.
+     * @param MoneroAmount $expectedReward Expected block reward in atomic units.
      */
     public function __construct(
         public string $blockhashingBlob,
         public string $blocktemplateBlob,
         public int $difficulty,
         public int $difficultyTop64,
-        public int $expectedReward,
+        public MoneroAmount $expectedReward,
         public int $height,
         public string $nextSeedHash,
         public string $prevHash,

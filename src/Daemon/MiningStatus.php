@@ -2,10 +2,15 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
+use BrianHenryIE\MoneroRpc\MoneroAmount;
+
 final readonly class MiningStatus extends ResponseBase
 {
     /**
      * @param string $powAlgorithm pow: proof of work
+     * @param MoneroAmount $blockReward Block reward in atomic units.
+     * @param int $blockTarget Target block time, in SECONDS (a duration — not a timestamp).
+     * @param int $speed Mining hashrate, in HASHES PER SECOND (not a currency amount).
      */
     public function __construct(
         public bool $active,
@@ -14,7 +19,7 @@ final readonly class MiningStatus extends ResponseBase
         public bool $bgIgnoreBattery,
         public int $bgMinIdleSeconds,
         public int $bgTarget,
-        public int $blockReward,
+        public MoneroAmount $blockReward,
         public int $blockTarget,
         public int $difficulty,
         public int $difficultyTop64,

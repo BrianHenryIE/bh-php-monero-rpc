@@ -77,6 +77,36 @@ EOD;
         self::assertFalse($result->active);
     }
 
+    /**
+     * Regression net for the float trap: a JSON-RPC result value above PHP's signed
+     * int64 max (here uint64 max, 18446744073709551615) must survive decoding exactly.
+     * `RpcClient::run()` decodes with JSON_BIGINT_AS_STRING, so the value reaches an
+     * untyped stdClass result as the exact numeric string rather than a lossy float.
+     *
+     * @covers \BrianHenryIE\MoneroRpc\RpcClient::run
+     */
+    public function testBigIntegerResultValuePreservedExactly(): void
+    {
+        $responseBody = <<<'EOD'
+{
+  "id": 0,
+  "jsonrpc": "2.0",
+  "result": {
+    "reward": 18446744073709551615,
+    "status": "OK",
+    "untrusted": false
+  }
+}
+EOD;
+
+        $daemonRpcClient = $this->getDaemonClient('json_rpc', $responseBody);
+
+        // getBlockByHash returns an untyped stdClass, so no scalar coercion occurs.
+        $result = $daemonRpcClient->getBlockByHash('any');
+
+        self::assertSame('18446744073709551615', $result->reward);
+    }
+
     public function testGetBlockCount(): void
     {
         $responseBody = <<<'EOD'

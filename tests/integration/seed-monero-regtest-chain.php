@@ -152,22 +152,22 @@ pollUntil(
 echo "Refreshing miner wallet...\n";
 $minerWalletRpc->refresh();
 pollUntil(
-    fn() => $minerWalletRpc->getBalance()->unlockedBalance > 0,
+    fn() => !$minerWalletRpc->getBalance()->unlockedBalance->isZero(),
     60,
     'Miner wallet shows no unlocked balance after mining'
 );
 
 echo "Transferring 1.23 XMR miner -> recipient...\n";
-// Wallet::transfer() takes XMR (not atomic units) and converts internally.
+// Wallet::transfer() takes a MoneroAmount (atomic units); build it from XMR here.
 $transferResult = $minerWalletRpc->transfer(
-    '1.23',
+    MoneroAmount::fromXmr('1.23'),
     MoneroRegtestFixture::RECIPIENT_WALLET_PRIMARY_ADDRESS
 );
 // NB: RpcClient maps response keys to camelCase, even on stdClass results.
 $transferTxid = $transferResult->txHash;
 $transferTxKey = $transferResult->txKey;
-$transferFeeAtomicUnits = (int) $transferResult->fee;
-if ((int) $transferResult->amount !== MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS) {
+$transferFeeAtomicUnits = (string) $transferResult->fee;
+if ((string) $transferResult->amount !== MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS) {
     fwrite(STDERR, "Transfer amount mismatch: {$transferResult->amount}\n");
     exit(1);
 }
@@ -192,7 +192,7 @@ $minerWalletRpc->refresh();
 $recipientWalletRpc->refresh();
 pollUntil(
     fn() => $recipientWalletRpc->getBalance()->balance
-        === MoneroRegtestFixture::EXPECTED_RECIPIENT_BALANCE_ATOMIC_UNITS,
+        ->isEqualTo(MoneroRegtestFixture::getExpectedRecipientBalance()),
     60,
     'Recipient wallet balance is not exactly '
         . MoneroRegtestFixture::EXPECTED_RECIPIENT_BALANCE_ATOMIC_UNITS
@@ -217,14 +217,16 @@ $manifest = [
         ),
         (string) ($expectedFinalHeight - 1) => $daemonPrimary->onGetBlockHash($expectedFinalHeight - 1),
     ],
-    'first_block_reward_atomic_units' => $firstBlockHeader->blockHeader->reward,
+    // Atomic-unit amounts are stored as JSON STRINGS (via MoneroAmount::toAtomicUnitsString()
+    // and the string fixture constant) so values above PHP_INT_MAX survive round-tripping.
+    'first_block_reward_atomic_units' => $firstBlockHeader->blockHeader->reward->toAtomicUnitsString(),
     'transfer_txid' => $transferTxid,
     'transfer_tx_key' => $transferTxKey,
     'transfer_fee_atomic_units' => $transferFeeAtomicUnits,
     'transfer_block_height' => $transferBlockHeight,
     'transfer_amount_atomic_units' => MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS,
-    'miner_wallet_balance_atomic_units' => $minerBalance->balance,
-    'miner_wallet_unlocked_balance_atomic_units' => $minerBalance->unlockedBalance,
+    'miner_wallet_balance_atomic_units' => $minerBalance->balance->toAtomicUnitsString(),
+    'miner_wallet_unlocked_balance_atomic_units' => $minerBalance->unlockedBalance->toAtomicUnitsString(),
 ];
 
 if (!is_dir(dirname($manifestPath))) {

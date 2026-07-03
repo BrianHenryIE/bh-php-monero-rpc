@@ -14,6 +14,9 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Wallet\TransferType;
+use BrianHenryIE\MoneroRpc\Wallet\WalletKeyType;
+
 /**
  * @coversDefaultClass \BrianHenryIE\MoneroRpc\Wallet
  */
@@ -33,7 +36,10 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         $result = $recipientWallet->getBalance();
 
-        self::assertSame(MoneroRegtestFixture::EXPECTED_RECIPIENT_BALANCE_ATOMIC_UNITS, $result->balance);
+        self::assertSame(
+            MoneroRegtestFixture::EXPECTED_RECIPIENT_BALANCE_ATOMIC_UNITS,
+            $result->balance->toAtomicUnitsString()
+        );
     }
 
     public function testMinerWalletBalanceMatchesManifest(): void
@@ -43,7 +49,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         $result = $minerWallet->getBalance();
 
-        self::assertSame(self::$manifest['miner_wallet_balance_atomic_units'], $result->balance);
+        self::assertSame(self::$manifest['miner_wallet_balance_atomic_units'], $result->balance->toAtomicUnitsString());
     }
 
     public function testGetAddressIsMnemonicDerivedConstant(): void
@@ -79,7 +85,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
     {
         $minerWallet = $this->openMinerWallet();
 
-        $result = $minerWallet->queryKey('mnemonic');
+        $result = $minerWallet->queryKey(WalletKeyType::Mnemonic);
 
         self::assertSame(MoneroRegtestFixture::MINER_WALLET_MNEMONIC, $result->key);
     }
@@ -89,11 +95,11 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         $recipientWallet = $this->openRecipientWallet();
         $recipientWallet->refresh();
 
-        $result = $recipientWallet->getTransfers(['in']);
+        $result = $recipientWallet->getTransfers([TransferType::In]);
 
         self::assertCount(1, $result->in);
         self::assertSame(self::$manifest['transfer_txid'], $result->in[0]->txid);
-        self::assertSame(MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS, (int) $result->in[0]->amount);
+        self::assertSame(MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS, (string) $result->in[0]->amount);
         self::assertSame(self::$manifest['transfer_block_height'], (int) $result->in[0]->height);
     }
 
@@ -105,8 +111,8 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         $result = $minerWallet->getTransferByTxid(self::$manifest['transfer_txid']);
 
         self::assertSame('out', $result->transfer->type);
-        self::assertSame(MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS, (int) $result->transfer->amount);
-        self::assertSame(self::$manifest['transfer_fee_atomic_units'], (int) $result->transfer->fee);
+        self::assertSame(MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS, (string) $result->transfer->amount);
+        self::assertSame(self::$manifest['transfer_fee_atomic_units'], (string) $result->transfer->fee);
     }
 
     public function testIncomingTransfers(): void
@@ -117,7 +123,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         $result = $recipientWallet->incomingTransfers();
 
         self::assertCount(1, $result->transfers);
-        self::assertSame(MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS, (int) $result->transfers[0]->amount);
+        self::assertSame(MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS, (string) $result->transfers[0]->amount);
     }
 
     public function testGetTxKeyMatchesManifest(): void
@@ -142,7 +148,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
             self::$manifest['transfer_tx_key']
         );
 
-        self::assertSame(MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS, (int) $result->received);
+        self::assertSame(MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS, (string) $result->received);
         self::assertFalse($result->inPool);
     }
 
@@ -162,7 +168,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         );
 
         self::assertTrue($result->good);
-        self::assertSame(MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS, (int) $result->received);
+        self::assertSame(MoneroRegtestFixture::TRANSFER_AMOUNT_ATOMIC_UNITS, (string) $result->received);
     }
 
     public function testGetAndCheckSpendProof(): void
@@ -257,7 +263,7 @@ class MoneroWalletRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         self::assertCount(1, $result->subaddressAccounts);
         self::assertSame(
             self::$manifest['miner_wallet_balance_atomic_units'],
-            (int) $result->totalBalance
+            (string) $result->totalBalance
         );
     }
 

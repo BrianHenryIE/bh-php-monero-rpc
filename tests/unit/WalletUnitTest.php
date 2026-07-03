@@ -81,18 +81,6 @@ EOD;
         self::assertFalse($result->wasDeprecated);
     }
 
-    /**
-     * `_transform()` previously declared `int $amount`, silently truncating
-     * fractional XMR amounts passed as strings ('1.23' became 1 XMR).
-     *
-     * @covers ::_transform
-     */
-    public function testTransformFractionalXmrAmountToAtomicUnits(): void
-    {
-        $walletRpcClient = $this->getWalletClient('json_rpc', '{}');
-
-        self::assertSame(1230000000000, $walletRpcClient->_transform('1.23'));
-        self::assertSame(1000000000000, $walletRpcClient->_transform(1));
-        self::assertSame(0, $walletRpcClient->_transform());
-    }
+    // The former `_transform()` XMR→atomic-units conversion has been replaced by
+    // MoneroAmount::fromXmr(); its coverage now lives in MoneroAmountUnitTest.
 }

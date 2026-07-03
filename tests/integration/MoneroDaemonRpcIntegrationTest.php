@@ -13,6 +13,8 @@
 
 namespace BrianHenryIE\MoneroRpc;
 
+use BrianHenryIE\MoneroRpc\Daemon\NetType;
+
 /**
  * @coversDefaultClass \BrianHenryIE\MoneroRpc\Daemon
  */
@@ -69,7 +71,7 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
             $result->blockHeader->hash
         );
         self::assertSame(0, $result->blockHeader->depth);
-        self::assertGreaterThan(0, $result->blockHeader->reward);
+        self::assertFalse($result->blockHeader->reward->isZero());
     }
 
     public function testGetBlockHeaderByHeightMatchesManifest(): void
@@ -106,7 +108,7 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
 
         self::assertSame(
             MoneroRegtestFixture::EXPECTED_FIRST_BLOCK_REWARD_ATOMIC_UNITS,
-            $result->blockHeader->reward
+            $result->blockHeader->reward->toAtomicUnitsString()
         );
     }
 
@@ -155,7 +157,7 @@ class MoneroDaemonRpcIntegrationTest extends MoneroRpcIntegrationTestCase
         $result = self::$daemonPrimaryRpcClient->getInfo();
 
         self::assertSame(MoneroRegtestFixture::EXPECTED_CHAIN_HEIGHT_AFTER_SEED, $result->height);
-        self::assertSame('fakechain', $result->nettype);
+        self::assertSame(NetType::Fakechain, $result->nettype);
         self::assertFalse($result->mainnet);
     }
 

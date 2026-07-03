@@ -2,10 +2,21 @@
 
 namespace BrianHenryIE\MoneroRpc\Daemon;
 
+use DateTimeImmutable;
+
 final readonly class Info extends ResponseBase
 {
+    /**
+     * @param ?DateTimeImmutable $adjustedTime Network-adjusted current time (epoch seconds → UTC);
+     *                                         null if monerod reports 0 (its "unset" epoch sentinel).
+     * @param ?DateTimeImmutable $startTime When this daemon process started (epoch seconds → UTC);
+     *                                      null if monerod reports 0.
+     * @param NetType $nettype The network this daemon is on.
+     * @param int $credits RPC-payment credits (a count, NOT a Monero amount).
+     * @param int $target Target block time, in SECONDS (a duration — not a timestamp).
+     */
     public function __construct(
-        public int $adjustedTime,
+        public ?DateTimeImmutable $adjustedTime,
         public int $altBlocksCount,
         public int $blockSizeLimit,
         public int $blockSizeMedian,
@@ -25,13 +36,13 @@ final readonly class Info extends ResponseBase
         public int $heightWithoutBootstrap,
         public int $incomingConnectionsCount,
         public bool $mainnet,
-        public string $nettype,
+        public NetType $nettype,
         public bool $offline,
         public int $outgoingConnectionsCount,
         public bool $restricted,
         public int $rpcConnectionsCount,
         public bool $stagenet,
-        public int $startTime,
+        public ?DateTimeImmutable $startTime,
         public bool $synchronized,
         public int $target,
         public int $targetHeight,
