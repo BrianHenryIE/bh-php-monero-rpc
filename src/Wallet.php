@@ -250,10 +250,7 @@ class Wallet extends RpcClient
     }
 
     /**
-     * Save wallet
-     *
-     * @return object  Example:
-     *
+     * Save wallet.
      */
     public function store(): void
     {
@@ -297,7 +294,7 @@ class Wallet extends RpcClient
      *
      * @param  ?int  $startHeight  Block height from which to start    (optional)
      *
-     * @return object  Example: {
+     * @return \BrianHenryIE\MoneroRpc\Wallet\RefreshResult  Example: {
      *   // TODO example
      * }
      *
@@ -337,7 +334,7 @@ class Wallet extends RpcClient
     /**
      * Look up how many blocks are in the longest chain known to the wallet
      *
-     * @return object  Example: {
+     * @return int  Example: {
      *   "height": 994310
      * }
      *
@@ -350,7 +347,7 @@ class Wallet extends RpcClient
     /**
      * Look up a list of available languages for your wallet's seed
      *
-     * @return object  Example: {
+     * @return \BrianHenryIE\MoneroRpc\Wallet\Languages  Example: {
      *   // TODO example
      * }
      *
@@ -394,7 +391,7 @@ class Wallet extends RpcClient
    * @param bool $allAaccounts - boolean; (Defaults to false)
    * @param bool $isStrict - boolean; (Defaults to false) all changes go to 0-th subaddress (in the current subaddress account)
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\Balance  Example: {
    *   "balance": 140000000000,
    *   "unlocked_balance": 50000000000
    * }
@@ -417,7 +414,7 @@ class Wallet extends RpcClient
    * @param  int  $accountIndex  Index of account to look up     (optional)
    * @param  int  $addressIndex  Index of subaddress to look up  (optional)
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\GetAddress  Example: {
    *   "address": "A2XE6ArhRkVZqepY2DQ5QpW8p8P2dhDQLhPJ9scSkW6q9aYUHhrhXVvE8sjg7vHRx2HnRv53zLQH4ATSiHHrDzcSFqHpARF",
    *   "addresses": [
    *     {
@@ -443,7 +440,7 @@ class Wallet extends RpcClient
 
     /**
      * @param string $address Monero address
-     * @return object Example: {
+     * @return \BrianHenryIE\MoneroRpc\Wallet\AddressIndex Example: {
     * "index": {
     * "major": 0,
     * "minor": 1
@@ -462,7 +459,7 @@ class Wallet extends RpcClient
    * @param  int  $accountIndex  The subaddress account index
    * @param  string  $label          A label to apply to the new subaddress
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\CreatedAddress  Example: {
    *   "address": "Bh3ttLbjGFnVGCeGJF1HgVh4DfCaBNpDt7PQAgsC2GFug7WKskgfbTmB6e7UupyiijiHDQPmDC7wSCo9eLoGgbAFJQaAaDS"
    *   "address_index": 1
    * }
@@ -506,7 +503,7 @@ class Wallet extends RpcClient
    *
    * @param  string $tag Optional filtering by tag
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\Accounts  Example: {
    *   "subaddress_accounts": {
    *     "0": {
    *       "account_index": 0,
@@ -570,7 +567,7 @@ class Wallet extends RpcClient
   /**
    * Look up account tags
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\AccountTags  Example: {
    *   "account_tags": {
    *     "0": {
    *       "accounts": {
@@ -1004,7 +1001,7 @@ class Wallet extends RpcClient
    *
    * @param  ?string  $paymentId  Payment ID  (optional)
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\IntegratedAddress  Example: {
    *   "integrated_address": "4BpEv3WrufwXoyJAeEoBaNW56ScQaLXyyQWgxeRL9KgAUhVzkvfiELZV7fCPBuuB2CGuJiWFQjhnhhwiH1FsHYGQQ8H2RRJveAtUeiFs6J"
    * }
    *
@@ -1020,7 +1017,7 @@ class Wallet extends RpcClient
    *
    * @param  string  $integratedAddress  Integrated address to split
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\SplitIntegratedAddress  Example: {
    *   "payment_id": "420fa29b2d9a49f5",
    *   "standard_address": "427ZuEhNJQRXoyJAeEoBaNW56ScQaLXyyQWgxeRL9KgAUhVzkvfiELZV7fCPBuuB2CGuJiWFQjhnhhwiH1FsHYGQGaDsaBA"
    * }
@@ -1049,7 +1046,7 @@ class Wallet extends RpcClient
    *
    * @param  array  $txIds  Array of transaction IDs (strings) to look up
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\TxNotes  Example: {
    *   // TODO example
    * }
    *
@@ -1077,7 +1074,7 @@ class Wallet extends RpcClient
    *
    * @param  string  $key  Wallet option to query
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\GetAttribute  Example: {
    *   // TODO example
    * }
    *
@@ -1093,7 +1090,7 @@ class Wallet extends RpcClient
    *
    * @param   string  $txId  Transaction ID to look up
    *
-   * @return  object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\TxKey  Example: {
    *   "tx_key": "e8e97866b1606bd87178eada8f995bf96d2af3fec5db0bc570a451ab1d589b0f"
    * }
    *
@@ -1111,7 +1108,7 @@ class Wallet extends RpcClient
    * @param   string  $txId     Transaction ID
    * @param   string  $txKey   Transaction key
    *
-   * @return  object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\CheckTxKey  Example: {
    *   "confirmations": 1,
    *   "in_pool": ,
    *   "received": 0
@@ -1130,7 +1127,7 @@ class Wallet extends RpcClient
    * @param  string  $address  Address that spent funds
    * @param  string  $txid     Transaction ID
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\Signature  Example: {
    *   "signature": "InProofV1Lq4nejMXxMnAdnLeZhHe3FGCmFdnSvzVM1AiGcXjngTRi4hfHPcDL9D4th7KUuvF9ZHnzCDXysNBhfy7gFvUfSbQWiqWtzbs35yUSmtW8orRZzJpYKNjxtzfqGthy1U3puiF"
    * }
    *
@@ -1148,7 +1145,7 @@ class Wallet extends RpcClient
    * @param  string  $txid       Transaction ID
    * @param  string  $signature  Signature (tx_proof)
    *
-   * @return object   Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\CheckTxProof   Example: {
    *   "confirmations": 2,
    *   "good": 1,
    *   "in_pool": ,
@@ -1167,7 +1164,7 @@ class Wallet extends RpcClient
    *
    * @param  string  $txId  Transaction ID
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\Signature  Example: {
    *   "signature": "SpendProofV1RnP6ywcDQHuQTBzXEMiHKbe5ErzRAjpUB1h4RUMfGPNv4bbR6V7EFyiYkCrURwbbrYWWxa6Kb38ZWWYTQhr2Y1cRHVoDBkK9GzBbikj6c8GWyKbu3RKi9hoYp2fA9zze7UEdeNrYrJ3tkoE6mkR3Lk5HP6X2ixnjhUTG65EzJgfCS4qZ85oGkd17UWgQo6fKRC2GRgisER8HiNwsqZdUTM313RmdUX7AYaTUNyhdhTinVLuaEw83L6hNHANb3aQds5CwdKCUQu4pkt5zn9K66z16QGDAXqL6ttHK6K9TmDHF17SGNQVPHzffENLGUf7MXqS3Pb6eijeYirFDxmisZc1n2mh6d5EW8ugyHGfNvbLEd2vjVPDk8zZYYr7NyJ8JjaHhDmDWeLYy27afXC5HyWgJH5nDyCBptoCxxDnyRuAnNddBnLsZZES399zJBYHkGb197ZJm85TV8SRC6cuYB4MdphsFdvSzygnjFtbAcZWHy62Py3QCTVhrwdUomAkeNByM8Ygc1cg245Se1V2XjaUyXuAFjj8nmDNoZG7VDxaD2GT9dXDaPd5dimCpbeDJEVoJXkeEFsZF85WwNcd67D4s5dWySFyS8RbsEnNA5UmoF3wUstZ2TtsUhiaeXmPwjNvnyLif3ASBmFTDDu2ZEsShLdddiydJcsYFJUrN8L37dyxENJN41RnmEf1FaszBHYW1HW13bUfiSrQ9sLLtqcawHAbZWnq4ZQLkCuomHaXTRNfg63hWzMjdNrQ2wrETxyXEwSRaodLmSVBn5wTFVzJe5LfSFHMx1FY1xf8kgXVGafGcijY2hg1yw8ru9wvyba9kdr16Lxfip5RJGFkiBDANqZCBkgYcKUcTaRc1aSwHEJ5m8umpFwEY2JtakvNMnShjURRA3yr7GDHKkCRTSzguYEgiFXdEiq55d6BXDfMaKNTNZzTdJXYZ9A2j6G9gRXksYKAVSDgfWVpM5FaZNRANvaJRguQyqWRRZ1gQdHgN4DqmQ589GPmStrdfoGEhk1LnfDZVwkhvDoYfiLwk9Z2JvZ4ZF4TojUupFQyvsUb5VPz2KNSzFi5wYp1pqGHKv7psYCCodWdte1waaWgKxDken44AB4k6wg2V8y1vG7Nd4hrfkvV4Y6YBhn6i45jdiQddEo5Hj2866MWNsdpmbuith7gmTmfat77Dh68GrRukSWKetPBLw7Soh2PygGU5zWEtgaX5g79FdGZg"
    * }
    *
@@ -1187,7 +1184,7 @@ class Wallet extends RpcClient
    * @param  string  $txId       Transaction ID
    * @param  string  $signature  Spend proof to verify
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\CheckSpendProof  Example: {
    *   "good": 1
    * }
    *
@@ -1206,7 +1203,7 @@ class Wallet extends RpcClient
    *
    * @param  string  $accountIndex  Comma-separated list of account indices of which to prove reserves (proves reserve of all accounts if empty)  (optional)
    *
-   * @return object   Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\Signature   Example: {
    *   "signature": "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE111111111111AjsVgKzau88VxXVGACbYgPVrDGC84vBU61Gmm2eiYxdZULAE4yzBxT1D9epWgCT7qiHFvFMbdChf3CpR2YsZj8CEhp8qDbitsfdy7iBdK6d5pPUiMEwCNsCGDp8AiAc6sLRiuTsLEJcfPYEKe"
    * }
    *
@@ -1228,7 +1225,7 @@ class Wallet extends RpcClient
    * @param  string  $address    Wallet address
    * @param  string  $signature  Reserve proof
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\CheckReserveProof  Example: {
    *   "good": 1,
    *   "spent": 0,
    *   "total": 0
@@ -1323,7 +1320,7 @@ class Wallet extends RpcClient
    *
    * @param  string  $data  Data to sign
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\Signature  Example: {
    *   "signature": "SigV1Xp61ZkGguxSCHpkYEVw9eaWfRfSoAf36PCsSCApx4DUrKWHEqM9CdNwjeuhJii6LHDVDFxvTPijFsj3L8NDQp1TV"
    * }
    *
@@ -1343,7 +1340,7 @@ class Wallet extends RpcClient
    * @param  string   $address    Address that signed data
    * @param  string   $signature  Signature to verify
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\Verify  Example: {
    *   "good": true
    * }
    *
@@ -1357,7 +1354,7 @@ class Wallet extends RpcClient
   /**
    * Export an array of signed key images
    *
-   * @return array  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\KeyImagesExport  Example: {
    *   // TODO example
    * }
    *
@@ -1375,7 +1372,7 @@ class Wallet extends RpcClient
    *
    * @param  array   $signedKeyImages  Array of signed key images
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\ImportKeyImagesResult  Example: {
    *   // TODO example
    *   height: ,
    *   spent: ,
@@ -1398,7 +1395,7 @@ class Wallet extends RpcClient
    * @param  ?string       $recipientName  Name of recipient            (optional)
    * @param  ?string       $txDescription  Payment description          (optional)
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\MakeUriResult  Example: {
    *   // TODO example
    * }
    *
@@ -1414,7 +1411,7 @@ class Wallet extends RpcClient
    *
    * @param  string  $uri  Payment URI
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\ParseUriResult  Example: {
    *   "uri": {
    *     "address": "44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A",
    *     "amount": 10,
@@ -1436,7 +1433,7 @@ class Wallet extends RpcClient
    *
    * @param  array   $entries  Array of address book entry indices to look up
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\AddressBook  Example: {
    *   // TODO example
    * }
    *
@@ -1454,7 +1451,7 @@ class Wallet extends RpcClient
    * @param  string  $paymentId   Payment ID to use with address in address book  (optional)
    * @param  string  $description  Description of address                          (optional)
    *
-   * @return object  Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\AddressBookIndex  Example: {
    *   // TODO example
    * }
    *
@@ -1618,7 +1615,7 @@ class Wallet extends RpcClient
    *
    * @param  string  $txDataHex  Blob of transaction to submit
    *
-   * @return object   Example: {
+   * @return \BrianHenryIE\MoneroRpc\Wallet\AddressValidation   Example: {
    *   // TODO example
    * }
    *
@@ -1636,7 +1633,7 @@ class Wallet extends RpcClient
    *         any_net_type - boolean (Optional); If true, consider addresses belonging to any of the three Monero networks (mainnet, stagenet, and testnet) valid. Otherwise, only consider an address valid if it belongs to the network on which the rpc-wallet's current daemon is running (Defaults to false).
    *         allow_openalias - boolean (Optional); If true, consider OpenAlias-formatted addresses valid (Defaults to false).
    *
-   * @return valid - boolean; True if the input address is a valid Monero address.
+   * @return \BrianHenryIE\MoneroRpc\Wallet\AddressValidation
    *         integrated - boolean; True if the given address is an integrated address.
    *         subaddress - boolean; True if the given address is a subaddress
    *         nettype - string; Specifies which of the three Monero networks (mainnet, stagenet, and testnet) the address belongs to.
